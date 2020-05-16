@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  aspire-sam
+
+  Sample SAM Template for aspire-sam
+
+Parameters:
+  dbUserPassword:
+    NoEcho: true
+    Type: String
+    Default: 'password'
+  dbUserName:
+    NoEcho: true
+    Type: String
+    Default: 'master'
+  dbInstanceClass:
+    Type: String
+    Default: 'db.t2.micro'
+  dbInstanceIdentifier:
+    Type: String
+    Default: 'bakhit-sam-db'
+  dbName:
+    Type: String
+    Default: 'aspire_db'
+
+Globals:
+  Function:
+    Runtime: python3.6
+    Timeout: 3
+
+Resources:
+  TestRds:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/test-rds
+      Handler: app.lambda_handler
+      Events:
+          GetEvent:
+            Type: Api
+            Properties:
+              Path: /test-rds
+              Method: get
+
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: '20'
+      BackupRetentionPeriod: 7
+      CopyTagsToSnapshot: true
+      DBInstanceClass: !Ref dbInstanceClass
+      DBInstanceIdentifier: !Ref dbInstanceIdentifier
+      DBName: !Ref dbName
+      EnableCloudwatchLogsExports:
+        - postgresql
+      EnablePerformanceInsights: true
+      Engine: postgres
+      EngineVersion: 11.6
+      MasterUsername: !Ref dbUserName
+      MasterUserPassword: !Ref dbUserPassword
+      MaxAllocatedStorage: 1000
+      PubliclyAccessible: true
+      StorageType: gp2
+
+Outputs:
+  TestRdsApi:
+    Description: "API Gateway endpoint URL for Prod stage for TestRds function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/test-rds/"
+  TestRds:
+    Description: "TestRds Lambda Function ARN"
+    Value: !GetAtt TestRds.Arn
+  TestRdsIamRole:
+    Description: "Implicit IAM Role created for TestRds function"
+    Value: !GetAtt TestRdsRole.Arn
