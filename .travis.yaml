@@ -1,7 +1,21 @@
 language: python
-python: "3.8"
-
+python:
+  - '3.8'
 install:
-    - pip3 install pytest-pylint pytest-flake8
-scripts:
-    - pytest --flake8
+  - pip install pytest-pylint 
+  - pip install pytest-flake8
+  - pip install awscli
+  - pip install aws-sam-cli
+script:
+  - pytest --flake8
+  - sam build --use-container
+  - sam package --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-1tsrvi0wv29t1 --output-template-file packaged.yaml
+deploy:
+  provider: script
+  script: sam deploy --template-file packaged.yaml --stack-name sam-app --capabilities CAPABILITY_IAM
+  skip_cleanup: true
+  on:
+    branch: master
+notifications:
+  email:
+    on_failure: always
