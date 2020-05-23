@@ -9,6 +9,8 @@ install:
 script:
   - pytest --flake8
   - sam build --use-container
+  - aws configure set aws_access_key_id $AWS_ACCESS_KEY
+  - aws configure set aws_secret_access_key $AWS_SECRET_KEY
   - sam package --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-1tsrvi0wv29t1 --output-template-file packaged.yaml
 deploy:
   provider: script
