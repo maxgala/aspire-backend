@@ -19,10 +19,10 @@ Parameters:
     Default: 'db.t2.micro'
   dbInstanceIdentifier:
     Type: String
-    Default: 'bakhit-sam-db'
+    Default: 'aspire-db'
   dbName:
     Type: String
-    Default: 'aspire_db'
+    Default: 'main_db'
 
 Globals:
   Function:
@@ -30,16 +30,16 @@ Globals:
     Timeout: 3
 
 Resources:
-  TestRds:
+  EmployeeEx:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: handlers/test-rds
-      Handler: app.lambda_handler
+      CodeUri: handlers/basic-rds
+      Handler: app.handler
       Events:
-          GetEvent:
+          EmployeeExEvent:
             Type: Api
             Properties:
-              Path: /test-rds
+              Path: /rds-employee-ex
               Method: get
 
   DBInstance:
@@ -63,12 +63,12 @@ Resources:
       StorageType: gp2
 
 Outputs:
-  TestRdsApi:
-    Description: "API Gateway endpoint URL for Prod stage for TestRds function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/test-rds/"
-  TestRds:
-    Description: "TestRds Lambda Function ARN"
-    Value: !GetAtt TestRds.Arn
-  TestRdsIamRole:
-    Description: "Implicit IAM Role created for TestRds function"
-    Value: !GetAtt TestRdsRole.Arn
+  EmployeeExApi:
+    Description: "API Gateway endpoint URL for Prod stage for EmployeeEx function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/rds-employee-ex/"
+  EmployeeEx:
+    Description: "EmployeeEx Lambda Function ARN"
+    Value: !GetAtt EmployeeEx.Arn
+  EmployeeExIamRole:
+    Description: "Implicit IAM Role created for EmployeeEx function"
+    Value: !GetAtt EmployeeExRole.Arn
