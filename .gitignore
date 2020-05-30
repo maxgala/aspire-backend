@@ -245,3 +245,6 @@ $RECYCLE.BIN/
 
 # AWS SAM ignores
 packaged.yaml
+
+# python packages
+src/layers/*/python/

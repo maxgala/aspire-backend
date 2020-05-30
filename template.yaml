@@ -5,24 +5,24 @@ Description: >
 
   Sample SAM Template for aspire-sam
 
-Parameters:
-  dbUserPassword:
-    NoEcho: true
-    Type: String
-    Default: 'password'
-  dbUserName:
-    NoEcho: true
-    Type: String
-    Default: 'master'
-  dbInstanceClass:
-    Type: String
-    Default: 'db.t2.micro'
-  dbInstanceIdentifier:
-    Type: String
-    Default: 'aspire-db'
-  dbName:
-    Type: String
-    Default: 'main_db'
+# Parameters:
+#   dbUserPassword:
+#     NoEcho: true
+#     Type: String
+#     Default: 'password'
+#   dbUserName:
+#     NoEcho: true
+#     Type: String
+#     Default: 'master'
+#   dbInstanceClass:
+#     Type: String
+#     Default: 'db.t2.micro'
+#   dbInstanceIdentifier:
+#     Type: String
+#     Default: 'aspire-db'
+#   dbName:
+#     Type: String
+#     Default: 'main_db'
 
 Globals:
   Function:
@@ -30,45 +30,57 @@ Globals:
     Timeout: 3
 
 Resources:
-  EmployeeEx:
+  CreateDatabaseModels:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: handlers/basic-rds
-      Handler: app.handler
+      CodeUri: src/lambda/CreateDatabaseModels
+      Handler: lambda_function.handler
       Events:
-          EmployeeExEvent:
+          CreateDatabaseModelsEvent:
             Type: Api
             Properties:
-              Path: /rds-employee-ex
+              Path: /create-db-models
               Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer
 
-  DBInstance:
-    Type: AWS::RDS::DBInstance
+  CommonDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
     Properties:
-      AllocatedStorage: '20'
-      BackupRetentionPeriod: 7
-      CopyTagsToSnapshot: true
-      DBInstanceClass: !Ref dbInstanceClass
-      DBInstanceIdentifier: !Ref dbInstanceIdentifier
-      DBName: !Ref dbName
-      EnableCloudwatchLogsExports:
-        - postgresql
-      EnablePerformanceInsights: true
-      Engine: postgres
-      EngineVersion: 11.6
-      MasterUsername: !Ref dbUserName
-      MasterUserPassword: !Ref dbUserPassword
-      MaxAllocatedStorage: 1000
-      PubliclyAccessible: true
-      StorageType: gp2
+      LayerName: max-aspire-common
+      ContentUri: src/layers/database
+      CompatibleRuntimes:
+        - python3.6
+    Metadata:
+      BuildMethod: python3.6
+
+  # DBInstance:
+  #   Type: AWS::RDS::DBInstance
+  #   Properties:
+  #     AllocatedStorage: '20'
+  #     BackupRetentionPeriod: 7
+  #     CopyTagsToSnapshot: true
+  #     DBInstanceClass: !Ref dbInstanceClass
+  #     DBInstanceIdentifier: !Ref dbInstanceIdentifier
+  #     DBName: !Ref dbName
+  #     EnableCloudwatchLogsExports:
+  #       - postgresql
+  #     EnablePerformanceInsights: true
+  #     Engine: postgres
+  #     EngineVersion: "11.6"
+  #     MasterUsername: !Ref dbUserName
+  #     MasterUserPassword: !Ref dbUserPassword
+  #     MaxAllocatedStorage: 1000
+  #     PubliclyAccessible: true
+  #     StorageType: gp2
 
 Outputs:
-  EmployeeExApi:
-    Description: "API Gateway endpoint URL for Prod stage for EmployeeEx function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/rds-employee-ex/"
-  EmployeeEx:
-    Description: "EmployeeEx Lambda Function ARN"
-    Value: !GetAtt EmployeeEx.Arn
-  EmployeeExIamRole:
-    Description: "Implicit IAM Role created for EmployeeEx function"
-    Value: !GetAtt EmployeeExRole.Arn
+  CreateDatabaseModelsApi:
+    Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
+  CreateDatabaseModels:
+    Description: "CreateDatabaseModels Lambda Function ARN"
+    Value: !GetAtt CreateDatabaseModels.Arn
+  CreateDatabaseModelsIamRole:
+    Description: "Implicit IAM Role created for CreateDatabaseModels function"
+    Value: !GetAtt CreateDatabaseModelsRole.Arn
