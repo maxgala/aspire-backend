@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   aspire-sam
 
-  Sample SAM Template for aspire-sam
+  SAM Template for aspire-sam
 
 # Parameters:
 #   dbUserPassword:
@@ -54,7 +54,7 @@ Resources:
     Metadata:
       BuildMethod: python3.6
 
-  # DBInstance:
+  # AspireDBInstance:
   #   Type: AWS::RDS::DBInstance
   #   Properties:
   #     AllocatedStorage: '20'
@@ -78,9 +78,3 @@ Outputs:
   CreateDatabaseModelsApi:
     Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
-  CreateDatabaseModels:
-    Description: "CreateDatabaseModels Lambda Function ARN"
-    Value: !GetAtt CreateDatabaseModels.Arn
-  CreateDatabaseModelsIamRole:
-    Description: "Implicit IAM Role created for CreateDatabaseModels function"
-    Value: !GetAtt CreateDatabaseModelsRole.Arn

@@ -5,8 +5,10 @@ import logging
 from datetime import datetime
 
 # FOR REFERENCE
-# from user import User, UserType, MembershipType, IndustryTags, EducationLevel
+from user import User, UserType, MembershipType, IndustryTags, EducationLevel
 from chat import Chat, ChatType, ChatStatus
+from job import Job, JobType, JobStatus, JobTags
+from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
 
 logger = logging.getLogger()
