@@ -61,7 +61,15 @@ Resources:
       MaxAllocatedStorage: 1000
       PubliclyAccessible: true
       StorageType: gp2
-
+    
+  ResumeBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      AccessControl: bucket-owner-full-control
+      BucketName: 'resume-bucket'
+      
+    
 Outputs:
   EmployeeExApi:
     Description: "API Gateway endpoint URL for Prod stage for EmployeeEx function"
