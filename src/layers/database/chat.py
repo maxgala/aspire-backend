@@ -23,11 +23,6 @@ chats_aspiring_professionals_association = Table('chats_aspiring_professionals',
     Column('user_id', Integer, ForeignKey('users.user_id'))
 )
 
-chats_senior_executives_association = Table('chats_senior_executives', Base.metadata,
-    Column('chat_id', Integer, ForeignKey('chats.chat_id')),
-    Column('user_id', Integer, ForeignKey('users.user_id'))
-)
-
 
 class Chat(Base):
     __tablename__ = 'chats'
@@ -39,6 +34,6 @@ class Chat(Base):
     credits = Column(Integer(), nullable=False)
     chat_status = Column(Enum(ChatStatus), nullable=False)
     aspiring_professionals = relationship("User", secondary=chats_aspiring_professionals_association)
-    senior_executives = relationship("User", secondary=chats_senior_executives_association)
+    senior_executive = Column(Integer(), ForeignKey('users.user_id'), nullable=False)
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)

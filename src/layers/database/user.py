@@ -58,3 +58,5 @@ class User(Base):
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
 
     jobs = relationship("Job")
+    job_applications = relationship("JobApplications")
+    chats = relationship("Chat")
