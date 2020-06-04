@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   aspire-sam
 
-  Sample SAM Template for aspire-sam
+  SAM Template for aspire-sam
 
 Parameters:
   dbUserPassword:
@@ -30,19 +30,31 @@ Globals:
     Timeout: 3
 
 Resources:
-  EmployeeEx:
+  CreateDatabaseModels:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: handlers/basic-rds
-      Handler: app.handler
+      CodeUri: src/lambda/CreateDatabaseModels
+      Handler: lambda_function.handler
       Events:
-          EmployeeExEvent:
+          CreateDatabaseModelsEvent:
             Type: Api
             Properties:
-              Path: /rds-employee-ex
+              Path: /create-db-models
               Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer
 
-  DBInstance:
+  CommonDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-common
+      ContentUri: src/layers/database
+      CompatibleRuntimes:
+        - python3.6
+    Metadata:
+      BuildMethod: python3.6
+
+  AspireDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
       AllocatedStorage: '20'
@@ -55,7 +67,7 @@ Resources:
         - postgresql
       EnablePerformanceInsights: true
       Engine: postgres
-      EngineVersion: 11.6
+      EngineVersion: "11.6"
       MasterUsername: !Ref dbUserName
       MasterUserPassword: !Ref dbUserPassword
       MaxAllocatedStorage: 1000
@@ -63,12 +75,6 @@ Resources:
       StorageType: gp2
 
 Outputs:
-  EmployeeExApi:
-    Description: "API Gateway endpoint URL for Prod stage for EmployeeEx function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/rds-employee-ex/"
-  EmployeeEx:
-    Description: "EmployeeEx Lambda Function ARN"
-    Value: !GetAtt EmployeeEx.Arn
-  EmployeeExIamRole:
-    Description: "Implicit IAM Role created for EmployeeEx function"
-    Value: !GetAtt EmployeeExRole.Arn
+  CreateDatabaseModelsApi:
+    Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
