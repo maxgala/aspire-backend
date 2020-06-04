@@ -48,11 +48,9 @@ Resources:
     Type: AWS::Serverless::LayerVersion
     Properties:
       LayerName: max-aspire-common
-      ContentUri: src/layers/database
+      ContentUri: src/layers/database/dependencies
       CompatibleRuntimes:
         - python3.6
-    Metadata:
-      BuildMethod: python3.6
 
   AspireDBInstance:
     Type: AWS::RDS::DBInstance
