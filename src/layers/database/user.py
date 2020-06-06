@@ -57,4 +57,4 @@ class User(Base):
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
 
-    jobs = relationship("Job")
+    #jobs = relationship("Job")

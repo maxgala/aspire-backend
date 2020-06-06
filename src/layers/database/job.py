@@ -3,7 +3,8 @@ from datetime import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, String, Integer, DateTime, Enum, Numeric
 from sqlalchemy.orm import relationship
-
+from uuid import uuid4
+from sqlalchemy.dialects import postgresql
 from base import Base
 
 class JobType(enum.Enum):
@@ -34,7 +35,7 @@ class Job(Base):
     job_type = Column(Enum(JobType), nullable=False)
     description = Column(String(), nullable = False)
     requirements = Column(String(), nullable = False)
-    posted_by = Column(Integer(), ForeignKey('users.user_id'), nullable=False)
+    posted_by = Column(Integer(), nullable=False)
     contact_email = Column(String(255), nullable = False)
     job_status = Column(Enum(JobStatus), nullable=False)
     job_tags = Column(Enum(JobTags), nullable=False)

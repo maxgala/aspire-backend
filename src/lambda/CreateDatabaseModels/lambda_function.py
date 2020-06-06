@@ -20,14 +20,13 @@ def handler(event, context):
 
     # FOR REFERENCE
     # # create a new session
-    # session = Session()
+    #session = Session()
 
     # # create users
-    # superman = User(username="superman", email_address="superman@krypton.ca", first_name="Kal",
-    #                 last_name="El", position="Superhero", user_type=UserType.ASPIRING_PROFESSIONAL,
-    #                 birth_year="1938", education_level=EducationLevel.HIGHSCHOOL,
-    #                 country="Canada", province="Quebec", credits=1000,
-    #                 membership_type=MembershipType.PREMIUM, password="12345678")
+    #superman = User(username="superman", email_address="superman@krypton.ca", first_name="Kal",
+     #                last_name="El", position="Superhero", user_type=UserType.ASPIRING_PROFESSIONAL,
+      #              country="Canada", province="Quebec", credits=1000,
+       #              membership_type=MembershipType.PREMIUM, password="12345678")
     # batman = User(username="batman", email_address="batman@cave.ca", first_name="Bruce",
     #                 last_name="Wayne", position="Superhero", user_type=UserType.SENIOR_EXECUTIVE,
     #                 birth_year="1963", education_level=EducationLevel.DOCTORATE,
@@ -48,15 +47,15 @@ def handler(event, context):
     # chat1.aspiring_professionals = [superman]
 
     # # persists data
-    # session.add(superman)
+    #session.add(superman)
     # session.add(batman)
     # session.add(saleh)
 
     # session.add(chat1)
 
     # # commit and close session
-    # session.commit()
-    # session.close()
+    #session.commit()
+    #session.close()
 
     return {
         "statusCode": 200,

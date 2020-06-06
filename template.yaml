@@ -5,29 +5,11 @@ Description: >
 
   SAM Template for aspire-sam
 
-# Parameters:
-#   dbUserPassword:
-#     NoEcho: true
-#     Type: String
-#     Default: 'password'
-#   dbUserName:
-#     NoEcho: true
-#     Type: String
-#     Default: 'master'
-#   dbInstanceClass:
-#     Type: String
-#     Default: 'db.t2.micro'
-#   dbInstanceIdentifier:
-#     Type: String
-#     Default: 'aspire-db'
-#   dbName:
-#     Type: String
-#     Default: 'main_db'
 
 Globals:
   Function:
     Runtime: python3.6
-    Timeout: 3
+    Timeout: 30
 
 Resources:
   CreateDatabaseModels:
@@ -43,6 +25,58 @@ Resources:
               Method: get
       Layers:
         - Ref: CommonDependenciesLayer
+  CreateJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/CreateJob
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /createJob
+              Method: post
+      Layers:
+        - Ref: CommonDependenciesLayer
+  GetAllJobs:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/GetAllJobs
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /getAllJobs
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
+  GetJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/GetJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /getJob/{jobId}
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
+  DeleteJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/DeleteJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /deleteJob/{jobId}
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer      
 
   CommonDependenciesLayer:
     Type: AWS::Serverless::LayerVersion
@@ -54,27 +88,13 @@ Resources:
     Metadata:
       BuildMethod: python3.6
 
-  # AspireDBInstance:
-  #   Type: AWS::RDS::DBInstance
-  #   Properties:
-  #     AllocatedStorage: '20'
-  #     BackupRetentionPeriod: 7
-  #     CopyTagsToSnapshot: true
-  #     DBInstanceClass: !Ref dbInstanceClass
-  #     DBInstanceIdentifier: !Ref dbInstanceIdentifier
-  #     DBName: !Ref dbName
-  #     EnableCloudwatchLogsExports:
-  #       - postgresql
-  #     EnablePerformanceInsights: true
-  #     Engine: postgres
-  #     EngineVersion: "11.6"
-  #     MasterUsername: !Ref dbUserName
-  #     MasterUserPassword: !Ref dbUserPassword
-  #     MaxAllocatedStorage: 1000
-  #     PubliclyAccessible: true
-  #     StorageType: gp2
-
 Outputs:
   CreateDatabaseModelsApi:
     Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
+  CreateJobApi:
+    Description: "API Gateway endpoint URL for Prod stage for CreateJob function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/createJob/"
+  GetAllJobsApi:
+    Description: "API Gateway endpoint URL for Prod stage for GetAllJobs function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAllJobs/"
