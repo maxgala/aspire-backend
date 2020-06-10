@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   aspire-sam
 
-  Sample SAM Template for aspire-sam
+  SAM Template for aspire-sam
 
 Parameters:
   dbUserPassword:
@@ -24,8 +24,57 @@ Globals:
     Timeout: 3
 
 Resources:
+<<<<<<< HEAD
   ResumeBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     Properties:
       BucketName: max-aspire-resume-bucket
+=======
+  CreateDatabaseModels:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/CreateDatabaseModels
+      Handler: lambda_function.handler
+      Events:
+          CreateDatabaseModelsEvent:
+            Type: Api
+            Properties:
+              Path: /create-db-models
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer
+
+  CommonDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-common
+      ContentUri: src/layers/database/dependencies
+      CompatibleRuntimes:
+        - python3.6
+
+  AspireDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: '20'
+      BackupRetentionPeriod: 7
+      CopyTagsToSnapshot: true
+      DBInstanceClass: !Ref dbInstanceClass
+      DBInstanceIdentifier: !Ref dbInstanceIdentifier
+      DBName: !Ref dbName
+      EnableCloudwatchLogsExports:
+        - postgresql
+      EnablePerformanceInsights: true
+      Engine: postgres
+      EngineVersion: "11.6"
+      MasterUsername: !Ref dbUserName
+      MasterUserPassword: !Ref dbUserPassword
+      MaxAllocatedStorage: 1000
+      PubliclyAccessible: true
+      StorageType: gp2
+
+Outputs:
+  CreateDatabaseModelsApi:
+    Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
+>>>>>>> 0271bb28d6d9089b955479648efdb4db6cd81377
