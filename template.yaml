@@ -28,53 +28,66 @@ Resources:
   CreateJob:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/CreateJob
+      CodeUri: src/lambda/Job/CreateJob
       Handler: lambda_function.handler
       Events:
           CreateJobEvent:
             Type: Api
             Properties:
-              Path: /createJob
+              Path: /jobs
               Method: post
       Layers:
         - Ref: CommonDependenciesLayer
   GetAllJobs:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/GetAllJobs
+      CodeUri: src/lambda/Job/GetAllJobs
       Handler: lambda_function.handler
       Events:
           CreateJobEvent:
             Type: Api
             Properties:
-              Path: /getAllJobs
+              Path: /jobs
               Method: get
       Layers:
         - Ref: CommonDependenciesLayer 
   GetJobById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/GetJobById
+      CodeUri: src/lambda/Job/GetJobById
       Handler: lambda_function.handler
       Events:
           CreateJobEvent:
             Type: Api
             Properties:
-              Path: /getJob/{jobId}
+              Path: /jobs/{jobId}
               Method: get
       Layers:
         - Ref: CommonDependenciesLayer 
   DeleteJobById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/DeleteJobById
+      CodeUri: src/lambda/Job/DeleteJobById
       Handler: lambda_function.handler
       Events:
           CreateJobEvent:
             Type: Api
             Properties:
-              Path: /deleteJob/{jobId}
-              Method: get
+              Path: /jobs/{jobId}
+              Method: delete
+      Layers:
+        - Ref: CommonDependenciesLayer
+  EditJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/EditJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs/{jobId}
+              Method: put
       Layers:
         - Ref: CommonDependenciesLayer      
 
@@ -92,9 +105,7 @@ Outputs:
   CreateDatabaseModelsApi:
     Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
-  CreateJobApi:
-    Description: "API Gateway endpoint URL for Prod stage for CreateJob function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/createJob/"
-  GetAllJobsApi:
-    Description: "API Gateway endpoint URL for Prod stage for GetAllJobs function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAllJobs/"
+  JobsApi:
+    Description: "API Gateway endpoint URL for Prod stage for Jobs Api"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/jobs/"
+  
