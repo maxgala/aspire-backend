@@ -1,10 +1,9 @@
 import enum
 from datetime import datetime
-from sqlalchemy import ForeignKey
-from sqlalchemy import Column, String, Integer, DateTime, Enum, Numeric
+from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
-from uuid import uuid4
-from sqlalchemy.dialects import postgresql
+from sqlalchemy.types import String, Integer, DateTime, Enum, Numeric
+
 from base import Base
 
 class JobType(enum.Enum):
@@ -35,7 +34,7 @@ class Job(Base):
     job_type = Column(Enum(JobType), nullable=False)
     description = Column(String(), nullable = False)
     requirements = Column(String(), nullable = False)
-    posted_by = Column(Integer(), nullable=False)
+    posted_by = Column(String(100), nullable=False)
     contact_email = Column(String(255), nullable = False)
     job_status = Column(Enum(JobStatus), nullable=False)
     job_tags = Column(Enum(JobTags), nullable=False)

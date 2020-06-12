@@ -209,6 +209,7 @@ venv.bak/
 .mypy_cache/
 
 ### VisualStudioCode ###
+.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -245,3 +246,6 @@ $RECYCLE.BIN/
 
 # AWS SAM ignores
 packaged.yaml
+
+# generated dependencies
+src/layers/*/dependencies/
