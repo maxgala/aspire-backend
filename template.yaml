@@ -43,6 +43,71 @@ Resources:
               Method: get
       Layers:
         - Ref: CommonDependenciesLayer
+  CreateJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/CreateJob
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs
+              Method: post
+      Layers:
+        - Ref: CommonDependenciesLayer
+  GetAllJobs:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/GetAllJobs
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
+  GetJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/GetJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs/{jobId}
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
+  DeleteJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/DeleteJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs/{jobId}
+              Method: delete
+      Layers:
+        - Ref: CommonDependenciesLayer
+  EditJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/EditJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs/{jobId}
+              Method: put
+      Layers:
+        - Ref: CommonDependenciesLayer      
 
   CommonDependenciesLayer:
     Type: AWS::Serverless::LayerVersion
