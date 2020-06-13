@@ -24,26 +24,19 @@ Globals:
     Timeout: 3
 
 Resources:
-  CreateChatApi:
-    Type: AWS::ApiGateway::RestApi
-    Properties:
-      Name: CreateChatAPI
-      Body:
-        OpenAPI specification: null
-      Description: API endpoint for chats
-  
-  ChatAPIMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      RestApiId: !Ref CreateChatApi
-      ResourceId: !GetAtt 
-        - MyApi
-        - RootResourceId
-      HttpMethod: POST
-      AuthorizationType: NONE
-      Integration:
-        Type: MOCK
         
+  CreateChat:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/CreateChat
+      Handler: lambda_function.handler
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            Path: /create-chat
+            Method: post
+            
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
     Properties:
