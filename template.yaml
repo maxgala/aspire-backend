@@ -30,6 +30,7 @@ Resources:
     Properties:
       CodeUri: src/lambda/CreateChat
       Handler: lambda_function.handler
+      Description: Lambda function to create new chat
       Events:
         CreateChatEvent:
           Type: Api
