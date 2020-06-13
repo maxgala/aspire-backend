@@ -24,13 +24,6 @@ Globals:
     Timeout: 3
 
 Resources:
-<<<<<<< HEAD
-  ResumeBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-    Properties:
-      BucketName: max-aspire-resume-bucket
-=======
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
     Properties:
@@ -77,4 +70,3 @@ Outputs:
   CreateDatabaseModelsApi:
     Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
->>>>>>> 0271bb28d6d9089b955479648efdb4db6cd81377
