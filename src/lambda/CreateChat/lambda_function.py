@@ -4,8 +4,6 @@ import inspect
 
 import sys
 
-sys.path.append('../../../../../')
-
 def handler(event, context):
     session = Session()
     
@@ -17,3 +15,4 @@ def handler(event, context):
     for attrib in chat_attribs:
         setattr(chat, attrib, event[attrib])
     
+handler({1: "test"})
