@@ -23,8 +23,7 @@ Globals:
     Runtime: python3.6
     Timeout: 3
 
-Resources:
-        
+Resources: 
   CreateChat:
     Type: AWS::Serverless::Function
     Properties:
@@ -49,20 +48,6 @@ Resources:
             Properties:
               Path: /create-db-models
               Method: get
-      Layers:
-        - Ref: CommonDependenciesLayer
-        
-  CreateChat:
-    Type: AWS::Lambda::Function
-    Properties:
-      CodeUri: src/lambda/CreateChat
-      Handler: lambda_function.handler
-      Events:
-          CreateChatEvent:
-            Type: Api
-            Properties:
-              Path: /create-chat
-              Method: put
       Layers:
         - Ref: CommonDependenciesLayer
         
