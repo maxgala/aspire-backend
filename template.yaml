@@ -36,7 +36,9 @@ Resources:
           Properties:
             Path: /create-chat
             Method: post
-            
+       Layers:
+        - Ref: CommonDependenciesLayer
+        
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
     Properties:
