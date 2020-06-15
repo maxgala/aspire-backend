@@ -18,14 +18,28 @@ def handler(event, context):
     # # create a new session
     session = Session()
     jobId = event["pathParameters"]["jobId"]
-    session.query(Job).filter(Job.job_id == jobId).delete()
     
-
+    # looking for job applications associated with the jobID
+    records = session.query(JobApplication).filter(JobApplication.job_id == jobId).first()
+    print(records)
+    
+    if records != None:
+        output = "Row has foreign key reference in Job Applications Table"
+    else:
+        output = "Row Deleted"
+        count = session.query(Job).filter(Job.job_id == jobId).delete()
+        
     # # commit and close session
     session.commit()
     session.close()
 
-    return {
-        "statusCode": 200,
-        "body": "Row Deleted"
-    }
+    if records == None and count == 0 :
+         return {
+            "statusCode": 404,
+            "body": "ID not found"
+        }
+    else:    
+        return {
+            "statusCode": 200,
+            "body": json.dumps(output)
+        }

@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import String, Integer, DateTime, Enum, Numeric
-
+from sqlalchemy_serializer import SerializerMixin
 from base import Base
 
 class JobType(enum.Enum):

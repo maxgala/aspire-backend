@@ -19,14 +19,35 @@ def handler(event, context):
     session = Session()
     jobId = event["pathParameters"]["jobId"]
     job = session.query(Job).get(jobId)
-    
     print(job)
 
     # # commit and close session
     
     session.close()
-
-    return {
-        "statusCode": 200,
-        "body": "Done"
-    }
+    if job != None:
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "title": job.title,
+                "company":job.company,
+                "province":job.province,
+                "city":job.city,
+                "num_applicants":job.num_applicants,
+                "job_type": job.job_type.name,
+                "description":job.description,
+                "requirements":job.requirements,
+                "posted_by":job.posted_by,
+                "contact_email":job.contact_email,
+                "job_status":job.job_status.name,
+                "job_tags":job.job_tags.name,
+                "salary":int(job.salary),
+                "deadline":job.deadline.strftime("%m/%d/%Y"),
+                "created_on": job.created_on.strftime("%m/%d/%Y"),
+                "updated_on":job.updated_on.strftime("%m/%d/%Y")
+            })
+        }
+    else:
+        return {
+            "statusCode" : 404,
+            "body" : "ID not found"
+        }    

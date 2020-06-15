@@ -27,7 +27,7 @@ Parameters:
 Globals:
   Function:
     Runtime: python3.6
-    Timeout: 3
+    Timeout: 30
 
 Resources:
   CreateDatabaseModels:
@@ -141,3 +141,6 @@ Outputs:
   CreateDatabaseModelsApi:
     Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
+  JobsApi:
+    Description: "API Gateway endpoints URL for Prod stage for Job Application functions"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/jobs/"

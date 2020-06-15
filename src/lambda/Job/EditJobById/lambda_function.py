@@ -21,16 +21,23 @@ def handler(event, context):
     job = session.query(Job).get(jobId)
     info = json.loads(event["body"])
     print(info)
-    keys = info.keys()
-    for key in keys:
-        setattr(job,key,info[key])
 
+    
+    if job != None: #if it was a valid jobid, and the job was found
+        keys = info.keys()
+        for key in keys:
+            setattr(job,key,info[key])
+        
+        session.commit()
+        session.close()
+        
+        return {
+            "statusCode": 200,
+            "body": "Row Updated"
+        }
+    else:
+        return {
+            "statusCode" : 404,
+            "body" : "ID not found"
+        }
 
-    # # commit and close session
-    session.commit()
-    session.close()
-
-    return {
-        "statusCode": 200,
-        "body": "Row Updated"
-    }
