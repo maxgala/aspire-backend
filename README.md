@@ -1,6 +1,6 @@
 # aspire-sam
 
-[![Build Status](https://travis-ci.com/maxgala/aspire-sam.svg?branch=master)](https://travis-ci.com/maxgala/aspire-sam)
+[![Build Status](https://travis-ci.com/maxgala/aspire-sam.svg?token=tsFY5SLhCWysCtqaoSpb&branch=master)](https://travis-ci.com/maxgala/aspire-sam)
 
 ## Deploy aspire-sam (ORM)
 First, we need to install the dependencies and move the model files to `src/layers/database/dependencies`

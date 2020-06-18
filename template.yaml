@@ -17,12 +17,6 @@ Parameters:
   dbInstanceClass:
     Type: String
     Default: 'db.t2.micro'
-  dbInstanceIdentifier:
-    Type: String
-    Default: 'aspire-db'
-  dbName:
-    Type: String
-    Default: 'main_db'
 
 Globals:
   Function:
