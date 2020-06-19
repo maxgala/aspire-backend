@@ -20,12 +20,17 @@ def handler(event, context):
     session = Session()
     info = json.loads(event["body"])
     
-    # # create users
+    tags = []
+    for tag in info["job_tags"]:
+        print(tag)
+        tags.append(JobTags[tag])
+    print(tags)
+    # # create job
     Job_row = Job(title=info["title"], company=info["company"],
                      province=info["province"], city=info["city"], job_type=JobType[info["job_type"]],
                      description=info["description"], requirements=info["requirements"],
                      posted_by=info["posted_by"], contact_email=info["contact_email"], job_status=JobStatus[info["job_status"]],
-                     job_tags=JobTags[info["job_tags"]], salary=info["salary"], deadline = datetime.strptime(info["deadline"], '%m-%d-%Y').date())
+                     job_tags=tags, salary=info["salary"], deadline = datetime.strptime(info["deadline"], '%m-%d-%Y').date())
    
     # # persists data
     session.add(Job_row)

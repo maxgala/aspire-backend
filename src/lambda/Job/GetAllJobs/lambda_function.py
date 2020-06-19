@@ -21,7 +21,10 @@ def handler(event, context):
     jobs = session.query(Job).all()
     joblist = []
     for job in jobs:
-        x = {
+        tags = []
+        for tag in job.job_tags:
+            tags.append(tag.name)
+        job_json = {
             "title": job.title,
             "company":job.company,
 	        "province":job.province,
@@ -33,13 +36,13 @@ def handler(event, context):
 	        "posted_by":job.posted_by,
 	        "contact_email":job.contact_email,
 	        "job_status":job.job_status.name,
-	        "job_tags":job.job_tags.name,
+	        "job_tags":tags,
 	        "salary":int(job.salary),
-	        "deadline":job.deadline.strftime("%m/%d/%Y"),
-            "created_on": job.created_on.strftime("%m/%d/%Y"),
-            "updated_on":job.updated_on.strftime("%m/%d/%Y")
+	        "deadline":job.deadline.timestamp(),
+            "created_on": job.created_on.timestamp(),
+            "updated_on":job.updated_on.timestamp()
         }
-        joblist.append(x)
+        joblist.append(job_json)
 
     # # commit and close session
     

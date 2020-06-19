@@ -36,10 +36,14 @@ def handler(event, context):
     if records == None and count == 0 :
          return {
             "statusCode": 404,
-            "body": "ID not found"
+            "body": json.dumps({
+                "message": "ID not found"
+            })
         }
     else:    
         return {
             "statusCode": 200,
-            "body": json.dumps(output)
+            "body": json.dumps({
+                "message": output
+            })
         }

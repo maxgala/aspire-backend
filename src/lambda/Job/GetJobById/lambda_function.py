@@ -25,6 +25,9 @@ def handler(event, context):
     
     session.close()
     if job != None:
+        tags = []
+        for tag in job.job_tags:
+            tags.append(tag.name)
         return {
             "statusCode": 200,
             "body": json.dumps({
@@ -39,15 +42,17 @@ def handler(event, context):
                 "posted_by":job.posted_by,
                 "contact_email":job.contact_email,
                 "job_status":job.job_status.name,
-                "job_tags":job.job_tags.name,
+                "job_tags":tags,
                 "salary":int(job.salary),
-                "deadline":job.deadline.strftime("%m/%d/%Y"),
-                "created_on": job.created_on.strftime("%m/%d/%Y"),
-                "updated_on":job.updated_on.strftime("%m/%d/%Y")
+                "deadline":job.deadline.timestamp(),
+                "created_on": job.created_on.timestamp(),
+                "updated_on":job.updated_on.timestamp()
             })
         }
     else:
         return {
             "statusCode" : 404,
-            "body" : "ID not found"
+            "body" : json.dumps({
+                "message": "ID not found"
+            })
         }    

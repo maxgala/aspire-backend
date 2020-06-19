@@ -30,14 +30,18 @@ def handler(event, context):
         
         session.commit()
         session.close()
-        
+
         return {
             "statusCode": 200,
-            "body": "Row Updated"
+            "body": json.dumps({
+                "message": "Row Updated"
+            })
         }
     else:
         return {
             "statusCode" : 404,
-            "body" : "ID not found"
+            "body" : json.dumps({
+                "message": "ID not found"
+            })
         }
 
