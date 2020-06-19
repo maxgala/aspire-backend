@@ -2,8 +2,7 @@ import enum
 from datetime import datetime
 from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
-from sqlalchemy.types import String, Integer, DateTime, Enum, Numeric
-
+from sqlalchemy.types import String, Integer, DateTime, Enum, Numeric, ARRAY
 from base import Base
 
 class JobType(enum.Enum):
@@ -37,7 +36,7 @@ class Job(Base):
     posted_by = Column(String(100), nullable=False)
     contact_email = Column(String(255), nullable = False)
     job_status = Column(Enum(JobStatus), nullable=False)
-    job_tags = Column(Enum(JobTags), nullable=False)
+    job_tags = Column(ARRAY(Enum(JobTags)), nullable=False)
     salary = Column(Numeric(precision=2))
     deadline = Column(DateTime(), nullable=False)
     created_on = Column(DateTime(), default=datetime.now)
