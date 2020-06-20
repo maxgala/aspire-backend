@@ -26,25 +26,10 @@ Parameters:
 
 Globals:
   Function:
-    Runtime: python3.6
+    Runtime: python3.8
     Timeout: 30
 
-Resources: 
-  CreateChat:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/lambda/CreateChat
-      Handler: lambda_function.handler
-      Description: Lambda function to create new chat
-      Events:
-        CreateChatEvent:
-          Type: Api
-          Properties:
-            Path: /create-chat
-            Method: post
-       Layers:
-        - Ref: CommonDependenciesLayer
-        
+Resources:       
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
     Properties:
@@ -58,6 +43,36 @@ Resources:
               Method: get
       Layers:
         - Ref: CommonDependenciesLayer
+   CreateChat:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/CreateChat
+      Handler: lambda_function.handler
+      Description: Lambda function to create new chat
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            Path: /create-chat
+            Method: post
+      Layers:
+        - Ref: CommonDependenciesLayer
+ 
+  GetChatById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/GetChatById
+      Handler: lambda_function.handler
+      Description: Lambda function to get chat by Id
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            Path: /get-chat-by-id
+            Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
+        
   CreateJob:
     Type: AWS::Serverless::Function
     Properties:
@@ -71,6 +86,7 @@ Resources:
               Method: post
       Layers:
         - Ref: CommonDependenciesLayer
+        
   GetAllJobs:
     Type: AWS::Serverless::Function
     Properties:
@@ -83,7 +99,8 @@ Resources:
               Path: /jobs
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer 
+        - Ref: CommonDependenciesLayer
+        
   GetJobById:
     Type: AWS::Serverless::Function
     Properties:
@@ -97,6 +114,7 @@ Resources:
               Method: get
       Layers:
         - Ref: CommonDependenciesLayer 
+        
   DeleteJobById:
     Type: AWS::Serverless::Function
     Properties:
@@ -110,6 +128,7 @@ Resources:
               Method: delete
       Layers:
         - Ref: CommonDependenciesLayer
+        
   EditJobById:
     Type: AWS::Serverless::Function
     Properties:
