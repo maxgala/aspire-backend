@@ -17,11 +17,17 @@ Parameters:
   dbInstanceClass:
     Type: String
     Default: 'db.t2.micro'
+  dbInstanceIdentifier:
+    Type: String
+    Default: 'aspire-db'
+  dbName:
+    Type: String
+    Default: 'main_db'
 
 Globals:
   Function:
     Runtime: python3.6
-    Timeout: 3
+    Timeout: 30
 
 Resources: 
   CreateChat:
@@ -52,12 +58,147 @@ Resources:
               Method: get
       Layers:
         - Ref: CommonDependenciesLayer
+  CreateJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/CreateJob
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs
+              Method: post
+      Layers:
+        - Ref: CommonDependenciesLayer
+  GetAllJobs:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/GetAllJobs
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
+  GetJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/GetJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs/{jobId}
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
+  DeleteJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/DeleteJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs/{jobId}
+              Method: delete
+      Layers:
+        - Ref: CommonDependenciesLayer
+  EditJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/EditJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs/{jobId}
+              Method: put
+      Layers:
+        - Ref: CommonDependenciesLayer      
+
+  CreateJobApplication:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/CreateJobApplication
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              Path: /job-applications
+              Method: post
+      Layers:
+        - Ref: CommonDependenciesLayer
+
+  GetAllJobApplications:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/GetAllJobApplications
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              Path: /job-applications
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer      
+        
+  DeleteJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/DeleteJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /job-applications/{jobAppId}
+              Method: delete
+      Layers:
+        - Ref: CommonDependenciesLayer        
+
+  GetJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/GetJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /job-applications/{jobAppId}
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
+
+  EditJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/EditJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /job-applications/{jobAppId}
+              Method: put
+      Layers:
+        - Ref: CommonDependenciesLayer         
         
   CommonDependenciesLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
       LayerName: max-aspire-common
-      ContentUri: src/layers/database/dependencies
+      ContentUri: src/layers/database/dependencies/
       CompatibleRuntimes:
         - python3.6
 
@@ -85,3 +226,9 @@ Outputs:
   CreateDatabaseModelsApi:
     Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
+  JobApplicationsApi:
+    Description: "API Gateway endpoints URL for Prod stage for Job Application functions"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/job-applications/"
+  JobsApi:
+    Description: "API Gateway endpoints URL for Prod stage for Job Application functions"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/jobs/"
