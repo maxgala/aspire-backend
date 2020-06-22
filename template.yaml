@@ -30,6 +30,35 @@ Globals:
     Timeout: 30
 
 Resources:
+  # --- Infrastructure ---
+  AspireDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: '20'
+      BackupRetentionPeriod: 7
+      CopyTagsToSnapshot: true
+      DBInstanceClass: !Ref dbInstanceClass
+      DBInstanceIdentifier: !Ref dbInstanceIdentifier
+      DBName: !Ref dbName
+      EnableCloudwatchLogsExports:
+        - postgresql
+      EnablePerformanceInsights: true
+      Engine: postgres
+      EngineVersion: "11.6"
+      MasterUsername: !Ref dbUserName
+      MasterUserPassword: !Ref dbUserPassword
+      MaxAllocatedStorage: 1000
+      PubliclyAccessible: true
+      StorageType: gp2
+
+  CommonDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-common
+      ContentUri: src/layers/database/dependencies/
+      CompatibleRuntimes:
+        - python3.6
+
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
     Properties:
@@ -40,9 +69,12 @@ Resources:
             Type: Api
             Properties:
               Path: /create-db-models
-              Method: get
+              Method: post
       Layers:
         - Ref: CommonDependenciesLayer
+  # --- Infrastructure ---
+
+  # --- Jobs Service ---
   CreateJob:
     Type: AWS::Serverless::Function
     Properties:
@@ -56,6 +88,7 @@ Resources:
               Method: post
       Layers:
         - Ref: CommonDependenciesLayer
+
   GetAllJobs:
     Type: AWS::Serverless::Function
     Properties:
@@ -68,7 +101,8 @@ Resources:
               Path: /jobs
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer 
+        - Ref: CommonDependenciesLayer
+
   GetJobById:
     Type: AWS::Serverless::Function
     Properties:
@@ -81,7 +115,8 @@ Resources:
               Path: /jobs/{jobId}
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer 
+        - Ref: CommonDependenciesLayer
+
   DeleteJobById:
     Type: AWS::Serverless::Function
     Properties:
@@ -95,6 +130,7 @@ Resources:
               Method: delete
       Layers:
         - Ref: CommonDependenciesLayer
+
   EditJobById:
     Type: AWS::Serverless::Function
     Properties:
@@ -107,8 +143,10 @@ Resources:
               Path: /jobs/{jobId}
               Method: put
       Layers:
-        - Ref: CommonDependenciesLayer      
+        - Ref: CommonDependenciesLayer
+  # --- Jobs Service ---
 
+  # --- Job Applications Service ---
   CreateJobApplication:
     Type: AWS::Serverless::Function
     Properties:
@@ -135,8 +173,8 @@ Resources:
               Path: /job-applications
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer      
-        
+        - Ref: CommonDependenciesLayer
+
   DeleteJobApplicationById:
     Type: AWS::Serverless::Function
     Properties:
@@ -149,7 +187,7 @@ Resources:
               Path: /job-applications/{jobAppId}
               Method: delete
       Layers:
-        - Ref: CommonDependenciesLayer        
+        - Ref: CommonDependenciesLayer
 
   GetJobApplicationById:
     Type: AWS::Serverless::Function
@@ -163,7 +201,7 @@ Resources:
               Path: /job-applications/{jobAppId}
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer 
+        - Ref: CommonDependenciesLayer
 
   EditJobApplicationById:
     Type: AWS::Serverless::Function
@@ -177,35 +215,66 @@ Resources:
               Path: /job-applications/{jobAppId}
               Method: put
       Layers:
-        - Ref: CommonDependenciesLayer         
-        
-  CommonDependenciesLayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      LayerName: max-aspire-common
-      ContentUri: src/layers/database/dependencies/
-      CompatibleRuntimes:
-        - python3.6
+        - Ref: CommonDependenciesLayer
+  # --- Job Applications Service ---
 
-  AspireDBInstance:
-    Type: AWS::RDS::DBInstance
+  # --- Industry Tags Service ---
+  IndustryTagsCreate:
+    Type: AWS::Serverless::Function
     Properties:
-      AllocatedStorage: '20'
-      BackupRetentionPeriod: 7
-      CopyTagsToSnapshot: true
-      DBInstanceClass: !Ref dbInstanceClass
-      DBInstanceIdentifier: !Ref dbInstanceIdentifier
-      DBName: !Ref dbName
-      EnableCloudwatchLogsExports:
-        - postgresql
-      EnablePerformanceInsights: true
-      Engine: postgres
-      EngineVersion: "11.6"
-      MasterUsername: !Ref dbUserName
-      MasterUserPassword: !Ref dbUserPassword
-      MaxAllocatedStorage: 1000
-      PubliclyAccessible: true
-      StorageType: gp2
+      CodeUri: src/lambda/IndustryTags/Create
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              Path: /industry-tags
+              Method: post
+      Layers:
+        - Ref: CommonDependenciesLayer
+
+  IndustryTagsGetAll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/GetAll
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              Path: /industry-tags
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer
+
+  IndustryTagsGetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/GetById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              Path: /industry-tags/{industryTagId}
+              Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer
+
+  IndustryTagsDeleteById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/DeleteById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              Path: /industry-tags/{industryTagId}
+              Method: delete
+      Layers:
+        - Ref: CommonDependenciesLayer
+  # --- Industry Tags Service ---
 
 Outputs:
   CreateDatabaseModelsApi:

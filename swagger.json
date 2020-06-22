@@ -26,6 +26,10 @@
         {
             "name": "JobApplications",
             "description": "API for Job Applications Service"
+        },
+        {
+            "name": "IndustryTags",
+            "description": "API for Industry Tags Service"
         }
     ],
     "paths": {
@@ -36,6 +40,17 @@
                 "responses": {
                     "200": {
                         "$ref": "#/components/responses/GeneralResponse"
+                    }
+                }
+            }
+        },
+        "/create-db-models": {
+            "post": {
+                "tags": ["Index"],
+                "description": "Create Database Tables",
+                "responses": {
+                    "201": {
+                        "description": "Created"
                     }
                 }
             }
@@ -74,24 +89,6 @@
                         "allOf": [{
                             "$ref": "#/components/responses/Chats"
                         }]
-                    }
-                }
-            },
-            "put": {
-                "tags": ["Chats"],
-                "description": "Update All Chats",
-                "responses": {
-                    "405": {
-                        "description": "Method Not Allowed"
-                    }
-                }
-            },
-            "delete": {
-                "tags": ["Chats"],
-                "description": "Delete All Chats",
-                "responses": {
-                    "405": {
-                        "description": "Method Not Allowed"
                     }
                 }
             }
@@ -245,24 +242,6 @@
                         }]
                     }
                 }
-            },
-            "put": {
-                "tags": ["Jobs"],
-                "description": "Update All Job",
-                "responses": {
-                    "405": {
-                        "description": "Method Not Allowed"
-                    }
-                }
-            },
-            "delete": {
-                "tags": ["Jobs"],
-                "description": "Delete All Jobs",
-                "responses": {
-                    "405": {
-                        "description": "Method Not Allowed"
-                    }
-                }
             }
         },
         "/jobs/{jobId}": {
@@ -356,7 +335,7 @@
                 }
             }
         },
-        "/job_applications": {
+        "/job-applications": {
             "post": {
                 "tags": ["JobApplications"],
                 "description": "Create new Job Applications",
@@ -392,27 +371,9 @@
                         }]
                     }
                 }
-            },
-            "put": {
-                "tags": ["JobApplications"],
-                "description": "Update All Job Applications",
-                "responses": {
-                    "405": {
-                        "description": "Method Not Allowed"
-                    }
-                }
-            },
-            "delete": {
-                "tags": ["JobApplications"],
-                "description": "Delete All Job Applications",
-                "responses": {
-                    "405": {
-                        "description": "Method Not Allowed"
-                    }
-                }
             }
         },
-        "/job_applications/{jobApplicationId}": {
+        "/job-applications/{jobApplicationId}": {
             "parameters": [
                 {"$ref": "#/components/parameters/JobApplicationIdPath"}
             ],
@@ -482,6 +443,94 @@
                     }
                 }
             }
+        },
+        "/industry-tags": {
+            "post": {
+                "tags": ["IndustryTags"],
+                "description": "Create new Industry Tag",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IndustryTag"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "get": {
+                "tags": ["IndustryTags"],
+                "description": "Get All Industry Tags",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "allOf": [{
+                            "$ref": "#/components/responses/IndustryTags"
+                        }]
+                    }
+                }
+            }
+        },
+        "/industry-tags/{industryTagId}": {
+            "parameters": [
+                {"$ref": "#/components/parameters/IndustryTagIdPath"}
+            ],
+            "get": {
+                "tags": ["IndustryTags"],
+                "description": "Get IndustryTag with id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "allOf": [{
+                            "$ref": "#/components/responses/IndustryTag"
+                        }]
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["IndustryTags"],
+                "description": "Delete IndustryTag with id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -497,9 +546,9 @@
             },
             "GeneralErrorSchema": {
                 "type": "object",
-                "required": ["error"],
+                "required": ["errorMessage"],
                 "properties": {
-                    "error": {
+                    "errorMessage": {
                         "type": "string"
                     }
                 }
@@ -613,9 +662,7 @@
                     "job_id",
                     "applicant_id",
                     "job_application_status",
-                    "documents",
-                    "created_on",
-                    "updated_on"
+                    "documents"
                 ],
                 "properties": {
                     "job_application_id": {
@@ -669,9 +716,7 @@
                     "description",
                     "credits",
                     "chat_status",
-                    "senior_executive",
-                    "created_on",
-                    "updated_on"
+                    "senior_executive"
                 ],
                 "properties": {
                     "chat_id": {
@@ -723,6 +768,42 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/Chat"
+                        }
+                    },
+                    "count": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "IndustryTag": {
+                "type": "object",
+                "required": [
+                    "tag"
+                ],
+                "properties": {
+                    "tag": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "created_on": {
+                        "type": "number"
+                    },
+                    "updated_on": {
+                        "type": "number"
+                    }
+                }
+            },
+            "IndustryTags": {
+                "type": "object",
+                "required": [
+                    "industry_tags",
+                    "count"
+                ],
+                "properties": {
+                    "chats": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IndustryTag"
                         }
                     },
                     "count": {
@@ -811,6 +892,26 @@
                         }
                     }
                 }
+            },
+            "IndustryTag": {
+                "description": "Industry Tag Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/IndustryTag"
+                        }
+                    }
+                }
+            },
+            "IndustryTags": {
+                "description": "Industry Tags Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/IndustryTags"
+                        }
+                    }
+                }
             }
         },
         "parameters": {
@@ -884,6 +985,24 @@
                 "required": true,
                 "schema": {
                     "$ref": "#/components/schemas/Chat/properties/chat_id"
+                }
+            },
+            "IndustryTagIdPath": {
+                "name": "industryTagId",
+                "in": "path",
+                "description": "id of industry_tag",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/IndustryTag/properties/tag"
+                }
+            },
+            "IndustryTagIdQuery": {
+                "name": "industryTagId",
+                "in": "query",
+                "description": "id of industry_tag",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/IndustryTag/properties/tag"
                 }
             }
         }
