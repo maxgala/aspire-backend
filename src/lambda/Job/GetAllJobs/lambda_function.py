@@ -27,9 +27,9 @@ def handler(event, context):
         job_json = {
             "title": job.title,
             "company":job.company,
-	        "province":job.province,
+	        "region":job.region,
 	        "city":job.city,
-            "num_applicants":job.num_applicants,
+            "country":job.country,
             "job_type": job.job_type.name,
 	        "description":job.description,
 	        "requirements":job.requirements,
