@@ -111,7 +111,7 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
-              Path: /jobs/close/{jobId}
+              Path: /jobs/{jobId}/close
               Method: put
       Layers:
         - Ref: CommonDependenciesLayer       
