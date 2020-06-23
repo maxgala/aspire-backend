@@ -101,7 +101,20 @@ Resources:
               Path: /jobs/{jobId}
               Method: put
       Layers:
-        - Ref: CommonDependenciesLayer      
+        - Ref: CommonDependenciesLayer
+  CloseJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/CloseJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /jobs/close/{jobId}
+              Method: put
+      Layers:
+        - Ref: CommonDependenciesLayer       
 
   CommonDependenciesLayer:
     Type: AWS::Serverless::LayerVersion
