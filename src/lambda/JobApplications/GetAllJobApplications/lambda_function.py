@@ -19,14 +19,24 @@ def handler(event, context):
     session = Session()
     
     jobApps = session.query(JobApplication).all()
-    
-    print(jobApps)
+    jobAppsList = []
 
+    for jobApp in jobApps:
+        jobApp_json = {
+            "job id": jobApp.job_id,
+            "applicant id": jobApp.applicant_id,
+            "documents": jobApp.documents,
+            "job application status": jobApp.job_application_status.name,
+            "created_on": jobApp.created_on.timestamp(),
+            "updated_on":jobApp.updated_on.timestamp()
+        }
+        jobAppsList.append(jobApp_json)
+    
     # # commit and close session
     
     session.close()
 
     return {
         "statusCode": 200,
-        "body": "Retrieved all rows!"
+        "body": json.dumps(jobAppsList)
     }
