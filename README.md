@@ -2,13 +2,11 @@
 
 [![Build Status](https://travis-ci.com/maxgala/aspire-sam.svg?token=tsFY5SLhCWysCtqaoSpb&branch=master)](https://travis-ci.com/maxgala/aspire-sam)
 
-## Deploy aspire-sam (ORM)
+## Build Project Dependencies
 First, we need to install the dependencies and move the model files to `src/layers/database/dependencies`
 ```bash
 cd src/layers/database
-
-# might need to use sudo bash database_layer_packages.sh
-./database_layer_packages
+./database_layer_packages.sh
 ```
 
 To deploy the application using SAM CLI
@@ -39,7 +37,13 @@ To use the SAM CLI, you need the following tools.
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
 To build and deploy your application for the first time, run the following in your shell:
+```bash
+sam package --output-template-file packaged.yaml --s3-bucket <bucket_name>
+sam build
+sam deploy --template-file packaged.yaml --stack-name <stack_name> --region <region> --capabilities CAPABILITY_IAM
+```
 
+Or the following
 ```bash
 sam build --use-container
 sam deploy --guided
