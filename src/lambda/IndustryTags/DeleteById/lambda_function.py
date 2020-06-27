@@ -1,28 +1,11 @@
 import json
 import logging
-import enum
-from datetime import datetime
 
 from industry_tag import IndustryTag
 from base import Session, engine, Base
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
-def row2dict(row):
-    d = {}
-    for column in row.__table__.columns:
-        key = column.name
-        val = getattr(row, column.name)
-        if isinstance(val, datetime):
-            val = val.timestamp()
-        elif isinstance(val, enum.Enum):
-            val = val.name
-        elif isinstance(val, list):
-            if isinstance(val[0], enum.Enum):
-                val = [v.name for v in val]
-        d[key] = val
-    return d
 
 
 def handler(event, context):
@@ -36,7 +19,7 @@ def handler(event, context):
         }
 
     session = Session()
-    industry_tag = session.query(IndustryTag).get(industryTagId)
+    industry_tag = session.query(IndustryTag).get(industryTagId.lower())
     if not industry_tag:
         session.close()
         return {
