@@ -17,8 +17,23 @@ def handler(event, context):
     # FOR REFERENCE
     # # create a new session
     session = Session()
+    # applicantId = event["pathParameters"]["applicantId"]
+    jobId = event["queryStringParameters"].get('jobId') if event["queryStringParameters"] else None
+    applicantId = event["queryStringParameters"].get('userId') if event["queryStringParameters"] else None
+    IdFound = True
+
+    if applicantId != None:
+        jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId).all()
+    elif jobId != None:
+        jobApps = session.query(JobApplication).filter(JobApplication.job_id == jobId).all()
+    else:
+        jobApps = session.query(JobApplication).all()
+        IdFound = False
     
-    jobApps = session.query(JobApplication).all()
+    # # commit and close session
+    
+    session.close()
+
     jobAppsList = []
 
     for jobApp in jobApps:
@@ -31,12 +46,27 @@ def handler(event, context):
             "updated_on":jobApp.updated_on.timestamp()
         }
         jobAppsList.append(jobApp_json)
-    
-    # # commit and close session
-    
-    session.close()
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps(jobAppsList)
-    }
+    if jobAppsList:
+        return {
+            "statusCode": 200,
+            "body": json.dumps(jobAppsList)
+        }
+
+    elif IdFound:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({
+                "message": "Record with that ID was not found"
+            })
+        }
+
+    else:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({
+                "message": "Table is empty"
+            })
+        }
+            
+    

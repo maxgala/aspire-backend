@@ -5,24 +5,24 @@ Description: >
 
   SAM Template for aspire-sam
 
-# Parameters:
-#   dbUserPassword:
-#     NoEcho: true
-#     Type: String
-#     Default: 'password'
-#   dbUserName:
-#     NoEcho: true
-#     Type: String
-#     Default: 'master'
-#   dbInstanceClass:
-#     Type: String
-#     Default: 'db.t2.micro'
-#   dbInstanceIdentifier:
-#     Type: String
-#     Default: 'aspire-db'
-#   dbName:
-#     Type: String
-#     Default: 'main_db'
+Parameters:
+  dbUserPassword:
+    NoEcho: true
+    Type: String
+    Default: 'password'
+  dbUserName:
+    NoEcho: true
+    Type: String
+    Default: 'master'
+  dbInstanceClass:
+    Type: String
+    Default: 'db.t2.micro'
+  dbInstanceIdentifier:
+    Type: String
+    Default: 'aspire-db'
+  dbName:
+    Type: String
+    Default: 'main_db'
 
 Globals:
   Function:
@@ -30,26 +30,26 @@ Globals:
     Timeout: 30
 
 Resources:
-  # --- Infrastructure ---
-    # AspireDBInstance:
-    #   Type: AWS::RDS::DBInstance
-    #   Properties:
-    #     AllocatedStorage: '20'
-    #     BackupRetentionPeriod: 7
-    #     CopyTagsToSnapshot: true
-    #     DBInstanceClass: !Ref dbInstanceClass
-    #     DBInstanceIdentifier: !Ref dbInstanceIdentifier
-    #     DBName: !Ref dbName
-    #     EnableCloudwatchLogsExports:
-    #       - postgresql
-    #     EnablePerformanceInsights: true
-    #     Engine: postgres
-    #     EngineVersion: "11.6"
-    #     MasterUsername: !Ref dbUserName
-    #     MasterUserPassword: !Ref dbUserPassword
-    #     MaxAllocatedStorage: 1000
-    #     PubliclyAccessible: true
-    #     StorageType: gp2
+  --- Infrastructure ---
+    AspireDBInstance:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        AllocatedStorage: '20'
+        BackupRetentionPeriod: 7
+        CopyTagsToSnapshot: true
+        DBInstanceClass: !Ref dbInstanceClass
+        DBInstanceIdentifier: !Ref dbInstanceIdentifier
+        DBName: !Ref dbName
+        EnableCloudwatchLogsExports:
+          - postgresql
+        EnablePerformanceInsights: true
+        Engine: postgres
+        EngineVersion: "11.6"
+        MasterUsername: !Ref dbUserName
+        MasterUserPassword: !Ref dbUserPassword
+        MaxAllocatedStorage: 1000
+        PubliclyAccessible: true
+        StorageType: gp2
 
   CommonDependenciesLayer:
     Type: AWS::Serverless::LayerVersion
@@ -214,20 +214,6 @@ Resources:
             Properties:
               Path: /job-applications/{jobAppId}
               Method: put
-      Layers:
-        - Ref: CommonDependenciesLayer
-
-  GetJobApplicationsByApplicantId:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/lambda/JobApplications/GetJobApplicationsByApplicantId
-      Handler: lambda_function.handler
-      Events:
-          CreateJobEvent:
-            Type: Api
-            Properties:
-              Path: /job-applications/{applicantId}
-              Method: get
       Layers:
         - Ref: CommonDependenciesLayer
   # --- Job Applications Service ---
