@@ -21,18 +21,25 @@ def handler(event, context):
     jobAppId = event["pathParameters"]["jobAppId"]
     jobApp = session.query(JobApplication).get(jobAppId)
 
-    keys = info.keys()
-    for key in keys:
-        setattr(jobApp,key,info[key])
+    if jobApp != None:
+        keys = info.keys()
+        for key in keys:
+            setattr(jobApp,key,info[key])
 
-    # # commit and close session
-    session.commit()
-    session.close()
+        session.commit()
+        session.close()
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "Updated to": info 
-        }),
-    }
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "Updated row to": info 
+            }),
+        }
+    else:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({
+                "message": "Record with that ID was not found"
+            })
+        }
     
