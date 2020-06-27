@@ -472,6 +472,26 @@
             "get": {
                 "tags": ["IndustryTags"],
                 "description": "Get All Industry Tags",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "filter response",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/IndustryTag/properties/tag"
+                        }
+                    },
+                    {
+                        "name": "fuzzy",
+                        "in": "query",
+                        "description": "enable fuzzy search",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok",
