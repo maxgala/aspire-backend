@@ -21,19 +21,7 @@ def handler(event, context):
     # FOR REFERENCE
     # # create a new session
     session = Session()
-    '''
-    response = client.initiate_auth(
-            ClientId='2vhuk4gmu79si564fppjaga16u',
-            AuthFlow='USER_PASSWORD_AUTH',
-            AuthParameters={'USERNAME': 'ss@email.com', 'PASSWORD': 'Password123!'}
-        )
-    '''
-    '''
-    response = client.admin_get_user(
-            UserPoolId='ca-central-1_BVHRl8r6S', 
-            Username='mqasim@idrf.ca'
-        )
-    '''
+    
     
     try:
         access_token = (event['headers']['Authorization']).replace('Bearer ', '')
