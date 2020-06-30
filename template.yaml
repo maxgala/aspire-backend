@@ -160,6 +160,7 @@ Resources:
   # --- Jobs Service ---
 
   # --- Job Applications Service ---
+  
   CreateJobApplication:
     Type: AWS::Serverless::Function
     Properties:

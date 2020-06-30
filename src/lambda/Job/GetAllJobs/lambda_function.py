@@ -17,8 +17,12 @@ def handler(event, context):
     # FOR REFERENCE
     # # create a new session
     session = Session()
-    
-    jobs = session.query(Job).all()
+    page = event["queryStringParameters"].get('page') if event["queryStringParameters"] else None
+    count = 2
+    if page != None:
+        jobs = session.query(Job).offset((int(page) * count) - count).limit(int(page) * count)
+    else:
+        jobs = session.query(Job).all()
     joblist = []
     for job in jobs:
         tags = []
@@ -50,5 +54,8 @@ def handler(event, context):
 
     return {
         "statusCode": 200,
-        "body": json.dumps(joblist)
+        "body": {
+            "jobs": json.dumps(joblist),
+            "count": len(joblist)
+        }
     }

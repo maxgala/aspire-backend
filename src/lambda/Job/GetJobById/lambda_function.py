@@ -20,11 +20,12 @@ def handler(event, context):
     jobId = event["pathParameters"]["jobId"]
     job = session.query(Job).get(jobId)
     print(job)
-
-    # # commit and close session
     
-    session.close()
     if job != None:
+        print(job.job_applications)
+        job_apps_id = []
+        for app in job.job_applications:
+            job_apps_id.append(app.job_application_id)
         tags = []
         for tag in job.job_tags:
             tags.append(tag.name)
@@ -46,9 +47,12 @@ def handler(event, context):
                 "salary":int(job.salary),
                 "deadline":job.deadline.timestamp(),
                 "created_on": job.created_on.timestamp(),
-                "updated_on":job.updated_on.timestamp()
+                "updated_on":job.updated_on.timestamp(),
+                "job-application" : job_apps_id
             })
         }
+        # # commit and close session
+        session.close()
     else:
         return {
             "statusCode" : 404,
