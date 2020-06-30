@@ -18,14 +18,24 @@ def handler(event, context):
     # # create a new session
     session = Session()
     jobAppId = event["pathParameters"]["jobAppId"]
-    session.query(JobApplication).filter(JobApplication.job_application_id == jobAppId).delete()
-    
+    records = session.query(JobApplication).filter(JobApplication.job_application_id == jobAppId).first()
 
     # # commit and close session
     session.commit()
     session.close()
 
-    return {
-        "statusCode": 200,
-        "body": "Row Deleted"
-    }
+    if records == None:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({
+                "message": "Record with that ID was not found"
+            })
+        }
+    else:
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "message": "Row deleted"
+            })
+        }
+

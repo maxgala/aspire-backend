@@ -2,7 +2,6 @@ import sys
 import json
 import logging
 import uuid
-from datetime import datetime
 
 from industry_tag import IndustryTag
 from base import Session, engine, Base
@@ -21,7 +20,7 @@ def handler(event, context):
                 "errorMessage": "missing body attribute(s): 'tag'"
             })
         }
-    
+
     Job_row = IndustryTag(tag=new_tag.lower())
 
     session = Session()
