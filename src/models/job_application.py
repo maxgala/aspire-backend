@@ -20,6 +20,8 @@ class JobApplication(Base):
     job_id = Column(Integer(), ForeignKey('jobs.job_id'), nullable=False)
     applicant_id = Column(String(100), nullable=False)
     job_application_status = Column(Enum(JobApplicationStatus), nullable=False)
-    documents = Column(String(255), nullable=False)
+    resumes = Column(String(255), nullable=False)
+    cover_letters = Column(String(255), nullable=False)
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
+    
