@@ -32,8 +32,7 @@ def handler(event, context):
             "message": "Authorization header is expected"
         }),
     }
-
-
+    
     getuserresponse =client.get_user(
             AccessToken=access_token
         )
