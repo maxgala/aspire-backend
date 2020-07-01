@@ -33,7 +33,7 @@ Use cases are categorized by routes
    * **Route:**   ```/job-applications```
    * **Type:** ```GET```
    * **Key-Value Parameters:** ```userId``` and ```jobId```
-   * **Example:** ```/job-applications/?userId=007```
+   * **Example:** ```/job-applications/?jobId=4&userId=0010```
 
 
 
