@@ -2,21 +2,6 @@
 
 [![Build Status](https://travis-ci.com/maxgala/aspire-sam.svg?token=tsFY5SLhCWysCtqaoSpb&branch=master)](https://travis-ci.com/maxgala/aspire-sam)
 
-## Deploy aspire-sam (ORM)
-First, we need to install the dependencies and move the model files to `src/layers/database/dependencies`
-```bash
-cd src/layers/database
-
-# might need to use sudo bash database_layer_packages.sh
-./database_layer_packages
-```
-
-To deploy the application using SAM CLI
-```bash
-sam package --output-template-file packaged.yaml --s3-bucket <bucket_name>
-sam build
-sam deploy --template-file packaged.yaml --stack-name <stack_name> --region <region> --capabilities CAPABILITY_IAM
-```
 
 The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
@@ -27,6 +12,13 @@ The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI
 * [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
 * [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
 * [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
+
+## Build Project Dependencies
+First, we need to install the dependencies and move the model files to `src/layers/database/dependencies`
+```bash
+cd src/layers/database
+./database_layer_packages.sh
+```
 
 ## Deploy the sample application
 
@@ -39,7 +31,13 @@ To use the SAM CLI, you need the following tools.
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
 To build and deploy your application for the first time, run the following in your shell:
+```bash
+sam package --output-template-file packaged.yaml --s3-bucket <bucket_name>
+sam build
+sam deploy --template-file packaged.yaml --stack-name <stack_name> --region <region> --capabilities CAPABILITY_IAM
+```
 
+Or the following
 ```bash
 sam build --use-container
 sam deploy --guided

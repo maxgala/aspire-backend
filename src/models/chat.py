@@ -20,7 +20,10 @@ class Chat(Base):
     __tablename__ = 'chats'
 
     chat_id = Column(Integer(), primary_key=True)
-    date = Column(DateTime(), nullable=False)
+    # date = Column(DateTime(), nullable=False)
+    # timestamp in long since 1970
+    # return object in response payload
+    
     chat_type = Column(Enum(ChatType), nullable=False)
     description = Column(String(255))
     credits = Column(Integer(), nullable=False)

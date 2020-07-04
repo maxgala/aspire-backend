@@ -1,0 +1,10 @@
+{"body":
+	{ 
+		"chat_type": 2,
+		"description": "my new chat",
+		"credits": 2,
+		"chat_status": 1,
+		"aspiring_professionals": ["Bob", "Jim", "Carly", "Kim"],
+		"senior_executive": "Larry"
+	}
+}

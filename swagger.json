@@ -1,0 +1,1030 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "version": "1.0.0",
+        "title": "MAX Aspire API",
+        "description": "MAX Aspire API Documentation"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080/api/v1/"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Users",
+            "description": "API for Users Service"
+        },
+        {
+            "name": "Chats",
+            "description": "API for Chats Service"
+        },
+        {
+            "name": "Jobs",
+            "description": "API for Jobs Service"
+        },
+        {
+            "name": "JobApplications",
+            "description": "API for Job Applications Service"
+        },
+        {
+            "name": "IndustryTags",
+            "description": "API for Industry Tags Service"
+        }
+    ],
+    "paths": {
+        "/": {
+            "get": {
+                "tags": ["Index"],
+                "description": "Returns API Version",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/GeneralResponse"
+                    }
+                }
+            }
+        },
+        "/create-db-models": {
+            "post": {
+                "tags": ["Index"],
+                "description": "Create Database Tables",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/chats": {
+            "post": {
+                "tags": ["Chats"],
+                "description": "Create new Chats",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Chat"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "get": {
+                "tags": ["Chats"],
+                "description": "Get All Chats",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "allOf": [{
+                            "$ref": "#/components/responses/Chats"
+                        }]
+                    }
+                }
+            }
+        },
+        "/chats/{chatId}": {
+            "parameters": [
+                {"$ref": "#/components/parameters/ChatIdPath"}
+            ],
+            "get": {
+                "tags": ["Chats"],
+                "description": "Get Chat with id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "allOf": [{
+                            "$ref": "#/components/responses/Chat"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Chats"],
+                "description": "Update Chat with id",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Chat"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "allOf": [{
+                            "$ref": "#/components/schemas/Chat"
+                        }]
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralResponse"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Chats"],
+                "description": "Delete Chat with id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            }
+        },
+        "/chats/{chatId}/reserve": {
+            "parameters": [
+                {"$ref": "#/components/parameters/ChatIdPath"},
+                {"$ref": "#/components/parameters/UserIdQuery"}
+            ],
+            "put": {
+                "tags": ["Chats"],
+                "description": "user reserve chat",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            }
+        },
+        "/chats/{chatId}/unreserve": {
+            "parameters": [
+                {"$ref": "#/components/parameters/ChatIdPath"},
+                {"$ref": "#/components/parameters/UserIdQuery"}
+            ],
+            "put": {
+                "tags": ["Chats"],
+                "description": "user unreserve chat",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            }
+        },
+        "/jobs": {
+            "post": {
+                "tags": ["Jobs"],
+                "description": "Create new Job",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Job"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "get": {
+                "tags": ["Jobs"],
+                "description": "Get All Jobs",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "allOf": [{
+                            "$ref": "#/components/responses/Jobs"
+                        }]
+                    }
+                }
+            }
+        },
+        "/jobs/{jobId}": {
+            "parameters": [
+                {"$ref": "#/components/parameters/JobIdPath"}
+            ],
+            "get": {
+                "tags": ["Jobs"],
+                "description": "Get Job with id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "allOf": [{
+                            "$ref": "#/components/responses/Job"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Jobs"],
+                "description": "Update Job with id",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Job"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "allOf": [{
+                            "$ref": "#/components/schemas/Job"
+                        }]
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralResponse"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Jobs"],
+                "description": "Delete Job with id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            }
+        },
+        "/jobs/{jobId}/close": {
+            "parameters": [
+                {"$ref": "#/components/parameters/JobIdPath"}
+            ],
+            "put": {
+                "tags": ["Jobs"],
+                "description": "Update Job status to CLOSED",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            }
+        },
+        "/job-applications": {
+            "post": {
+                "tags": ["JobApplications"],
+                "description": "Create new Job Applications",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JobApplication"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "get": {
+                "tags": ["JobApplications"],
+                "description": "Get All Job Applications",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "allOf": [{
+                            "$ref": "#/components/responses/JobApplications"
+                        }]
+                    }
+                }
+            }
+        },
+        "/job-applications/{jobApplicationId}": {
+            "parameters": [
+                {"$ref": "#/components/parameters/JobApplicationIdPath"}
+            ],
+            "get": {
+                "tags": ["JobApplications"],
+                "description": "Get Job Applications with id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "allOf": [{
+                            "$ref": "#/components/responses/JobApplication"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "put": {
+                "tags": ["JobApplications"],
+                "description": "Update Job Applications with id",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JobApplication"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "allOf": [{
+                            "$ref": "#/components/schemas/JobApplication"
+                        }]
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralResponse"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["JobApplications"],
+                "description": "Delete Job Applications with id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            }
+        },
+        "/industry-tags": {
+            "post": {
+                "tags": ["IndustryTags"],
+                "description": "Create new Industry Tag",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IndustryTag"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "get": {
+                "tags": ["IndustryTags"],
+                "description": "Get All Industry Tags",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "filter response",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/IndustryTag/properties/tag"
+                        }
+                    },
+                    {
+                        "name": "fuzzy",
+                        "in": "query",
+                        "description": "enable fuzzy search",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "allOf": [{
+                            "$ref": "#/components/responses/IndustryTags"
+                        }]
+                    }
+                }
+            }
+        },
+        "/industry-tags/{industryTagId}": {
+            "parameters": [
+                {"$ref": "#/components/parameters/IndustryTagIdPath"}
+            ],
+            "get": {
+                "tags": ["IndustryTags"],
+                "description": "Get IndustryTag with id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "allOf": [{
+                            "$ref": "#/components/responses/IndustryTag"
+                        }]
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["IndustryTags"],
+                "description": "Delete IndustryTag with id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/GeneralErrorResponse"
+                        }]
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "GeneralSchema": {
+                "type": "object",
+                "required": ["message"],
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "GeneralErrorSchema": {
+                "type": "object",
+                "required": ["errorMessage"],
+                "properties": {
+                    "errorMessage": {
+                        "type": "string"
+                    }
+                }
+            },
+            "UserReference": {
+                "type": "string",
+                "maxLength": 100
+            },
+            "Job": {
+                "type": "object",
+                "required": [
+                    "title",
+                    "description",
+                    "posted_by",
+                    "contact_email",
+                    "company",
+                    "country",
+                    "region",
+                    "city",
+                    "job_type",
+                    "job_tags",
+                    "deadline"
+                ],
+                "properties": {
+                    "job_id": {
+                        "type": "number"
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "requirements": {
+                        "type": "string"
+                    },
+                    "posted_by": {
+                        "$ref": "#/components/schemas/UserReference"
+                    },
+                    "contact_email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "company": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "country": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "region": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "city": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "job_type": {
+                        "type": "string",
+                        "enum": ["BOARD_POSITION", "REGULAR_JOB"]
+                    },
+                    "job_status": {
+                        "type": "string",
+                        "enum": ["OPEN", "CLOSED"]
+                    },
+                    "job_tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["SOFTWARE", "FINANCE", "LAW"]
+                        }
+                    },
+                    "salary": {
+                        "type": "number"
+                    },
+                    "deadline": {
+                        "type": "number"
+                    },
+                    "created_on": {
+                        "type": "number"
+                    },
+                    "updated_on": {
+                        "type": "number"
+                    }
+                }
+            },
+            "Jobs": {
+                "type": "object",
+                "required": [
+                    "jobs",
+                    "count"
+                ],
+                "properties": {
+                    "jobs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Job"
+                        }
+                    },
+                    "count": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "JobApplication": {
+                "type": "object",
+                "required": [
+                    "job_id",
+                    "applicant_id",
+                    "job_application_status",
+                    "documents"
+                ],
+                "properties": {
+                    "job_application_id": {
+                        "type": "number"
+                    },
+                    "job_id": {
+                        "type":"number"
+                    },
+                    "applicant_id": {
+                        "$ref": "#/components/schemas/UserReference"
+                    },
+                    "job_application_status": {
+                        "type": "string",
+                        "enum": ["SUBMIT", "REVIEW", "OFFER_EXTEND", "OFFER_ACCEPT", "OFFER_REJECT"]
+                    },
+                    "documents": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "created_on": {
+                        "type": "number"
+                    },
+                    "updated_on": {
+                        "type": "number"
+                    }
+                }
+            },
+            "JobApplications": {
+                "type": "object",
+                "required": [
+                    "job_applications",
+                    "count"
+                ],
+                "properties": {
+                    "job_applications": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/JobApplication"
+                        }
+                    },
+                    "count": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "Chat": {
+                "type": "object",
+                "required": [
+                    "date",
+                    "chat_type",
+                    "description",
+                    "credits",
+                    "chat_status",
+                    "senior_executive"
+                ],
+                "properties": {
+                    "chat_id": {
+                        "type": "number"
+                    },
+                    "date": {
+                        "type": "number"
+                    },
+                    "chat_type": {
+                        "type": "string",
+                        "enum": ["ONE_ON_ONE", "ONE_ON_FOUR"]
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "credits": {
+                        "type": "number"
+                    },
+                    "chat_status": {
+                        "type": "string",
+                        "enum": ["PENDING", "DONE", "CANCELED"]
+                    },
+                    "aspiring_professionals": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserReference"
+                        }
+                    },
+                    "senior_executive": {
+                        "$ref": "#/components/schemas/UserReference"
+                    },
+                    "created_on": {
+                        "type": "number"
+                    },
+                    "updated_on": {
+                        "type": "number"
+                    }
+                }
+            },
+            "Chats": {
+                "type": "object",
+                "required": [
+                    "chats",
+                    "count"
+                ],
+                "properties": {
+                    "chats": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Chat"
+                        }
+                    },
+                    "count": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "IndustryTag": {
+                "type": "object",
+                "required": [
+                    "tag"
+                ],
+                "properties": {
+                    "tag": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "created_on": {
+                        "type": "number"
+                    },
+                    "updated_on": {
+                        "type": "number"
+                    }
+                }
+            },
+            "IndustryTags": {
+                "type": "object",
+                "required": [
+                    "industry_tags",
+                    "count"
+                ],
+                "properties": {
+                    "chats": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IndustryTag"
+                        }
+                    },
+                    "count": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "responses": {
+            "GeneralResponse": {
+                "description": "General Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/GeneralSchema"
+                        }
+                    }
+                }
+            },
+            "GeneralErrorResponse": {
+                "description": "General Error Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/GeneralErrorSchema"
+                        }
+                    }
+                }
+            },
+            "Job": {
+                "description": "Job Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Job"
+                        }
+                    }
+                }
+            },
+            "Jobs": {
+                "description": "Jobs Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Jobs"
+                        }
+                    }
+                }
+            },
+            "JobApplication": {
+                "description": "Job Application Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/JobApplication"
+                        }
+                    }
+                }
+            },
+            "JobApplications": {
+                "description": "Job Applications Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/JobApplications"
+                        }
+                    }
+                }
+            },
+            "Chat": {
+                "description": "Chat Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Chat"
+                        }
+                    }
+                }
+            },
+            "Chats": {
+                "description": "Chats Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Chats"
+                        }
+                    }
+                }
+            },
+            "IndustryTag": {
+                "description": "Industry Tag Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/IndustryTag"
+                        }
+                    }
+                }
+            },
+            "IndustryTags": {
+                "description": "Industry Tags Response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/IndustryTags"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "UserIdPath": {
+                "name": "userId",
+                "in": "path",
+                "description": "id of user",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/UserReference"
+                }
+            },
+            "UserIdQuery": {
+                "name": "userId",
+                "in": "query",
+                "description": "id of user",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/UserReference"
+                }
+            },
+            "JobIdPath": {
+                "name": "jobId",
+                "in": "path",
+                "description": "id of job",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/Job/properties/job_id"
+                }
+            },
+            "JobIdQuery": {
+                "name": "jobId",
+                "in": "query",
+                "description": "id of job",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/Job/properties/job_id"
+                }
+            },
+            "JobApplicationIdPath": {
+                "name": "jobApplicationId",
+                "in": "path",
+                "description": "id of job applicationId",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/JobApplication/properties/job_application_id"
+                }
+            },
+            "JobApplicationIdQuery": {
+                "name": "jobApplicationId",
+                "in": "query",
+                "description": "id of job applicationId",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/JobApplication/properties/job_application_id"
+                }
+            },
+            "ChatIdPath": {
+                "name": "chatId",
+                "in": "path",
+                "description": "id of chat",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/Chat/properties/chat_id"
+                }
+            },
+            "ChatIdQuery": {
+                "name": "chatId",
+                "in": "query",
+                "description": "id of chat",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/Chat/properties/chat_id"
+                }
+            },
+            "IndustryTagIdPath": {
+                "name": "industryTagId",
+                "in": "path",
+                "description": "id of industry_tag",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/IndustryTag/properties/tag"
+                }
+            },
+            "IndustryTagIdQuery": {
+                "name": "industryTagId",
+                "in": "query",
+                "description": "id of industry_tag",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/IndustryTag/properties/tag"
+                }
+            }
+        }
+    }
+}

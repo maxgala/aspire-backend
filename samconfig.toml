@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "deploy-test"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1tsrvi0wv29t1"
+s3_prefix = "deploy-test"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "dbInstanceClass=\"db.t2.micro\" dbInstanceIdentifier=\"aspire-db\" dbName=\"main_db\""
