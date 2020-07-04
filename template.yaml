@@ -72,7 +72,8 @@ Resources:
               Method: post
       Layers:
         - Ref: CommonDependenciesLayer
-
+        
+# --- Chats Service ---
   CreateChat:
     Type: AWS::Serverless::Function
     Properties:
@@ -147,6 +148,8 @@ Resources:
             Method: get
       Layers:
         - Ref: CommonDependenciesLayer 
+  # --- End of Chats Service ---      
+  
   # --- Jobs Service ---
   CreateJob:
     Type: AWS::Serverless::Function
