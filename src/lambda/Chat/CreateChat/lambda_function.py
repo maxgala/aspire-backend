@@ -14,7 +14,6 @@ def handler(event, context):
 
     manual_attribs = ["chat_id", "created_on", "updated_on", \
                       "chat_status", "chat_type"]
-    
     # ignore primary key, dates automatically set
     
     info = json.loads(event["body"])
@@ -28,14 +27,12 @@ def handler(event, context):
             # else skip, it it handled automatically by sqlalchemy
         elif not (attrib.startswith('_') or attrib.strip() == "metadata"):
             try:
-                attrib_data =  info[attrib]
-                setattr(chat, attrib, attrib_data)
-            except:
+                setattr(chat, attrib, info[attrib])
+            except: # in case underspecified?
                 continue
                 
     session.add(chat)
     session.commit()
-    
     session.refresh(chat)
     session.close()
 
@@ -43,5 +40,5 @@ def handler(event, context):
         "statusCode": 200,
         "body": json.dumps({
             "message": "Created Chat Row, with ID {}".format(chat.chat_id)
-        }),
+        })
     }

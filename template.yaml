@@ -98,11 +98,41 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
-            Path: /chat/{id}
+            Path: /chat/{chatId}
             Method: get
       Layers:
-        - Ref: CommonDependenciesLayer 
+        - Ref: CommonDependenciesLayer
         
+  EditChatById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/EditChatById
+      Handler: lambda_function.handler
+      Description: Lambda function to edit chat by Id
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            Path: /chat/{chatId}
+            Method: put
+      Layers:
+        - Ref: CommonDependenciesLayer   
+  
+  DeleteChatById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/DeleteChatById
+      Handler: lambda_function.handler
+      Description: Lambda function to delete chat by Id
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            Path: /chat/{chatId}
+            Method: delete
+      Layers:
+        - Ref: CommonDependenciesLayer
+
   # --- Jobs Service ---
   CreateJob:
     Type: AWS::Serverless::Function
