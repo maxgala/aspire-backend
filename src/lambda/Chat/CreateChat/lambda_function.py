@@ -36,9 +36,22 @@ def handler(event, context):
     session.refresh(chat)
     session.close()
 
+    # return object as payload -- this code can be refactored
+    # to be less repetetive
+    
+    chat_attribs = []
+    pruned_attribs = ["chat_id"]
+
+    for attrib in dir(Chat):
+        if not (attrib.startswith('_') or attrib.strip() == "metadata"\
+                or attrib in pruned_attribs):
+            chat_attribs.append(attrib)
+            
+    chat_dict = {}
+    for attrib in chat_attribs:
+        chat_dict[attrib] = str(getattr(chat, attrib)) 
+
     return {
         "statusCode": 200,
-        "body": json.dumps({
-            "message": "Created Chat Row, with ID {}".format(chat.chat_id)
-        })
+        "body": json.dumps(chat_dict)
     }

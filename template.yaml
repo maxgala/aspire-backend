@@ -132,7 +132,21 @@ Resources:
             Method: delete
       Layers:
         - Ref: CommonDependenciesLayer
-
+        
+  GetAllChats:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/GetAllChats
+      Handler: lambda_function.handler
+      Description: Lambda function to get all chats
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            Path: /chats
+            Method: get
+      Layers:
+        - Ref: CommonDependenciesLayer 
   # --- Jobs Service ---
   CreateJob:
     Type: AWS::Serverless::Function
