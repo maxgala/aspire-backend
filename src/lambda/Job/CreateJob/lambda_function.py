@@ -27,7 +27,7 @@ def handler(event, context):
     print(tags)
     # # create job
     Job_row = Job(title=info["title"], company=info["company"],
-                     province=info["province"], city=info["city"], job_type=JobType[info["job_type"]],
+                     region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
                      description=info["description"], requirements=info["requirements"],
                      posted_by=info["posted_by"], contact_email=info["contact_email"], job_status=JobStatus[info["job_status"]],
                      job_tags=tags, salary=info["salary"], deadline = datetime.strptime(info["deadline"], '%m-%d-%Y').date())

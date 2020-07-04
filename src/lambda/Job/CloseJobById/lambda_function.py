@@ -14,32 +14,30 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
 
-    # FOR REFERENCE
+    
     # # create a new session
     session = Session()
-    info = json.loads(event["body"])
-    jobAppId = event["pathParameters"]["jobAppId"]
-    jobApp = session.query(JobApplication).get(jobAppId)
+    jobId = event["pathParameters"]["jobId"]
+    job = session.query(Job).get(jobId)
 
-    if jobApp != None:
-        keys = info.keys()
-        for key in keys:
-            setattr(jobApp,key,info[key])
-
+    
+    if job != None: #if it was a valid jobid, and the job was found
+        job.job_status = JobStatus.CLOSED
+        
         session.commit()
         session.close()
 
         return {
             "statusCode": 200,
             "body": json.dumps({
-                "Updated row to": info 
-            }),
+                "message": "Job Closed"
+            })
         }
     else:
         return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "message": "Record with that ID was not found"
+            "statusCode" : 404,
+            "body" : json.dumps({
+                "message": "ID not found"
             })
         }
-    
+
