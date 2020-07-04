@@ -32,7 +32,8 @@ def handler(event, context):
             "body": json.dumps({
                 "job id": jobApp.job_id,
                 "applicant id": jobApp.applicant_id,
-                "documents": jobApp.documents,
+                "resumes": jobApp.resumes,
+                "cover_letters": jobApp.cover_letters,
                 "job application status": jobApp.job_application_status.name,
                 "created_on": jobApp.created_on.timestamp(),
                 "updated_on":jobApp.updated_on.timestamp()
