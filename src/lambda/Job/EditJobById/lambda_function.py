@@ -20,8 +20,6 @@ def handler(event, context):
     jobId = event["pathParameters"]["jobId"]
     job = session.query(Job).get(jobId)
     info = json.loads(event["body"])
-    print(info)
-
     
     if job != None: #if it was a valid jobid, and the job was found
         keys = info.keys()

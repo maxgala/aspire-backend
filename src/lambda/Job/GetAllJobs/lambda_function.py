@@ -27,15 +27,11 @@ def handler(event, context):
         status = event["queryStringParameters"].get('status')
         page_size = int(event["queryStringParameters"].get('page_size',3))
 
-    print(status)
-    print(user_id)
-    print(page)
-    print(page_size)
     jobs = session.query(Job)
     if user_id != None:
         jobs = jobs.filter(Job.posted_by == user_id)
     if status != None:
-        jobs = jobs.filter(Job.job_status == status)
+        jobs = jobs.filter(Job.job_status == status.upper())
     if page != None:
         jobs = jobs.offset((int(page) * page_size) - page_size).limit(page_size)
    

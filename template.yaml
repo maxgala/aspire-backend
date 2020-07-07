@@ -156,6 +156,19 @@ Resources:
               Path: /jobs/{jobId}/close
               Method: put
       Layers:
+        - Ref: CommonDependenciesLayer
+  JobContactById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/JobContactById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              Path: /job_contact/{jobId}
+              Method: get
+      Layers:
         - Ref: CommonDependenciesLayer       
   # --- Jobs Service ---
 
