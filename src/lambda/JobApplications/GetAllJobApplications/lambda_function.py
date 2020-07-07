@@ -22,10 +22,12 @@ def handler(event, context):
     applicantId = event["queryStringParameters"].get('userId') if event["queryStringParameters"] else None
     IdFound = True
 
-    if applicantId != None:
-        jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId).all()
+    if (applicantId != None and jobId != None): 
+        jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId, JobApplication.job_id == jobId).all()
     elif jobId != None:
         jobApps = session.query(JobApplication).filter(JobApplication.job_id == jobId).all()
+    elif applicantId != None:
+        jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId).all()        
     else:
         jobApps = session.query(JobApplication).all()
         IdFound = False
@@ -40,7 +42,8 @@ def handler(event, context):
         jobApp_json = {
             "job id": jobApp.job_id,
             "applicant id": jobApp.applicant_id,
-            "documents": jobApp.documents,
+            "resumes": jobApp.resumes,
+            "cover_letters": jobApp.cover_letters,
             "job application status": jobApp.job_application_status.name,
             "created_on": jobApp.created_on.timestamp(),
             "updated_on":jobApp.updated_on.timestamp()
