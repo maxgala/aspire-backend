@@ -20,8 +20,9 @@ def handler(event, context):
     # applicantId = event["pathParameters"]["applicantId"]
     jobId = event["queryStringParameters"].get('jobId') if event["queryStringParameters"] else None
     applicantId = event["queryStringParameters"].get('userId') if event["queryStringParameters"] else None
-    IdFound = True
+    id_passed = True
 
+    #Checks to see if any keys passed in are empty, and then performs one search accordingly.
     if (applicantId != None and jobId != None): 
         jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId, JobApplication.job_id == jobId).all()
     elif jobId != None:
@@ -30,7 +31,7 @@ def handler(event, context):
         jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId).all()        
     else:
         jobApps = session.query(JobApplication).all()
-        IdFound = False
+        id_passed = False
     
     # # commit and close session
     
@@ -40,11 +41,12 @@ def handler(event, context):
 
     for jobApp in jobApps:
         jobApp_json = {
-            "job id": jobApp.job_id,
-            "applicant id": jobApp.applicant_id,
+            "job_application_id": jobApp.job_application_id,
+            "job_id": jobApp.job_id,
+            "applicant_id": jobApp.applicant_id,
             "resumes": jobApp.resumes,
             "cover_letters": jobApp.cover_letters,
-            "job application status": jobApp.job_application_status.name,
+            "job_application_status": jobApp.job_application_status.name,
             "created_on": jobApp.created_on.timestamp(),
             "updated_on":jobApp.updated_on.timestamp()
         }
@@ -56,7 +58,7 @@ def handler(event, context):
             "body": json.dumps(jobAppsList)
         }
 
-    elif IdFound:
+    elif id_passed:
         return {
             "statusCode": 404,
             "body": json.dumps({
