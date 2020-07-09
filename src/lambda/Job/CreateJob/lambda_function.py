@@ -6,9 +6,11 @@ from datetime import datetime
 
 # FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
-from user import User, UserType, MembershipType, IndustryTags, EducationLevel
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
+import boto3
+
+client = boto3.client('cognito-idp')
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -18,31 +20,67 @@ def handler(event, context):
     # FOR REFERENCE
     # # create a new session
     session = Session()
-    info = json.loads(event["body"])
     
-    tags = []
-    for tag in info["job_tags"]:
-        print(tag)
-        tags.append(JobTags[tag])
-    print(tags)
-    # # create job
-    Job_row = Job(title=info["title"], company=info["company"],
-                     region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
-                     description=info["description"], requirements=info["requirements"],
-                     posted_by=info["posted_by"], contact_email=info["contact_email"], job_status=JobStatus[info["job_status"]],
-                     job_tags=tags, salary=info["salary"], deadline = datetime.strptime(info["deadline"], '%m-%d-%Y').date())
-   
-    # # persists data
-    session.add(Job_row)
     
-
-    # # commit and close session
-    session.commit()
-    session.close()
-
-    return {
-        "statusCode": 200,
+    try:
+        access_token = (event['headers']['Authorization']).replace('Bearer ', '')
+    except:
+        return {
+        "statusCode": 401,
         "body": json.dumps({
-            "message": "Created Job Row"
+            "message": "Authorization header is expected"
         }),
     }
+    
+    getuserresponse =client.get_user(
+            AccessToken=access_token
+        )
+    
+    user_att=getuserresponse['UserAttributes']
+    mem_type = ''
+    for att in user_att:
+        if att['Name'] == 'custom:user_type':
+            user_type = att['Value']
+        try:
+            if att['Name'] == 'custom:membership_type':
+                mem_type = att['Value']
+        except:
+            pass
+    
+    if user_type == 'Mentor' or (user_type == 'Mentee' and mem_type == 'premium'):
+        
+        info = json.loads(event["body"])
+        
+        tags = []
+        for tag in info["job_tags"]:
+            tags.append(JobTags[tag])
+        # # create job
+        Job_row = Job(title=info["title"], company=info["company"],
+                        region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
+                        description=info["description"], requirements=info["requirements"], posted_by=info["posted_by"],
+                        poster_family_name = info["poster_family_name"], poster_given_name = info["poster_given_name"],
+                        job_status=JobStatus[info["job_status"]],job_tags=tags, salary=info["salary"], deadline = info["deadline"])
+    
+        # # persists data
+        session.add(Job_row)
+        
+
+        # # commit and close session
+        
+        session.commit()
+        session.close()
+
+        return {
+            "statusCode": 201,
+            "body": json.dumps({
+                "message": "Created Job Row",
+                "job": info
+            }),
+        }
+    else:
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "message": "You are not allowed to post a Job. Upgrade your membership"
+            }),
+        }

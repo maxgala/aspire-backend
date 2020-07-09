@@ -1,4 +1,5 @@
 import enum
+import decimal
 from datetime import datetime
 
 from sqlalchemy import create_engine
@@ -14,6 +15,8 @@ def row2dict(row):
             val = val.timestamp()
         elif isinstance(val, enum.Enum):
             val = val.name
+        elif isinstance(val, decimal.Decimal):
+            val = float(val)
         elif isinstance(val, list):
             if isinstance(val[0], enum.Enum):
                 val = [v.name for v in val]
