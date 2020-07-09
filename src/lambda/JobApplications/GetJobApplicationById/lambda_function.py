@@ -20,8 +20,6 @@ def handler(event, context):
     jobAppId = event["pathParameters"]["jobAppId"]
     jobApp = session.query(JobApplication).get(jobAppId)
     
-    print(jobApp)
-
     # # commit and close session
     
     session.close()
@@ -30,11 +28,12 @@ def handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps({
-                "job id": jobApp.job_id,
-                "applicant id": jobApp.applicant_id,
+                "job_application_id": jobApp.job_application_id,
+                "job_id": jobApp.job_id,
+                "applicant_id": jobApp.applicant_id,
                 "resumes": jobApp.resumes,
                 "cover_letters": jobApp.cover_letters,
-                "job application status": jobApp.job_application_status.name,
+                "job_application_status": jobApp.job_application_status.name,
                 "created_on": jobApp.created_on.timestamp(),
                 "updated_on":jobApp.updated_on.timestamp()
             })

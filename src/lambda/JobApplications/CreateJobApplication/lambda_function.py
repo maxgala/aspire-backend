@@ -31,22 +31,21 @@ def handler(event, context):
         }),
     }
 
-    getuserresponse =client.get_user(
+    get_user_response =client.get_user(
             AccessToken=access_token
         )
-    User_Att=getuserresponse['UserAttributes']
-    Mem_type = ''
-    for att in User_Att:
+    user_att = get_user_response['UserAttributes']
+    mem_type = ''
+    for att in user_att:
         if att['Name'] == 'custom:user_type':
-            User_type = att['Value']
+            user_type = att['Value']
         try:
             if att['Name'] == 'custom:membership_type':
-                Mem_type = att['Value']
+                mem_type = att['Value']
         except:
             pass
-    print(User_type)
-    print(Mem_type)
-    if User_type == 'Mentor' or (User_type == 'Mentee' and Mem_type == 'premium'):
+
+    if user_type == 'Mentor' or (user_type == 'Mentee' and mem_type == 'premium'):
 
         info = json.loads(event["body"])
 
@@ -68,12 +67,12 @@ def handler(event, context):
     #change to info
 
         return {
-            "statusCode": 200,
+            "statusCode": 201,
             "body": json.dumps(info),
         }
     else:
         return {
-            "statusCode": 401,
+            "statusCode": 403,
             "body": json.dumps({
                 "message": "Insufficient privileges to post a job application"
             }),
