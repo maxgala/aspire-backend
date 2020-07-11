@@ -2,8 +2,9 @@ import enum
 from datetime import datetime
 from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
-from sqlalchemy.types import String, Integer, DateTime, Enum, Numeric, ARRAY
+from sqlalchemy.types import String, Integer, DateTime, Enum, Numeric, ARRAY, BigInteger
 from base import Base
+import time
 
 class JobType(enum.Enum):
     BOARD_POSITION = 1
@@ -34,12 +35,14 @@ class Job(Base):
     description = Column(String(), nullable = False)
     requirements = Column(String(), nullable = False)
     posted_by = Column(String(100), nullable=False)
-    contact_email = Column(String(255), nullable = False)
+    poster_family_name = Column(String(100), nullable=False)
+    poster_given_name = Column(String(100), nullable=False)
+    people_contacted = Column(Integer(), default = 0)
     job_status = Column(Enum(JobStatus), nullable=False)
     job_tags = Column(ARRAY(Enum(JobTags)), nullable=False)
     salary = Column(Numeric(precision=2))
-    deadline = Column(DateTime(), nullable=False)
-    created_on = Column(DateTime(), default=datetime.now)
-    updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
+    deadline = Column(BigInteger(), nullable=False)
+    created_on = Column(BigInteger(), default=time.time())
+    updated_on = Column(BigInteger(), default=time.time(), onupdate=time.time())
 
     job_applications = relationship("JobApplication")
