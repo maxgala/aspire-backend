@@ -21,7 +21,9 @@ def handler(event, context):
     for attrib in chat_attribs:
         if attrib in manual_attribs:
             if attrib == "chat_status":
-                setattr(chat, attrib, ChatStatus(int(info[attrib])))
+                #setattr(chat, attrib, ChatStatus(int(info[attrib])))
+                #default to pending
+                setattr(chat, attrib, ChatStatus(1))
             elif attrib == "chat_type":
                 setattr(chat, attrib, ChatType(int(info[attrib])))
             # else skip, it it handled automatically by sqlalchemy

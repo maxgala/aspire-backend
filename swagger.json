@@ -58,7 +58,7 @@
         "/chats": {
             "post": {
                 "tags": ["Chats"],
-                "description": "Create new Chats",
+                "description": "Create new Chat",
                 "requestBody": {
                     "content": {
                         "application/json": {

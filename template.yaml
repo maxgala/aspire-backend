@@ -147,7 +147,38 @@ Resources:
             Path: /chats
             Method: get
       Layers:
-        - Ref: CommonDependenciesLayer 
+        - Ref: CommonDependenciesLayer
+        
+  ReserveChatById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/ReserveChatById
+      Handler: lambda_function.handler
+      Description: Lambda function to reserve a chat
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            Path: /chats/{chatId}/reserve
+            Method: put
+      Layers:
+        - Ref: CommonDependenciesLayer
+        
+  UnReserveChatById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/UnreserveChatById
+      Handler: lambda_function.handler
+      Description: Lambda function to reserve a chat
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            Path: /chats/{chatId}/unreserve
+            Method: put
+      Layers:
+        - Ref: CommonDependenciesLayer
+        
   # --- End of Chats Service ---      
   
   # --- Jobs Service ---

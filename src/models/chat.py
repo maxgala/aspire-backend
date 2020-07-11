@@ -8,12 +8,15 @@ from base import Base
 class ChatType(enum.Enum):
     ONE_ON_ONE = 1
     ONE_ON_FOUR = 2
+    MOCK_INTERVIEW = 3
 
 
 class ChatStatus(enum.Enum):
     PENDING = 1
-    DONE = 2
-    CANCELED = 3
+    ACTIVE = 2
+    RESERVED = 3
+    DONE = 4
+    CANCELED = 5
 
 
 class Chat(Base):
