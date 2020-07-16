@@ -159,7 +159,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
-            Path: /chats/{chatId}/reserve
+            Path: /chat/{chatId}/reserve
             Method: put
       Layers:
         - Ref: CommonDependenciesLayer

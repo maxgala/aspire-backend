@@ -12,8 +12,8 @@ def handler(event, context):
     chat = Chat()
     chat_attribs = dir(Chat)
 
-    manual_attribs = ["chat_id", "created_on", "updated_on", \
-                      "chat_status", "chat_type"]
+    manual_attribs = ["chat_id", "credits", "created_on", "updated_on", \
+                      "chat_status", "chat_type", "aspiring_professionals"]
     # ignore primary key, dates automatically set
     
     info = json.loads(event["body"])
@@ -23,16 +23,21 @@ def handler(event, context):
             if attrib == "chat_status":
                 #setattr(chat, attrib, ChatStatus(int(info[attrib])))
                 #default to pending
-                setattr(chat, attrib, ChatStatus(1))
+                setattr(chat, attrib, ChatStatus.PENDING)
             elif attrib == "chat_type":
                 setattr(chat, attrib, ChatType(int(info[attrib])))
-            # else skip, it it handled automatically by sqlalchemy
+            elif attrib == "aspiring_professionals":
+                chat.aspiring_professionals = MenteeList.coerce("chat.aspiring_professionals", info[attrib])
+                # else skip, it it handled automatically by sqlalchemy
         elif not (attrib.startswith('_') or attrib.strip() == "metadata"):
             try:
                 setattr(chat, attrib, info[attrib])
             except: # in case underspecified?
                 continue
-                
+
+    # do this at the end to avoid any errors with chat_type being set
+    setattr(chat, "credits", credit_mapping[chat.chat_type])
+    
     session.add(chat)
     session.commit()
     session.refresh(chat)
