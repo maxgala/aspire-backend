@@ -23,6 +23,12 @@ Parameters:
   dbName:
     Type: String
     Default: 'main_db'
+  # cognitoUserPool:
+  #   Type: String
+  #   Default: 'AspireUserPool'
+  # cognitoUserPoolArn:
+  #   Type: String
+  #   Default: ''
 
 Globals:
   Function:
@@ -35,8 +41,6 @@ Resources:
     Type: AWS::RDS::DBInstance
     Properties:
       AllocatedStorage: '20'
-      BackupRetentionPeriod: 7
-      CopyTagsToSnapshot: true
       DBInstanceClass: !Ref dbInstanceClass
       DBInstanceIdentifier: !Ref dbInstanceIdentifier
       DBName: !Ref dbName
@@ -51,13 +55,36 @@ Resources:
       PubliclyAccessible: true
       StorageType: gp2
 
-  CommonDependenciesLayer:
+  DatabaseLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: max-aspire-common
+      LayerName: max-aspire-database
       ContentUri: src/layers/database/dependencies/
       CompatibleRuntimes:
         - python3.6
+
+  # AuthLayer:
+  #   Type: AWS::Serverless::LayerVersion
+  #   Properties:
+  #     LayerName: max-aspire-auth
+  #     ContentUri: src/layers/auth/dependencies/
+  #     CompatibleRuntimes:
+  #       - python3.6
+
+  AspireApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+      # Auth:
+      #   DefaultAuthorizer: !Ref cognitoUserPool
+      #   AddDefaultAuthorizerToCorsPreflight: False
+      #   Authorizers:
+      #     AspireUserPoolTestAuthorizer:
+      #       UserPoolArn: !Ref cognitoUserPoolArn
 
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
@@ -68,10 +95,11 @@ Resources:
           CreateDatabaseModelsEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /create-db-models
               Method: post
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
   # --- Infrastructure ---
 
   # --- Jobs Service ---
@@ -84,10 +112,11 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /jobs
               Method: post
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   GetAllJobs:
     Type: AWS::Serverless::Function
@@ -98,10 +127,11 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /jobs
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   GetJobById:
     Type: AWS::Serverless::Function
@@ -112,10 +142,11 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /jobs/{jobId}
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   DeleteJobById:
     Type: AWS::Serverless::Function
@@ -126,10 +157,11 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /jobs/{jobId}
               Method: delete
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   EditJobById:
     Type: AWS::Serverless::Function
@@ -140,10 +172,12 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /jobs/{jobId}
               Method: put
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
+
   CloseJobById:
     Type: AWS::Serverless::Function
     Properties:
@@ -153,10 +187,12 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /jobs/{jobId}/close
               Method: put
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
+
   JobContactById:
     Type: AWS::Serverless::Function
     Properties:
@@ -166,10 +202,11 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /job_contact/{jobId}
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer       
+        - Ref: DatabaseLayer       
   # --- Jobs Service ---
 
   # --- Job Applications Service ---
@@ -183,10 +220,11 @@ Resources:
           CreateJobApplicationEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /job-applications
               Method: post
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   GetAllJobApplications:
     Type: AWS::Serverless::Function
@@ -197,10 +235,11 @@ Resources:
           CreateJobApplicationEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /job-applications
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   DeleteJobApplicationById:
     Type: AWS::Serverless::Function
@@ -211,10 +250,11 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /job-applications/{jobAppId}
               Method: delete
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   GetJobApplicationById:
     Type: AWS::Serverless::Function
@@ -225,10 +265,11 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /job-applications/{jobAppId}
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   EditJobApplicationById:
     Type: AWS::Serverless::Function
@@ -239,10 +280,11 @@ Resources:
           CreateJobEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /job-applications/{jobAppId}
               Method: put
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
   # --- Job Applications Service ---
 
   # --- Industry Tags Service ---
@@ -255,10 +297,11 @@ Resources:
           CreateJobApplicationEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /industry-tags
               Method: post
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   IndustryTagsGetAll:
     Type: AWS::Serverless::Function
@@ -269,10 +312,11 @@ Resources:
           CreateJobApplicationEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /industry-tags
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   IndustryTagsGetById:
     Type: AWS::Serverless::Function
@@ -283,10 +327,11 @@ Resources:
           CreateJobApplicationEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /industry-tags/{industryTagId}
               Method: get
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
 
   IndustryTagsDeleteById:
     Type: AWS::Serverless::Function
@@ -297,19 +342,23 @@ Resources:
           CreateJobApplicationEvent:
             Type: Api
             Properties:
+              RestApiId: !Ref AspireApi
               Path: /industry-tags/{industryTagId}
               Method: delete
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
+        # - Ref: AuthLayer
   # --- Industry Tags Service ---
 
 Outputs:
-  CreateDatabaseModelsApi:
-    Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
-  JobApplicationsApi:
-    Description: "API Gateway endpoints URL for Prod stage for Job Application functions"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/job-applications/"
-  JobsApi:
-    Description: "API Gateway endpoints URL for Prod stage for Job Application functions"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/jobs/"
+  Region:
+    Description: "Region"
+    Value: !Ref AWS::Region
+
+  AspireApiId:
+    Description: "Aspire API ID"
+    Value: !Ref AspireApi
+
+  AspireApiUrl:
+    Description: "Aspire API endpoint URL for Prod environment"
+    Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
