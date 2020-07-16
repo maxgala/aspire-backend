@@ -352,8 +352,8 @@
                     "201": {
                         "description": "Created"
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "426": {
+                        "description": "Insufficient Privileges",
                         "allOf": [{
                             "$ref": "#/components/responses/GeneralErrorResponse"
                         }]
@@ -369,7 +369,13 @@
                         "allOf": [{
                             "$ref": "#/components/responses/JobApplications"
                         }]
-                    }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "allOf": [{
+                            "$ref": "#/components/responses/JobApplications"
+                        }]
+                    }                    
                 }
             }
         },
@@ -412,12 +418,6 @@
                         "description": "OK",
                         "allOf": [{
                             "$ref": "#/components/schemas/JobApplication"
-                        }]
-                    },
-                    "204": {
-                        "description": "No Content",
-                        "allOf": [{
-                            "$ref": "#/components/responses/GeneralResponse"
                         }]
                     },
                     "404": {
