@@ -247,5 +247,8 @@ $RECYCLE.BIN/
 # AWS SAM ignores
 packaged.yaml
 
-# generated dependencies
+# generated layer dependencies
 src/layers/*/dependencies/
+
+# .backup files
+*.backup
