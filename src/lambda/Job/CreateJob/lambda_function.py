@@ -41,6 +41,12 @@ def handler(event, context):
     for att in user_att:
         if att['Name'] == 'custom:user_type':
             user_type = att['Value']
+        elif att['Name'] == 'email':
+            email = att['Value']
+        elif att['Name'] == 'family_name':
+            family_name = att['Value']
+        elif att['Name'] == 'given_name':
+            given_name = att['Value']
         try:
             if att['Name'] == 'custom:membership_type':
                 mem_type = att['Value']
@@ -57,9 +63,9 @@ def handler(event, context):
         # # create job
         Job_row = Job(title=info["title"], company=info["company"],
                         region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
-                        description=info["description"], requirements=info["requirements"], posted_by=info["posted_by"],
-                        poster_family_name = info["poster_family_name"], poster_given_name = info["poster_given_name"],
-                        job_status=JobStatus[info["job_status"]],job_tags=tags, salary=info["salary"], deadline = info["deadline"])
+                        description=info["description"], requirements=info["requirements"], posted_by=email,
+                        poster_family_name = family_name, poster_given_name = given_name,
+                        job_status=JobStatus[info["job_status"]] if "job_status" in info else "OPEN",job_tags=tags, salary=info["salary"], deadline = info["deadline"])
     
         # # persists data
         session.add(Job_row)
@@ -79,7 +85,7 @@ def handler(event, context):
         }
     else:
         return {
-            "statusCode": 200,
+            "statusCode": 426,
             "body": json.dumps({
                 "message": "You are not allowed to post a Job. Upgrade your membership"
             }),

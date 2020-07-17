@@ -27,18 +27,23 @@ def handler(event, context):
             })
         }
     if len(job.job_applications) != 0: # when there are job applications associated to a job
-        output = "Row has foreign key reference in Job Applications Table"
-    else: # when there are no job applications associated to a job, and the job can be deleted
-        output = "Row Deleted"
-        session.query(Job).filter(Job.job_id == jobId).delete()
+        return {
+            "statusCode": 409,
+            "body": json.dumps({
+                "message": "Row has foreign key reference in Job Applications Table"
+            })
+        }
+
+    session.query(Job).filter(Job.job_id == jobId).delete()
         
     # # commit and close session
     session.commit()
     session.close()
-   
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": output
+            "message": "Row deleted"
         })
     }
+   
+    
