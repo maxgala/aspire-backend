@@ -207,7 +207,7 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer
-  # --- End of Chats Service ---   
+  # --- Chats Service ---   
 
   # --- Jobs Service ---
   CreateJob:
