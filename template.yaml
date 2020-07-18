@@ -99,8 +99,8 @@ Resources:
               Path: /create-db-models
               Method: post
       Layers:
-<<<<<<< HEAD
-        - Ref: CommonDependenciesLayer
+
+        - Ref: DatabaseLayer
         
 # --- Chats Service ---
   CreateChat:
@@ -116,7 +116,7 @@ Resources:
             Path: /chat
             Method: post
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
  
   GetChatById:
     Type: AWS::Serverless::Function
@@ -131,7 +131,7 @@ Resources:
             Path: /chat/{chatId}
             Method: get
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
         
   EditChatById:
     Type: AWS::Serverless::Function
@@ -146,7 +146,7 @@ Resources:
             Path: /chat/{chatId}
             Method: put
       Layers:
-        - Ref: CommonDependenciesLayer   
+        - Ref: DatabaseLayer   
   
   DeleteChatById:
     Type: AWS::Serverless::Function
@@ -161,7 +161,7 @@ Resources:
             Path: /chat/{chatId}
             Method: delete
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
         
   GetAllChats:
     Type: AWS::Serverless::Function
@@ -176,7 +176,7 @@ Resources:
             Path: /chats
             Method: get
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
         
   ReserveChatById:
     Type: AWS::Serverless::Function
@@ -191,7 +191,7 @@ Resources:
             Path: /chat/{chatId}/reserve
             Method: put
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
         
   UnReserveChatById:
     Type: AWS::Serverless::Function
@@ -203,18 +203,18 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
-            Path: /chats/{chatId}/unreserve
+            Path: /chat/{chatId}/unreserve
             Method: put
       Layers:
-        - Ref: CommonDependenciesLayer
+        - Ref: DatabaseLayer
         
   # --- End of Chats Service ---      
   
-=======
+
         - Ref: DatabaseLayer
   # --- Infrastructure ---
 
->>>>>>> ea6558acfceda03fec132a1e0b4e073cdb240a97
+
   # --- Jobs Service ---
   CreateJob:
     Type: AWS::Serverless::Function
@@ -259,11 +259,7 @@ Resources:
               Path: /jobs/{jobId}
               Method: get
       Layers:
-<<<<<<< HEAD
-        - Ref: CommonDependenciesLayer 
-=======
         - Ref: DatabaseLayer
->>>>>>> ea6558acfceda03fec132a1e0b4e073cdb240a97
 
   DeleteJobById:
     Type: AWS::Serverless::Function
@@ -468,7 +464,7 @@ Resources:
   # --- Industry Tags Service ---
 
 Outputs:
-<<<<<<< HEAD
+
   CreateDatabaseModelsApi:
     Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
@@ -478,7 +474,7 @@ Outputs:
   JobsApi:
     Description: "API Gateway endpoints URL for Prod stage for Job Application functions"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/jobs/"
-=======
+
   Region:
     Description: "Region"
     Value: !Ref AWS::Region
@@ -490,4 +486,4 @@ Outputs:
   AspireApiUrl:
     Description: "Aspire API endpoint URL for Prod environment"
     Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
->>>>>>> ea6558acfceda03fec132a1e0b4e073cdb240a97
+

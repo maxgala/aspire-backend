@@ -4,6 +4,10 @@ from chat import *
 from base import Session
 from sqlalchemy.types import DateTime
 from datetime import datetime
+import boto3
+
+client = boto3.client('cognito-idp')
+
 
 def handler(event, context):
     # ----------------- User validation ------------------
@@ -40,7 +44,7 @@ def handler(event, context):
         return{
             "statusCode": 409,
             "body": json.dumps({
-            "message": "Invalid user type. Only Aspiring Professionals may reserve chats."
+            "message": "Invalid user type. Only Aspiring Professionals may (un)reserve chats."
             })
         }
     # ----------------------- End user validation ------------------------------
@@ -60,7 +64,12 @@ def handler(event, context):
             i = chat.aspiring_professionals.index(user_id)
             #pop the user
             chat.aspiring_professionals.pop(i)
-            #all done!
+            
+            #check if we need to modify the status
+            if chat.chat_status == ChatStatus.RESERVED:
+                chat.chat_status = ChatStatus.ACTIVE
+
+            session.commit()
             session.close()
             return {
                 "statusCode": 200,

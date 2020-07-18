@@ -2,7 +2,7 @@ import json
 from chat import *
 
 from base import Session, MutableList
-from sqlalchemy.types import DateTime
+# from sqlalchemy.types import DateTime
 from datetime import datetime
 
 def handler(event, context):
@@ -27,16 +27,20 @@ def handler(event, context):
     chat_attribs = dir(Chat)
 
     manual_attribs = ["chat_id", "credits", "created_on", "updated_on", \
-                      "chat_status", "chat_type", "aspiring_professionals"]
+                      "chat_status", "chat_type", "date",\
+                      "aspiring_professionals"]
     # ignore primary key, dates automatically set
     
 
     for attrib in chat_attribs:
         if attrib in manual_attribs:
             if attrib == "chat_status":
-                #setattr(chat, attrib, ChatStatus(int(info[attrib])))
                 #default to pending
                 setattr(chat, attrib, ChatStatus.PENDING)
+            elif attrib == "date" and attrib in info:
+                date_format = "%m-%d-%Y %H:%M"
+                # e.g. "01-01-2020  21:20"
+                setattr(chat, attrib, datetime.strptime(info[attrib], date_format))
             elif attrib == "chat_type":
                 setattr(chat, attrib, ChatType(int(info[attrib])))
             elif attrib == "aspiring_professionals":
