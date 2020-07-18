@@ -39,6 +39,8 @@ def handler(event, context):
     for att in user_att:
         if att['Name'] == 'custom:user_type':
             user_type = att['Value']
+        elif att['Name'] == 'email':
+            email = att['Value']            
         try:
             if att['Name'] == 'custom:membership_type':
                 mem_type = att['Value']
@@ -51,7 +53,7 @@ def handler(event, context):
 
         Job_application_row = JobApplication(
             job_id = info["job_id"],
-            applicant_id = info["applicant_id"],
+            applicant_id = email,
             job_application_status = JobApplicationStatus[info["job_application_status"]],
             resumes = info["resumes"],
             cover_letters = info["cover_letters"]
@@ -68,11 +70,17 @@ def handler(event, context):
 
         return {
             "statusCode": 201,
-            "body": json.dumps(info),
+            "body": json.dumps({
+                "job_id": info["job_id"],
+                "applicant_id": email,
+                "job_application_status": info["job_application_status"],
+                "resumes": info["resumes"],
+                "cover_letters": info["cover_letters"]
+            })
         }
     else:
         return {
-            "statusCode": 403,
+            "statusCode": 426,
             "body": json.dumps({
                 "message": "Insufficient privileges to post a job application"
             }),

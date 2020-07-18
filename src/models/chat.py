@@ -3,27 +3,8 @@ from datetime import datetime
 from sqlalchemy.schema import Column
 from sqlalchemy.types import String, Integer, DateTime, Enum
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.ext.mutable import Mutable
 
-from base import Base
-
-class MenteeList(Mutable, list):
-    def append(self, value):
-        list.append(self, value)
-        self.changed()
-    def pop(self, index=0):
-        value = list.pop(self, index)
-        self.changed()
-        return value
-
-    @classmethod
-    def coerce(cls, key, value):
-        if not isinstance(value, MenteeList):
-            if isinstance(value, list):
-                return MenteeList(value)
-            return Mutable.coerce(key, value)
-        else:
-            return value
+from base import Base, MutableList
         
 class ChatType(enum.Enum):
     ONE_ON_ONE = 1
@@ -53,8 +34,7 @@ class Chat(Base):
     # YYYY-MM-DD HH:MM:SS
     
     chat_status = Column(Enum(ChatStatus), nullable=False)
-    aspiring_professionals = Column(MenteeList.as_mutable(ARRAY(String(100))))
-    #Column(ARRAY(String(100), dimensions=1))
+    aspiring_professionals = Column(MutableList.as_mutable(ARRAY(String(100))))
     senior_executive = Column(String(100), nullable=False)
     
     created_on = Column(DateTime(), default=datetime.now)

@@ -1,6 +1,6 @@
 import json
 from chat import *
-from base import Session
+from base import Session, MutableList
 import boto3
 
 client = boto3.client('cognito-idp')
@@ -89,7 +89,7 @@ def handler(event, context):
         
         # credits updated
         if chat.aspiring_professionals == None:
-            chat.aspiring_professionals = MenteeList.coerce(chat.aspiring_professionals, [user_id]) # create a new entry
+            chat.aspiring_professionals = MutableList.coerce(chat.aspiring_professionals, [user_id]) # create a new entry
         else:
              # check if user has already reserved this chat
             if user_id in chat.aspiring_professionals:
