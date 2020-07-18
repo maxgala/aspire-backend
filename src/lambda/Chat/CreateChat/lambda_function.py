@@ -1,14 +1,28 @@
 import json
 from chat import *
 
-from base import Session
+from base import Session, MutableList
 from sqlalchemy.types import DateTime
 from datetime import datetime
 
 def handler(event, context):
-    session = Session()
     
+    info = json.loads(event["body"])
+    # check mandatory date for 4 on 1
+    chat_type = ChatType(int(info["chat_type"]))
+    if chat_type in mandatory_date:
+        if "date" not in info:
+            return {"statusCode": 400,\
+                    "body": json.dumps({
+                    "message": "For a {} chat, date must be specified".format(chat_type)
+                    })
+            }
+    # ------------------- passed date check ----------------------------
+
+    
+    session = Session()
     #create a new chat instance
+
     chat = Chat()
     chat_attribs = dir(Chat)
 
@@ -16,8 +30,7 @@ def handler(event, context):
                       "chat_status", "chat_type", "aspiring_professionals"]
     # ignore primary key, dates automatically set
     
-    info = json.loads(event["body"])
-    
+
     for attrib in chat_attribs:
         if attrib in manual_attribs:
             if attrib == "chat_status":
@@ -27,7 +40,7 @@ def handler(event, context):
             elif attrib == "chat_type":
                 setattr(chat, attrib, ChatType(int(info[attrib])))
             elif attrib == "aspiring_professionals":
-                chat.aspiring_professionals = MenteeList.coerce("chat.aspiring_professionals", info[attrib])
+                chat.aspiring_professionals = MutableList.coerce("chat.aspiring_professionals", info[attrib])
                 # else skip, it it handled automatically by sqlalchemy
         elif not (attrib.startswith('_') or attrib.strip() == "metadata"):
             try:
@@ -37,6 +50,8 @@ def handler(event, context):
 
     # do this at the end to avoid any errors with chat_type being set
     setattr(chat, "credits", credit_mapping[chat.chat_type])
+
+
     
     session.add(chat)
     session.commit()

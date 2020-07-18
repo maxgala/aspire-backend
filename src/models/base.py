@@ -36,7 +36,6 @@ class MutableList(Mutable, list):
         self.changed()
         return value
 
-
 def row2dict(row):
     d = {}
     for column in row.__table__.columns:
