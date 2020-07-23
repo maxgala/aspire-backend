@@ -24,7 +24,10 @@ def handler(event, context):
             chat_dict[attrib] = str(getattr(chats[i], attrib))
             
         chats_list[i] = chat_dict
-            
+
+    chats_dict = {}
+    chats_dict["chats"] = chats_list;
+    chats_dict["count"] = len(chats_list);
     return {"statusCode": 200,
-            "body": json.dumps(chats_list)
+            "body": json.dumps(chats_dict)
     }

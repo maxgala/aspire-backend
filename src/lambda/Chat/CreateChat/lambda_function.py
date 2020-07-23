@@ -2,7 +2,7 @@ import json
 from chat import *
 
 from base import Session, MutableList
-# from sqlalchemy.types import DateTime
+from sqlalchemy.types import BigInteger
 from datetime import datetime
 
 def handler(event, context):
@@ -38,9 +38,7 @@ def handler(event, context):
                 #default to pending
                 setattr(chat, attrib, ChatStatus.PENDING)
             elif attrib == "date" and attrib in info:
-                date_format = "%m-%d-%Y %H:%M"
-                # e.g. "01-01-2020  21:20"
-                setattr(chat, attrib, datetime.strptime(info[attrib], date_format))
+                setattr(chat, attrib, BigInteger(info[attrib]))
             elif attrib == "chat_type":
                 setattr(chat, attrib, ChatType(int(info[attrib])))
             elif attrib == "aspiring_professionals":

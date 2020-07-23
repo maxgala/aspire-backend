@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 from sqlalchemy.schema import Column
-from sqlalchemy.types import String, Integer, DateTime, Enum
+from sqlalchemy.types import String, Integer, BigInteger, Enum
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from base import Base, MutableList
@@ -32,9 +32,7 @@ class Chat(Base):
     
     credits = Column(Integer(), nullable=False)
     
-    date = Column(DateTime())
-    # date and time of the actual chat 
-    # YYYY-MM-DD HH:MM:SS
+    date = Column(BigInteger())
     
     chat_status = Column(Enum(ChatStatus), nullable=False)
     aspiring_professionals = Column(MutableList.as_mutable(ARRAY(String(100))))
