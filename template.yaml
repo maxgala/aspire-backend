@@ -99,9 +99,9 @@ Resources:
               Path: /create-db-models
               Method: post
       Layers:
-
         - Ref: DatabaseLayer
-        
+  # --- Infrastructure ---
+
 # --- Chats Service ---
   CreateChat:
     Type: AWS::Serverless::Function
@@ -132,7 +132,7 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
-        
+
   EditChatById:
     Type: AWS::Serverless::Function
     Properties:
@@ -147,7 +147,7 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer   
-  
+
   DeleteChatById:
     Type: AWS::Serverless::Function
     Properties:
@@ -162,7 +162,7 @@ Resources:
             Method: delete
       Layers:
         - Ref: DatabaseLayer
-        
+
   GetAllChats:
     Type: AWS::Serverless::Function
     Properties:
@@ -177,7 +177,7 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
-        
+
   ReserveChatById:
     Type: AWS::Serverless::Function
     Properties:
@@ -192,7 +192,7 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer
-        
+
   UnReserveChatById:
     Type: AWS::Serverless::Function
     Properties:
@@ -207,13 +207,7 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer
-        
-  # --- End of Chats Service ---      
-  
-
-        - Ref: DatabaseLayer
-  # --- Infrastructure ---
-
+  # --- Chats Service ---   
 
   # --- Jobs Service ---
   CreateJob:
@@ -464,17 +458,6 @@ Resources:
   # --- Industry Tags Service ---
 
 Outputs:
-
-  CreateDatabaseModelsApi:
-    Description: "API Gateway endpoint URL for Prod stage for CreateDatabaseModels function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-db-models/"
-  JobApplicationsApi:
-    Description: "API Gateway endpoints URL for Prod stage for Job Application functions"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/job-applications/"
-  JobsApi:
-    Description: "API Gateway endpoints URL for Prod stage for Job Application functions"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/jobs/"
-
   Region:
     Description: "Region"
     Value: !Ref AWS::Region
