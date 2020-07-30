@@ -7,42 +7,42 @@ client = boto3.client('cognito-idp')
 
 def handler(event, context):  
     # ----------------- User validation ------------------
-    try:
-        access_token = (event['headers']['Authorization']).replace('Bearer ', '')
-    except:
-        return {
-        "statusCode": 401,
-        "body": json.dumps({
-            "message": "Authorization header is expected"
-        }),
-    }
-    
-    getuserresponse = client.get_user(
-            AccessToken=access_token
-        )
-    
-    user_att = getuserresponse['UserAttributes']
-    user_id = getuserresponse['Username']
-
-    user_type = ''
-    mem_type = ''
-    credit = 0
-    
-    for att in user_att:
-        if att['Name'] == 'custom:user_type':
-            user_type = att['Value']
-        if att['Name'] == 'custom:membership_type':
-            mem_type = att['Value']
-        if att['Name'] == 'custom:credits':
-            credit = int(att['Value'])
-
-    if user_type != "Mentee":
-        return{
-            "statusCode": 409,
-            "body": json.dumps({
-            "message": "Invalid user type. Only Aspiring Professionals may reserve chats."
-            })
-        }
+##    try:
+##        access_token = (event['headers']['Authorization']).replace('Bearer ', '')
+##    except:
+##        return {
+##        "statusCode": 401,
+##        "body": json.dumps({
+##            "message": "Authorization header is expected"
+##        }),
+##    }
+##    
+##    getuserresponse = client.get_user(
+##            AccessToken=access_token
+##        )
+##    
+##    user_att = getuserresponse['UserAttributes']
+##    user_id = getuserresponse['Username']
+##
+##    user_type = ''
+##    mem_type = ''
+##    credit = 0
+##    
+##    for att in user_att:
+##        if att['Name'] == 'custom:user_type':
+##            user_type = att['Value']
+##        if att['Name'] == 'custom:membership_type':
+##            mem_type = att['Value']
+##        if att['Name'] == 'custom:credits':
+##            credit = int(att['Value'])
+##
+##    if user_type != "Mentee":
+##        return{
+##            "statusCode": 409,
+##            "body": json.dumps({
+##            "message": "Invalid user type. Only Aspiring Professionals may reserve chats."
+##            })
+##        }
     # ----------------------- End user validation ------------------------------
     # user is mentee
     
@@ -53,17 +53,17 @@ def handler(event, context):
     chat = session.query(Chat).get(chat_id)
     
     if chat != None:
-        credit_cost = credit_mapping[chat.chat_type]
-        sufficient_credits = credit >= credit_cost
-        
-        if not sufficient_credits:
-            session.close()
-            return {
-                "statusCode": 409, 
-                "body": json.dumps({
-                "message": "Insufficient credits, need {} but have {}".format(credit_cost, credit)
-                })
-            }
+##        credit_cost = credit_mapping[chat.chat_type]
+##        sufficient_credits = credit >= credit_cost
+##        
+##        if not sufficient_credits:
+##            session.close()
+##            return {
+##                "statusCode": 409, 
+##                "body": json.dumps({
+##                "message": "Insufficient credits, need {} but have {}".format(credit_cost, credit)
+##                })
+##            }
         
         if chat.chat_status != ChatStatus.ACTIVE:
             # cannot reserve this chat, it is not active
@@ -77,15 +77,15 @@ def handler(event, context):
             }
 
         # ----------------------- all ok to go ahead and reserve ---------------------------
-        response = client.update_user_attributes(
-            UserAttributes=[
-                {
-                    'Name': 'custom:credits',
-                    'Value': str(int(credit) - credit_cost)
-                },
-            ],
-            AccessToken=access_token
-        )
+##        response = client.update_user_attributes(
+##            UserAttributes=[
+##                {
+##                    'Name': 'custom:credits',
+##                    'Value': str(int(credit) - credit_cost)
+##                },
+##            ],
+##            AccessToken=access_token
+##        )
         
         # credits updated
         if chat.aspiring_professionals == None:

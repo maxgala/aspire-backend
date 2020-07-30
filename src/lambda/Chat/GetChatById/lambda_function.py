@@ -5,7 +5,7 @@ from datetime import datetime
 
 def handler(event, context):
     info = json.loads(event["body"])
-    chat_id = event["pathParameters"]["chat_id"]
+    chat_id = event["pathParameters"]["chatId"]
 
     session = Session()
     chat = session.query(Chat).get(chat_id)

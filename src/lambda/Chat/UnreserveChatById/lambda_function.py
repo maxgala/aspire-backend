@@ -11,42 +11,42 @@ client = boto3.client('cognito-idp')
 
 def handler(event, context):
     # ----------------- User validation ------------------
-    try:
-        access_token = (event['headers']['Authorization']).replace('Bearer ', '')
-    except:
-        return {
-        "statusCode": 401,
-        "body": json.dumps({
-            "message": "Authorization header is expected"
-        }),
-    }
-    
-    getuserresponse = client.get_user(
-            AccessToken=access_token
-        )
-    
-    user_att = getuserresponse['UserAttributes']
-    user_id = getuserresponse['Username']
-
-    user_type = ''
-    mem_type = ''
-    credit = 0
-    
-    for att in user_att:
-        if att['Name'] == 'custom:user_type':
-            user_type = att['Value']
-        if att['Name'] == 'custom:membership_type':
-            mem_type = att['Value']
-        if att['Name'] == 'custom:credits':
-            credit = int(att['Value'])
-
-    if user_type != "Mentee":
-        return{
-            "statusCode": 409,
-            "body": json.dumps({
-            "message": "Invalid user type. Only Aspiring Professionals may (un)reserve chats."
-            })
-        }
+##    try:
+##        access_token = (event['headers']['Authorization']).replace('Bearer ', '')
+##    except:
+##        return {
+##        "statusCode": 401,
+##        "body": json.dumps({
+##            "message": "Authorization header is expected"
+##        }),
+##    }
+##    
+##    getuserresponse = client.get_user(
+##            AccessToken=access_token
+##        )
+##    
+##    user_att = getuserresponse['UserAttributes']
+##    user_id = getuserresponse['Username']
+##
+##    user_type = ''
+##    mem_type = ''
+##    credit = 0
+##    
+##    for att in user_att:
+##        if att['Name'] == 'custom:user_type':
+##            user_type = att['Value']
+##        if att['Name'] == 'custom:membership_type':
+##            mem_type = att['Value']
+##        if att['Name'] == 'custom:credits':
+##            credit = int(att['Value'])
+##
+##    if user_type != "Mentee":
+##        return{
+##            "statusCode": 409,
+##            "body": json.dumps({
+##            "message": "Invalid user type. Only Aspiring Professionals may (un)reserve chats."
+##            })
+##        }
     # ----------------------- End user validation ------------------------------
     
     info = json.loads(event["body"])
@@ -59,12 +59,9 @@ def handler(event, context):
         # do we refund the credits? 
         # check if user is in the list
         if user_id in chat.aspiring_professionals:
-            # k let's get you off this list
-            # get the index
             i = chat.aspiring_professionals.index(user_id)
-            #pop the user
             chat.aspiring_professionals.pop(i)
-            
+
             #check if we need to modify the status
             if chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.ACTIVE

@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 from sqlalchemy.schema import Column
-from sqlalchemy.types import String, Integer, BigInteger, Enum
+from sqlalchemy.types import String, Integer, BigInteger, Enum, DateTime
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from base import Base, MutableList
