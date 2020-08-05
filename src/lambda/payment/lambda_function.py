@@ -5,7 +5,7 @@ import logging
 
 stripe.api_key= "sk_test_51H0cpsGPqNNATumTocDFOQBCm29E08vroVYDfbduGfSf2bOUzjX0fbOUtPtuJ7xJRi7xGLZIU9SnZXK6cKE1ld0T00MOwM7rEP"
 
-def process_payment(event, context):
+def handler(event, context):
 
     try:
         # print(event)
