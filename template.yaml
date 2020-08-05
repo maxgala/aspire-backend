@@ -457,6 +457,23 @@ Resources:
         # - Ref: AuthLayer
   # --- Industry Tags Service ---
 
+  # --- Payments Service ---
+
+  StripePaymentProcessor:
+    Type: AWS::Serverless::Function 
+    Properties:
+        CodeUri: src/lambda/payment
+        Handler: lambda_function.handler
+        Events:
+            Payment:  
+              Type: Api
+              Properties:
+                RestApiId: !Ref AspireApi
+                Path: /payment
+                Method: post
+        Layers:
+          - Ref: DatabaseLayer
+
 Outputs:
   Region:
     Description: "Region"
