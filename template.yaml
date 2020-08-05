@@ -74,10 +74,10 @@ Resources:
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: prod
+      StageName: Prod
       Cors:
-        AllowMethods: "'*'"
-        AllowHeaders: "'*'"
+        AllowMethods: "'OPTIONS,GET,POST,PUT'"
+        AllowHeaders: "'Content-Type,Access-Control-Allow-Origin'"
         AllowOrigin: "'*'"
       # Auth:
       #   DefaultAuthorizer: !Ref cognitoUserPool
