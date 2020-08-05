@@ -19,7 +19,7 @@ Parameters:
     Default: 'db.t2.micro'
   dbInstanceIdentifier:
     Type: String
-    Default: 'aspire-db'
+    Default: 'aspire-db-master'
   dbName:
     Type: String
     Default: 'main_db'

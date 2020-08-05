@@ -32,9 +32,9 @@ To use the SAM CLI, you need the following tools.
 
 To build and deploy your application for the first time, run the following in your shell:
 ```bash
-sam package --output-template-file packaged.yaml --s3-bucket <bucket_name>
 sam build
-sam deploy --template-file packaged.yaml --stack-name <stack_name> --region <region> --capabilities CAPABILITY_IAM
+sam package --output-template-file packaged.yaml --s3-bucket aspire-sam-deployment
+sam deploy --template-file packaged.yaml --stack-name Aspire-Api --region us-east-1 --capabilities CAPABILITY_IAM
 ```
 
 Or the following
