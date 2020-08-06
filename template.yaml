@@ -19,7 +19,7 @@ Parameters:
     Default: 'db.t2.micro'
   dbInstanceIdentifier:
     Type: String
-    Default: 'aspire-db'
+    Default: 'aspire-db-master'
   dbName:
     Type: String
     Default: 'main_db'
@@ -74,10 +74,10 @@ Resources:
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: prod
+      StageName: Prod
       Cors:
-        AllowMethods: "'*'"
-        AllowHeaders: "'*'"
+        AllowMethods: "'OPTIONS,GET,POST,PUT'"
+        AllowHeaders: "'Content-Type,Access-Control-Allow-Origin'"
         AllowOrigin: "'*'"
       # Auth:
       #   DefaultAuthorizer: !Ref cognitoUserPool
@@ -526,6 +526,23 @@ Resources:
         - Ref: DatabaseLayer
         # - Ref: AuthLayer
   # --- Industry Tags Service ---
+
+  # --- Payments Service ---
+
+  StripePaymentProcessor:
+    Type: AWS::Serverless::Function 
+    Properties:
+        CodeUri: src/lambda/payment
+        Handler: lambda_function.handler
+        Events:
+            Payment:  
+              Type: Api
+              Properties:
+                RestApiId: !Ref AspireApi
+                Path: /payment
+                Method: post
+        Layers:
+          - Ref: DatabaseLayer
 
 Outputs:
   Region:
