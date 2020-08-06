@@ -10,6 +10,7 @@ class ConnectStatus(enum.Enum):
     PENDING = 1
     ACCEPTED = 2
     CANCELLED = 3
+    DECLINED = 4
 
 class ConnectSE(Base):
     __tablename__ = 'senior-exec-connect'
