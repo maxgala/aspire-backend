@@ -113,6 +113,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat
             Method: post
       Layers:
@@ -128,6 +129,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}
             Method: get
       Layers:
@@ -143,6 +145,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}
             Method: put
       Layers:
@@ -158,6 +161,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}
             Method: delete
       Layers:
@@ -173,6 +177,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chats
             Method: get
       Layers:
@@ -188,6 +193,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}/reserve
             Method: put
       Layers:
@@ -203,6 +209,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}/unreserve
             Method: put
       Layers:
