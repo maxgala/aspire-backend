@@ -18,7 +18,6 @@ def handler(event, context):
                     })
             }
     # ------------------- passed date check ----------------------------
-
     
     session = Session()
     #create a new chat instance
@@ -29,16 +28,16 @@ def handler(event, context):
     manual_attribs = ["chat_id", "credits", "created_on", "updated_on", \
                       "chat_status", "chat_type", "date",\
                       "aspiring_professionals"]
+    
     # ignore primary key, dates automatically set
     
-
     for attrib in chat_attribs:
         if attrib in manual_attribs:
             if attrib == "chat_status":
                 #default to pending
                 setattr(chat, attrib, ChatStatus.PENDING)
             elif attrib == "date" and attrib in info:
-                setattr(chat, attrib, BigInteger(info[attrib]))
+                setattr(chat, attrib, info[attrib])
             elif attrib == "chat_type":
                 setattr(chat, attrib, ChatType(int(info[attrib])))
             elif attrib == "aspiring_professionals":
@@ -52,8 +51,6 @@ def handler(event, context):
 
     # do this at the end to avoid any errors with chat_type being set
     setattr(chat, "credits", credit_mapping[chat.chat_type])
-
-
     
     session.add(chat)
     session.commit()
@@ -64,7 +61,7 @@ def handler(event, context):
     # to be less repetetive
     
     chat_attribs = []
-    pruned_attribs = ["chat_id"]
+    pruned_attribs = []
 
     for attrib in dir(Chat):
         if not (attrib.startswith('_') or attrib.strip() == "metadata"\

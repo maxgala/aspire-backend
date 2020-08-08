@@ -8,22 +8,18 @@ import unittest
 
 from CreateChat import lambda_function as create
 from DeleteChatById import lambda_function as delete
-from EditChatById import lambda_function as edit
-from GetAllChats import lambda_function as get_all
-from GetChatById import lambda_function as get
-from ReserveChatById import lambda_function as reserve
-from UnreserveChatById import lambda_function as unreserve
 
 import chat
-
 context = ""
 
 class TestCreateChat(unittest.TestCase):
     msg_status_code = "Expected status code{}, but returned {}"
-    msg_body = "Expected body {}, but returned {}"
+    ids_created = []
+    
     def test00_one_on_one(self):
         event = {}
         request = { "chat_type": 1,
+                    "description": "meow meow meow",
                     "senior_executive": "larry@gmail.com",
                     "aspiring_professionals": []
                     }
@@ -35,12 +31,13 @@ class TestCreateChat(unittest.TestCase):
         self.assertEqual(actual["statusCode"], 200, \
                          self.msg_status_code.format(200, \
                                                      actual["statusCode"]))
-
+        self.ids_created.append(json.loads(actual["body"])["chat_id"])
         
     def test01_one_on_four_no_date(self):
         event = {}
         request = { "chat_type": 2,
                     "senior_executive": "larry@gmail.com",
+                    "description": "meow meow meow",
                     "aspiring_professionals": []
                     }
 
@@ -59,6 +56,7 @@ class TestCreateChat(unittest.TestCase):
         event = {}
         request = { "chat_type": 2,
                     "senior_executive": "larry@gmail.com",
+                    "description": "meow meow meow",
                     "aspiring_professionals": [],
                     "date": 10000
                     }
@@ -70,11 +68,14 @@ class TestCreateChat(unittest.TestCase):
         self.assertEqual(actual["statusCode"], expected["statusCode"], \
                          self.msg_status_code.format(expected["statusCode"], \
                                                      actual["statusCode"]))
+
+        self.ids_created.append(json.loads(actual["body"])["chat_id"])
         
     def test03_mock_interview_no_date(self):
         event = {}
         request = { "chat_type": 3,
                     "senior_executive": "larry@gmail.com",
+                    "description": "meow meow meow",
                     "aspiring_professionals": []
                     }
         event["body"] = json.dumps(request)
@@ -91,10 +92,11 @@ class TestCreateChat(unittest.TestCase):
         actual_body = actual["body"]
         assert (json.loads(actual_body) == expected["body"])
     
-    def test03_mock_interview_with_date(self):
+    def test04_mock_interview_with_date(self):
         event = {}
         request = { "chat_type":3,
                     "senior_executive": "larry@gmail.com",
+                    "description": "meow meow meow",
                     "aspiring_professionals": [],
                     "date": 10000
                     }
@@ -107,5 +109,15 @@ class TestCreateChat(unittest.TestCase):
                          self.msg_status_code.format(expected["statusCode"], \
                                                      actual["statusCode"]))
 
+        self.ids_created.append(json.loads(actual["body"])["chat_id"])
+                           
+    def test05_clean(self):
+        for chat in self.ids_created:
+            event = {}
+            event["body"] = json.dumps({})
+            event["pathParameters"] = {}
+            event["pathParameters"]["chatId"] = chat
+            delete.handler(event, context)
+        
 if __name__ == "__main__":
     unittest.main(exit=False)
