@@ -1,4 +1,5 @@
 import unittest
+import json
 
 import CreateChat as create
 import DeleteChatById as delete
@@ -8,3 +9,9 @@ import GetChatById as get
 import ReserveChatById as reserve
 import UnreserveChatById as unreserve
 
+class TestCreateChat(unittest.TestCase):
+    ''' Test case for CreateChat endpoint
+    '''
+
+    event = json.dump({
+            })
