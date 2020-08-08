@@ -55,7 +55,7 @@ def row2dict(row):
 
 
 #rds settings
-rds_host  = "aspire-db.c42zh1ryp8o3.us-east-1.rds.amazonaws.com"
+rds_host  = "aspire-db-master.c42zh1ryp8o3.us-east-1.rds.amazonaws.com"
 rds_port = "5432"
 name = "master"
 password = "password"
