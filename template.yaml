@@ -103,6 +103,7 @@ Resources:
   # --- Infrastructure ---
 
 # --- Chats Service ---
+# git is not tracking this change?
   CreateChat:
     Type: AWS::Serverless::Function
     Properties:
