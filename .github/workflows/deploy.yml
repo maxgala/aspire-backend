@@ -19,11 +19,14 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - uses: poketapp/gh-action-aws-sam@v1
+    - run: cd src/layers/database
+    - run: ./database_layer_packages.sh
+    - run: cd ../../../
+    - uses: poketapp/gh-action-aws-sam@v2
       env:
         TEMPLATE: 'template.yaml'
         AWS_STACK_NAME: Aspire-Sam
-        AWS_REGION: 'ca-central-1'
+        AWS_REGION: 'us-east-1'
         AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
         AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
         AWS_DEPLOY_BUCKET: aspire-sam
