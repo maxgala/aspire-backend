@@ -20,6 +20,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - run: cd src/layers/database
+    - run: chmod +x database_layer_packages.sh
     - run: ./database_layer_packages.sh
     - run: cd ../../../
     - uses: poketapp/gh-action-aws-sam@v2
