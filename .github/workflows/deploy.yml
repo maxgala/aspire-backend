@@ -19,11 +19,7 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - run: cd src/layers/database
-    - run: pwd && ls 
-    - run: chmod +x database_layer_packages.sh
-    - run: ./database_layer_packages.sh
-    - run: cd ../../../
+    - run: cd src/layers/database && chmod +x database_layer_packages.sh && ./database_layers_package.sh 
     - uses: poketapp/gh-action-aws-sam@v2
       env:
         TEMPLATE: 'template.yaml'
