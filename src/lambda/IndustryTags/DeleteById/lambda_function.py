@@ -31,7 +31,6 @@ def handler(event, context):
 
     session = Session()
     industry_tag = session.query(IndustryTag).get(industryTagId.lower())
-    import pdb; pdb.set_trace()
     if not industry_tag:
         session.close()
         return {
