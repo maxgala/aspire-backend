@@ -10,14 +10,11 @@ from unittest import mock
 from CreateChat import lambda_function as create
 
 import chat
-from base import Session
 
 context = ""
 
 class TestCreateChat(unittest.TestCase):
     msg_status_code = "Expected status code{}, but returned {}"
-    ids_created = []
-
     
     def test00_one_on_one(self):
         event = {}
@@ -36,7 +33,6 @@ class TestCreateChat(unittest.TestCase):
         self.assertEqual(actual["statusCode"], 200, \
                              self.msg_status_code.format(200, \
                                                          actual["statusCode"]))
-        self.ids_created.append(json.loads(actual["body"])["chat_id"])
         
     def test01_one_on_four_no_date(self):
         event = {}
@@ -78,8 +74,6 @@ class TestCreateChat(unittest.TestCase):
         self.assertEqual(actual["statusCode"], expected["statusCode"], \
                          self.msg_status_code.format(expected["statusCode"], \
                                                      actual["statusCode"]))
-
-        self.ids_created.append(json.loads(actual["body"])["chat_id"])
         
     def test03_mock_interview_no_date(self):
         event = {}
@@ -122,7 +116,6 @@ class TestCreateChat(unittest.TestCase):
                          self.msg_status_code.format(expected["statusCode"], \
                                                      actual["statusCode"]))
 
-        self.ids_created.append(json.loads(actual["body"])["chat_id"])
    
         
 if __name__ == "__main__":
