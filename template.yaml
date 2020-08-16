@@ -34,6 +34,11 @@ Globals:
   Function:
     Runtime: python3.6
     Timeout: 30
+  Api:
+    Cors:
+      AllowMethods: "'OPTIONS,GET,POST,PUT'"
+      AllowHeaders: "'Content-Type,Access-Control-Allow-Origin'"
+      AllowOrigin: "'*'"
 
 Resources:
   # --- Infrastructure ---
@@ -75,10 +80,6 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-      Cors:
-        AllowMethods: "'OPTIONS,GET,POST,PUT'"
-        AllowHeaders: "'Content-Type,Access-Control-Allow-Origin'"
-        AllowOrigin: "'*'"
       # Auth:
       #   DefaultAuthorizer: !Ref cognitoUserPool
       #   AddDefaultAuthorizerToCorsPreflight: False
