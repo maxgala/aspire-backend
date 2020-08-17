@@ -38,7 +38,7 @@ Globals:
     Cors:
       AllowMethods: "'OPTIONS,GET,POST,PUT'"
       AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-      AllowOrigin: "'*'"
+      AllowOrigin: "'https://max-aspire-frontend.herokuapp.com'"
 
 Resources:
   # --- Infrastructure ---
