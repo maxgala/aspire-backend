@@ -31,11 +31,11 @@ class TestIndustryTagsCreate(unittest.TestCase):
     def test_create_201(self):
         tag = "tag1"
         with mock.patch("Create.lambda_function.Session") as mock_session:
-            mock_delete = mock_session.return_value.add
-            mock_delete.side_effect = tags_db.append(tag)
+            mock_add = mock_session.return_value.add
+            mock_add.side_effect = tags_db.append(tag)
             ret = create.handler(apigw_create_event(tag), "")
 
-        self.assertEqual(ret["statusCode"], 201, self.msg_status_code.format(200, ret["statusCode"]))
+        self.assertEqual(ret["statusCode"], 201, self.msg_status_code.format(201, ret["statusCode"]))
         self.assertTrue(tag in tags_db)
 
     def test_create_400(self):
