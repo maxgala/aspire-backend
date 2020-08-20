@@ -10,7 +10,7 @@ sys.path.insert(0, "%s/../../../src/models/" % (CURRENT_DIRECTORY))
 import json
 import stripe
 from stripe.util import convert_to_stripe_object
-from . import app
+import lambda_function as process_payment
 
 class TestStudent(unittest.TestCase):
 
@@ -175,7 +175,7 @@ class TestStudent(unittest.TestCase):
         with mock.patch('stripe.PaymentIntent.create') as mock_process_payment:
             stripe_obj = convert_to_stripe_object(response)
             mock_process_payment.return_value= stripe_obj
-            ret = app.process_payment(event, "")
+            ret = process_payment.handler(event, "")
 
         self.assertEqual(ret["statusCode"], 200, self.msg_status_code.format(200, ret["statusCode"]))
         
@@ -191,7 +191,7 @@ class TestStudent(unittest.TestCase):
         with mock.patch('stripe.PaymentIntent.create') as mock_process_payment:
             stripe_obj = convert_to_stripe_object(response)
             mock_process_payment.return_value= stripe_obj
-            ret = app.process_payment(event, "")
+            ret = process_payment.handler(event, "")
 
         self.assertEqual(ret["statusCode"], 400, self.msg_status_code.format(400, ret["statusCode"]))
 
@@ -211,7 +211,7 @@ class TestStudent(unittest.TestCase):
             stripe_obj = convert_to_stripe_object(response)
             mock_process_payment.return_value= stripe_obj
             mock_process_payment.side_effect= except_error
-            ret= app.process_payment(event, "")
+            ret= process_payment.handler(event, "")
             getmessage= json.loads(ret['body'])
             getmessageFinal= getmessage["message"]
 
