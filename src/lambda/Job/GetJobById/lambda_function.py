@@ -24,6 +24,7 @@ def handler(event, context):
     if job != None:
         print(job.job_applications)
         job_apps_id = []
+        import pdb; pdb.set_trace()
         for app in job.job_applications:
             job_apps_id.append(app.job_application_id)
         jobdict = row2dict(job)

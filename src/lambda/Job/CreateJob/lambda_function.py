@@ -21,7 +21,7 @@ def handler(event, context):
     # # create a new session
     session = Session()
     
-    
+    """
     try:
         access_token = (event['headers']['Authorization']).replace('Bearer ', '')
     except:
@@ -54,35 +54,36 @@ def handler(event, context):
             pass
     
     if user_type == 'Mentor' or (user_type == 'Mentee' and mem_type == 'premium'):
-        
-        info = json.loads(event["body"])
-        
-        tags = []
-        for tag in info["job_tags"]:
-            tags.append(JobTags[tag])
-        # # create job
-        Job_row = Job(title=info["title"], company=info["company"],
-                        region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
-                        description=info["description"], requirements=info["requirements"], posted_by=email,
-                        poster_family_name = family_name, poster_given_name = given_name,
-                        job_status=JobStatus[info["job_status"]] if "job_status" in info else "OPEN",job_tags=tags, salary=info["salary"], deadline = info["deadline"])
+    """
+    info = json.loads(event["body"])
     
-        # # persists data
-        session.add(Job_row)
-        
+    tags = []
+    for tag in info["job_tags"]:
+        tags.append(JobTags[tag])
+    # # create job
+    Job_row = Job(title=info["title"], company=info["company"],
+                    region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
+                    description=info["description"], requirements=info["requirements"], posted_by=info["email"],
+                    poster_family_name = info["family_name"], poster_given_name = info["given_name"],
+                    job_status=JobStatus[info["job_status"]] if "job_status" in info else "OPEN",job_tags=tags, salary=info["salary"], deadline = info["deadline"])
 
-        # # commit and close session
-        
-        session.commit()
-        session.close()
+    # # persists data
+    session.add(Job_row)
+    
 
-        return {
-            "statusCode": 201,
-            "body": json.dumps({
-                "message": "Created Job Row",
-                "job": info
-            }),
-        }
+    # # commit and close session
+    
+    session.commit()
+    session.close()
+
+    return {
+        "statusCode": 201,
+        "body": json.dumps({
+            "message": "Created Job Row",
+            "job": info
+        }),
+    }
+    """
     else:
         return {
             "statusCode": 426,
@@ -90,3 +91,4 @@ def handler(event, context):
                 "message": "You are not allowed to post a Job. Upgrade your membership"
             }),
         }
+    """

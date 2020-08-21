@@ -24,7 +24,7 @@ def handler(event, context):
     job = session.query(Job).get(jobId)
     if job == None:
         return {
-            "statusCode": 401,
+            "statusCode": 404,
             "body": json.dumps({
                 "message": "ID not found"
             })
@@ -68,7 +68,7 @@ def handler(event, context):
                 applied = True
         if not applied:
             return {
-                "statusCode": 200,
+                "statusCode": 428,
                 "body": json.dumps({
                     "message": "You need to apply to the job before requesting contact-information"
                 })
@@ -76,7 +76,7 @@ def handler(event, context):
 
         if job.people_contacted >= 4:
             return {
-                "statusCode": 200,
+                "statusCode": 417,
                 "body": json.dumps({
                     "message": "Limit of contact information requests has been exceeded"
                 })
@@ -84,7 +84,7 @@ def handler(event, context):
         print(credit)
         if int(credit) < 5:
             return {
-                "statusCode": 200,
+                "statusCode": 402,
                 "body": json.dumps({
                     "message": "You do not have enough credits to request contact information"
                 })
@@ -112,7 +112,7 @@ def handler(event, context):
         }
     else:
         return {
-            "statusCode": 401,
+            "statusCode": 426,
             "body": json.dumps({
                 "message": "You are not allowed to view the contact information of the job poster. Upgrade membership"
             }),
