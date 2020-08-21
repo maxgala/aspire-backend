@@ -31,7 +31,7 @@ def handler(event, context):
 
     return {
         "statusCode": 200,
-        "body": json.dumps({
-            "industry_tag": row2dict(industry_tag)
-        })
+        "body": json.dumps(
+            row2dict(industry_tag)
+        )
     }
