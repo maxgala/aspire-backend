@@ -46,7 +46,6 @@ class TestCreateJob(unittest.TestCase):
                              self.msg_status_code.format(201, \
                                                          actual["statusCode"]))
         self.assertTrue(data["message"], "Created Job Row")
-        self.assertTrue(data["job"], event["body"])
     
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ from datetime import datetime
 # FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
-from base import Session, engine, Base
+from base import Session, engine, Base, row2dict
 import boto3
 
 client = boto3.client('cognito-idp')
@@ -22,6 +22,7 @@ def handler(event, context):
     session = Session()
     
     """
+    #Commented out this authentication because we are planning to do some other way in the future
     try:
         access_token = (event['headers']['Authorization']).replace('Bearer ', '')
     except:
@@ -63,8 +64,8 @@ def handler(event, context):
     # # create job
     Job_row = Job(title=info["title"], company=info["company"],
                     region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
-                    description=info["description"], requirements=info["requirements"], posted_by=info["email"],
-                    poster_family_name = info["family_name"], poster_given_name = info["given_name"],
+                    description=info["description"], requirements=info["requirements"], posted_by=info["posted_by"],
+                    poster_family_name = info["poster_family_name"], poster_given_name = info["poster_given_name"],
                     job_status=JobStatus[info["job_status"]] if "job_status" in info else "OPEN",job_tags=tags, salary=info["salary"], deadline = info["deadline"])
 
     # # persists data
@@ -74,15 +75,16 @@ def handler(event, context):
     # # commit and close session
     
     session.commit()
-    session.close()
+    
 
     return {
         "statusCode": 201,
         "body": json.dumps({
             "message": "Created Job Row",
-            "job": info
+            "job": row2dict(Job_row)
         }),
     }
+    session.close()
     """
     else:
         return {
