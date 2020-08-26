@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import datetime
 
-FILEPATH = './clean_data.csv'
+FILEPATH = './sample/data.csv'
 
 
 def renameColumns(data):
