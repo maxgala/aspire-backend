@@ -15,12 +15,29 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        python-version: [3.6]
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - run: cd ./src/layers/database && sudo bash database_layer_packages.sh && sudo chown -R runner dependencies && sudo chgrp -R docker dependencies && ls -lt
-      - uses: poketapp/gh-action-aws-sam@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ./src/layers/database/requirements.txt
+      - name: Run Unit Tests using unittest
+        run: |
+          python -m unittest discover ./tests/unit
+      - name: Setup DB
+        run: cd ./src/layers/database && sudo bash database_layer_packages.sh && sudo chown -R runner dependencies && sudo chgrp -R docker dependencies && ls -lt
+      - name: Deploy to AWS using SAM
+        uses: poketapp/gh-action-aws-sam@v2
         env:
           TEMPLATE: 'template.yaml'
           AWS_STACK_NAME: Aspire-Api
