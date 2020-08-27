@@ -9,11 +9,11 @@ sys.path.insert(0, "%s/../../../src/lambda/Job" % (CURRENT_DIRECTORY))
 sys.path.insert(0, "%s/../../../src/models/" % (CURRENT_DIRECTORY))
 from base import Session, row2dict
 
-from JobContactById import lambda_function as close
+from JobContactById import lambda_function as contact
 
 context = ""
 
-def apigw_close_event(jobid):
+def apigw_contact_event(jobid):
     """ Generates Event"""
     return {
         "body": '{}',
@@ -29,7 +29,7 @@ class TestJobContactById(unittest.TestCase):
             mock_query = mock_session.return_value.query
             mock_close = mock_query.return_value.get
             mock_close.return_value = None
-            ret = close.handler(apigw_close_event(job_id), context)
+            ret = contact.handler(apigw_contact_event(job_id), context)
 
         self.assertEqual(ret["statusCode"], 404, self.msg_status_code.format(404, ret["statusCode"]))
     
@@ -38,7 +38,7 @@ class TestJobContactById(unittest.TestCase):
         job_id = 100
         
         with mock.patch("JobContactById.lambda_function.Session") as mock_session:
-            ret = close.handler(apigw_close_event(job_id), "")
+            ret = contact.handler(apigw_contact_event(job_id), "")
 
         data = json.loads(ret["body"])
         
