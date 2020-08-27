@@ -5,6 +5,7 @@ from sqlalchemy.types import String, Integer, BigInteger, Enum, DateTime
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from base import Base, MutableList
+        
 
 class ChatType(enum.Enum):
     ONE_ON_ONE = 1
