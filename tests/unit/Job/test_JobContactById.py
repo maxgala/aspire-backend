@@ -43,16 +43,6 @@ class TestJobContactById(unittest.TestCase):
         data = json.loads(ret["body"])
         
         self.assertEqual(ret["statusCode"], 401, self.msg_status_code.format(401, ret["statusCode"]))
-
-    def test03_no_auth_header(self):
-        job_id = 100
-        
-        with mock.patch("JobContactById.lambda_function.Session") as mock_session:
-            ret = close.handler(apigw_close_event(job_id), "")
-
-        data = json.loads(ret["body"])
-        
-        self.assertEqual(ret["statusCode"], 401, self.msg_status_code.format(401, ret["statusCode"]))
     
 
 if __name__ == "__main__":
