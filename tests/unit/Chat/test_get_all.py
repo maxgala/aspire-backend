@@ -20,10 +20,6 @@ class TestGetAllChats(unittest.TestCase):
         event = {}
         event["body"] = None
 
-        chat_id = 10
-        
-        event["pathParameters"] = {}
-        event["pathParameters"]["chatId"] = chat_id
         
         with mock.patch("GetAllChats.lambda_function.Session") as mock_session:
             actual = get_all.handler(event, context)

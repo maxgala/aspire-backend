@@ -71,7 +71,8 @@ def handler(event, context):
     chat_dict = {}
     for attrib in chat_attribs:
         chat_dict[attrib] = str(getattr(chat, attrib)) 
-
+        
+    
     return {
         "statusCode": 200,
         "body": json.dumps(chat_dict)
