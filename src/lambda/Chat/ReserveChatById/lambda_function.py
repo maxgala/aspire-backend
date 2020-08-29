@@ -45,10 +45,12 @@ def handler(event, context):
                 "message": "Invalid user type. Only Aspiring Professionals may reserve chats."
                 })
             }
+    else:
+        user_id = ""
     # ----------------------- End user validation ------------------------------
     # user is mentee
     
-    info = json.loads(event["body"])
+    # info = json.loads(event["body"])
     chat_id = event["pathParameters"]["chatId"]
     
     session = Session()
@@ -80,7 +82,7 @@ def handler(event, context):
             }
 
         # ----------------------- all ok to go ahead and reserve ---------------------------
-        if validatE:
+        if validate:
             response = client.update_user_attributes(
                 UserAttributes=[
                     {

@@ -17,28 +17,31 @@ def handler(event, context):
     # FOR REFERENCE
     # # create a new session
     session = Session()
-    # applicantId = event["pathParameters"]["applicantId"]
-    jobId = event["queryStringParameters"].get('jobId') if event["queryStringParameters"] else None
-    applicantId = event["queryStringParameters"].get('userId') if event["queryStringParameters"] else None
-    id_passed = True
+    applicantId = ""
+    jobId = ""
 
-    #Checks to see if any keys passed in are empty, and then performs one search accordingly.
-    if (applicantId != None and jobId != None): 
+    if event["queryStringParameters"] != None:
+        if event["queryStringParameters"].get('jobId') != None:
+            jobId = event["queryStringParameters"].get('jobId') 
+        if event["queryStringParameters"].get('userId') != None:
+            applicantId = event["queryStringParameters"].get('userId')
+
+        #Checks to see if any keys passed in are empty, and then performs one search accordingly.
+    if (applicantId != None and  applicantId != "" and jobId != None and jobId != "" ):
         jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId, JobApplication.job_id == jobId).all()
-    elif jobId != None:
+    elif (jobId != None and jobId != ""):
         jobApps = session.query(JobApplication).filter(JobApplication.job_id == jobId).all()
-    elif applicantId != None:
+    elif (applicantId != None and applicantId != ""):
         jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId).all()        
     else:
         jobApps = session.query(JobApplication).all()
-        id_passed = False
     
     # # commit and close session
     
     session.close()
 
     jobAppsList = []
-
+    
     for jobApp in jobApps:
         jobApp_json = {
             "job_application_id": jobApp.job_application_id,
@@ -51,27 +54,7 @@ def handler(event, context):
             "updated_on":jobApp.updated_on.timestamp()
         }
         jobAppsList.append(jobApp_json)
-
-    if jobAppsList:
-        return {
-            "statusCode": 200,
-            "body": json.dumps(jobAppsList)
-        }
-
-    elif id_passed:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "message": "Record with that ID was not found"
-            })
-        }
-
-    else:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "message": "Table is empty"
-            })
-        }
-            
-    
+    return {
+        "statusCode": 200,
+        "body": json.dumps(jobAppsList)
+    }
