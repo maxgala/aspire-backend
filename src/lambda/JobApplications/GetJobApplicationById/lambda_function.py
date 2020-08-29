@@ -7,7 +7,8 @@ from datetime import datetime
 # FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
-from base import Session, engine, Base
+from base import Session, engine, Base, row2dict
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -25,18 +26,10 @@ def handler(event, context):
     session.close()
 
     if jobApp != None:
+        jobAppDict = row2dict(jobApp)
         return {
             "statusCode": 200,
-            "body": json.dumps({
-                "job_application_id": jobApp.job_application_id,
-                "job_id": jobApp.job_id,
-                "applicant_id": jobApp.applicant_id,
-                "resumes": jobApp.resumes,
-                "cover_letters": jobApp.cover_letters,
-                "job_application_status": jobApp.job_application_status.name,
-                "created_on": jobApp.created_on.timestamp(),
-                "updated_on":jobApp.updated_on.timestamp()
-            })
+            "body": json.dumps(jobAppDict)
         }
     else:
         return {

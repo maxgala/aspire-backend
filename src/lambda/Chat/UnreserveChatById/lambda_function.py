@@ -49,9 +49,10 @@ def handler(event, context):
                 "message": "Invalid user type. Only Aspiring Professionals may (un)reserve chats."
                 })
             }
+    else:
+        user_id = ""
     # ----------------------- End user validation ------------------------------
     
-    info = json.loads(event["body"])
     chat_id = event["pathParameters"]["chatId"]
     
     session = Session()
