@@ -47,8 +47,7 @@ class TestDeleteJobById(unittest.TestCase):
             
             mock_query = mock_session.return_value.query
             mock_get = mock_query.return_value.get
-            mock_job_applications = mock_get.return_value.job_applications
-            mock_job_applications.return_value = ["1"]
+            mock_get.return_value = mock.Mock(job_applications = ["1"])
             ret = delete.handler(apigw_delete_event(job_id), "")
 
         self.assertEqual(ret["statusCode"], 409, self.msg_status_code.format(409, ret["statusCode"]))

@@ -22,6 +22,7 @@ def handler(event, context):
     session = Session()
     jobId = event["pathParameters"]["jobId"]
     job = session.query(Job).get(jobId)
+    
     if job == None:
         return {
             "statusCode": 404,
@@ -40,7 +41,7 @@ def handler(event, context):
         }),
     }
     
-    getuserresponse =client.get_user(
+    getuserresponse = client.get_user(
         AccessToken=access_token
     )
     user_att=getuserresponse['UserAttributes']
@@ -73,6 +74,7 @@ def handler(event, context):
             pass
     if user_type == 'Mentor' or (user_type == 'Mentee' and mem_type == 'premium'):
     '''
+    
     applied = False
     for job_app in job.job_applications:
         if job_app.applicant_id == email:

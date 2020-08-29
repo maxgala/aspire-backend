@@ -18,6 +18,10 @@ from JobContactById import lambda_function as contact
 from CreateJobApplication import lambda_function as createApp
 from DeleteJobApplicationById import lambda_function as deleteApp
 
+import boto3
+
+client = boto3.client('cognito-idp')
+
 context = ""
 ids_created = []
 ########################################################################
@@ -209,6 +213,89 @@ def test_edit_404(apigw_edit_event):
     ret = edit.handler(apigw_edit_event(-1), "")
     assert ret["statusCode"] == 404
 
+########################################################################
+#                         JOB CONTACT BY ID TEST CASES                         #
+########################################################################
+@pytest.fixture()
+def apigw_contact_event():
+    """ Generates API GW Event"""
+    def _gen(job_id):
+        return {
+            "body": '{}',
+            "pathParameters": {"jobId": "%s" % (job_id)}
+        }
+
+    return _gen
+
+@pytest.fixture()
+def apigw_contact_header_event():
+    """ Generates API GW Event"""
+    def _gen(job_id,token):
+        return {
+            "body": '{}',
+            "pathParameters": {"jobId": "%s" % (job_id)},
+            "headers": {"Authorization": "Bearer %s" % (token)}
+        }
+
+    return _gen
+
+def test_contact_404(apigw_contact_event):
+    ret = contact.handler(apigw_contact_event(-1), "")
+    assert ret["statusCode"] == 404
+
+def test_contact_no_auth_401(apigw_contact_event):
+    ret = contact.handler(apigw_contact_event(ids_created[0]), "")
+    data = json.loads(ret["body"])
+
+    assert ret["statusCode"] == 401
+
+response = client.admin_initiate_auth(
+        UserPoolId='us-east-1_osaXQ2xh5',
+        ClientId='1ev0u0hf43ank26v9t9oo693bb',
+        AuthFlow='ADMIN_NO_SRP_AUTH',
+        AuthParameters={
+            'USERNAME': 'test@email.com',
+            'PASSWORD': 'Password123!'
+        }
+    )
+
+def test_contact_428(apigw_contact_header_event):
+    ret = contact.handler(apigw_contact_header_event(ids_created[0],response["AuthenticationResult"]["AccessToken"]), "")
+    data = json.loads(ret["body"])
+    assert ret["statusCode"] == 428
+
+@pytest.fixture()
+def apigw_deleteAppId_event():
+    """ Generates API GW Event"""
+    def _gen(jobAppId):
+        return {
+            "body": '{}',
+            "pathParameters": {"jobAppId": "%s" % (jobAppId)}
+        }
+
+    return _gen
+
+def test_contact_200(apigw_contact_header_event,apigw_deleteAppId_event):
+    event = {}
+    request = {
+        "job_id": "%s" % (ids_created[0]),
+        "job_application_status": "OFFER_REJECT",
+        "email": "test@email.com",
+        "resumes": "resumes/path-goes-here",
+        "cover_letters": "cover_letters/path-goes-here"
+    }
+    event["body"] = json.dumps(request)
+    actual = {}
+    actual = createApp.handler(event, "")
+    assert actual["statusCode"] == 201
+    acc_data = json.loads(actual["body"])
+    
+    ret = contact.handler(apigw_contact_header_event(ids_created[0],response["AuthenticationResult"]["AccessToken"]), "")
+    data = json.loads(ret["body"])
+    assert ret["statusCode"] == 200
+    delete_app = deleteApp.handler(apigw_deleteAppId_event(acc_data["job_application_id"]),"")
+    assert delete_app["statusCode"] == 200
+
 
 
 ########################################################################
@@ -224,13 +311,13 @@ def apigw_delete_event():
         }
 
     return _gen
-'''
-def test_delete_409(apigw_delete_event):
+
+def test_delete_409(apigw_delete_event,apigw_deleteAppId_event):
     event = {}
     request = {
         "job_id": "%s" % (ids_created[0]),
         "job_application_status": "OFFER_REJECT",
-        "applicant_id": "test@email.com",
+        "email": "test@email.com",
         "resumes": "resumes/path-goes-here",
         "cover_letters": "cover_letters/path-goes-here"
     }
@@ -238,10 +325,12 @@ def test_delete_409(apigw_delete_event):
     actual = {}
     actual = createApp.handler(event, context)
     assert actual["statusCode"] == 201
+    acc_data = json.loads(actual["body"])
     ret = delete.handler(apigw_delete_event(ids_created[0]), "")
     assert ret["statusCode"] == 409
-    del_app = deleteApp.handler(apigw_delete_event(ids_created[0]), "")
-'''
+    delete_app = deleteApp.handler(apigw_deleteAppId_event(acc_data["job_application_id"]),"")
+    assert delete_app["statusCode"] == 200
+
 def test_delete_200(apigw_delete_event):
     for jobid in ids_created:
         ret = delete.handler(apigw_delete_event(jobid), "")
