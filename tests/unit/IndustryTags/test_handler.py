@@ -7,7 +7,6 @@ from unittest import mock
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, "%s/../../../src/lambda/IndustryTags" % (CURRENT_DIRECTORY))
 sys.path.insert(0, "%s/../../../src/models/" % (CURRENT_DIRECTORY))
-from base import Session, row2dict
 from Create import lambda_function as create
 from DeleteById import lambda_function as delete
 from GetAll import lambda_function as get_all
@@ -165,4 +164,4 @@ class TestIndustryTagsDeleteById(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(exit=False)
+    unittest.main(verbosity=2, exit=False)
