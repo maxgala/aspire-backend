@@ -292,6 +292,16 @@ def test_contact_200(apigw_contact_header_event,apigw_deleteAppId_event):
     
     ret = contact.handler(apigw_contact_header_event(ids_created[0],response["AuthenticationResult"]["AccessToken"]), "")
     data = json.loads(ret["body"])
+    resp = client.admin_update_user_attributes(
+        UserPoolId='us-east-1_osaXQ2xh5',
+        Username='test@email.com',
+        UserAttributes=[
+            {
+                'Name': 'custom:credits',
+                'Value': '50'
+            },
+        ],
+    )
     assert ret["statusCode"] == 200
     delete_app = deleteApp.handler(apigw_deleteAppId_event(acc_data["job_application_id"]),"")
     assert delete_app["statusCode"] == 200
