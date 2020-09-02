@@ -34,6 +34,11 @@ Globals:
   Function:
     Runtime: python3.6
     Timeout: 30
+  Api:
+    Cors:
+      AllowMethods: "'OPTIONS,GET,POST,PUT'"
+      AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+      AllowOrigin: "'*'"
 
 Resources:
   # --- Infrastructure ---
@@ -75,10 +80,6 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-      Cors:
-        AllowMethods: "'OPTIONS,GET,POST,PUT'"
-        AllowHeaders: "'Content-Type,Access-Control-Allow-Origin'"
-        AllowOrigin: "'*'"
       # Auth:
       #   DefaultAuthorizer: !Ref cognitoUserPool
       #   AddDefaultAuthorizerToCorsPreflight: False
@@ -103,6 +104,7 @@ Resources:
   # --- Infrastructure ---
 
 # --- Chats Service ---
+# git is not tracking this change?
   CreateChat:
     Type: AWS::Serverless::Function
     Properties:
@@ -113,6 +115,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat
             Method: post
       Layers:
@@ -128,6 +131,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}
             Method: get
       Layers:
@@ -143,6 +147,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}
             Method: put
       Layers:
@@ -158,6 +163,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}
             Method: delete
       Layers:
@@ -173,6 +179,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chats
             Method: get
       Layers:
@@ -188,6 +195,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}/reserve
             Method: put
       Layers:
@@ -203,6 +211,7 @@ Resources:
         CreateChatEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /chat/{chatId}/unreserve
             Method: put
       Layers:
