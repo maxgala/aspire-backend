@@ -22,7 +22,7 @@ def handler(event, context):
         try:
             
             result = client.send_raw_email(
-                Source=msg['From'],
+                Source=acceptor,
                 Destinations=[recipient.email for recipient in recipients],
                 RawMessage={'Data': msg.as_string()}
 
