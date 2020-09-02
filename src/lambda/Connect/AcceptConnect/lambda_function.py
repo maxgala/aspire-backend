@@ -9,25 +9,38 @@ def handler(event, context):
     
     session = Session()
     connect = session.query(ConnectSE).get(connect_id)
+    name = "Saima"
+    acceptor = "saiima.ali@mail.utoronto.ca"
+    requestor = "saiima.ali@mail.utoronto.ca"
+
+    email_subject = "Your Senior Executive connection request was accepted."
+    email_body = "{} has accepted your connection request! You can connect them at {}".format(name, acceptor)
+    
 
     if connect != None:
-        attrs_to_update = info.keys()
-        for attr in attrs_to_update:
-            if attr == "connect_status":
-                setattr(connect, attr, ConnectStatus(int(info[attr])))
-            else:
-                setattr(connect, attr, info[attr])
-            
-        session.commit()
-        session.close()
 
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
-            "message": "Updated Connect Row, with ID {}".format(connect_id)
+        try:
+            
+            result = client.send_raw_email(
+                Source=msg['From'],
+                Destinations=[recipient.email for recipient in recipients],
+                RawMessage={'Data': msg.as_string()}
+
+            )
+        except ClientError as e:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({
+                "message": "Cannot send email to {}".format(requestor)
             })
         }
-    
+        else:
+            return {
+                "statusCode": 200,
+                "body": json.dumps({
+                "message": "Accepted Connect, with ID {}".format(connect_id)
+            })
+        }
     else:
         session.close()
         
