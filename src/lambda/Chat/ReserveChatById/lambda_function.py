@@ -76,8 +76,7 @@ def handler(event, context):
             return {
                 "statusCode": 409,
                 "body": json.dumps({
-                "message": "Chat with ID {} cannot be reserved, chat status is {}".format(chat.chat_id,
-                                                                                        chat.chat_status)
+                "message": "Chat with ID {} cannot be reserved, chat status is {}".format(chat.chat_id, chat.chat_status)
                 })
             }
 
