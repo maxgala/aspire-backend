@@ -10,6 +10,7 @@ client = boto3.client('cognito-idp')
 
 
 def handler(event, context):
+
     validate = False
     if validate:
         # ----------------- User validation ------------------
@@ -51,6 +52,7 @@ def handler(event, context):
             }
     else:
         user_id = ""
+
     # ----------------------- End user validation ------------------------------
     
     chat_id = event["pathParameters"]["chatId"]
@@ -63,7 +65,7 @@ def handler(event, context):
         if user_id in chat.aspiring_professionals:
             i = chat.aspiring_professionals.index(user_id)
             chat.aspiring_professionals.pop(i)
-            
+
             #check if we need to modify the status
             if chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.ACTIVE

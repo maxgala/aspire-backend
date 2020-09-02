@@ -7,26 +7,28 @@ import json
 import unittest
 from unittest import mock
 
-from GetChatById import lambda_function as get
+from EditChatById import lambda_function as update
 
 import chat
 
 context = ""
 
-class TestGetChatById(unittest.TestCase):
+class TestEditChatById(unittest.TestCase):
     msg_status_code = "Expected status code{}, but returned {}"
 
     def test00_valid_id(self):
         event = {}
         event["body"] = None
-
+        event["body"] = json.dumps({
+            "chat_status": 2
+        })
         chat_id = 10
         
         event["pathParameters"] = {}
         event["pathParameters"]["chatId"] = chat_id
         
-        with mock.patch("GetChatById.lambda_function.Session") as mock_session:
-            actual = get.handler(event, context)
+        with mock.patch("EditChatById.lambda_function.Session") as mock_session:
+            actual = update.handler(event, context)
             
         expected = {"statusCode": 200, "body": json.dumps(
                 {}
@@ -42,13 +44,16 @@ class TestGetChatById(unittest.TestCase):
         chat_id = -1
         
         event["pathParameters"] = {}
+        event["body"] = json.dumps({
+            "chat_status": 2
+        })
         event["pathParameters"]["chatId"] = chat_id
         
-        with mock.patch("GetChatById.lambda_function.Session") as mock_session:
+        with mock.patch("EditChatById.lambda_function.Session") as mock_session:
             mock_query = mock_session.return_value.query
             mock_get = mock_query.return_value.get
             mock_get.return_value = None
-            actual = get.handler(event, context)
+            actual = update.handler(event, context)
 
 
             

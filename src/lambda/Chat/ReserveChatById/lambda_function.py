@@ -47,6 +47,7 @@ def handler(event, context):
             }
     else:
         user_id = ""
+
     # ----------------------- End user validation ------------------------------
     # user is mentee
     
@@ -57,6 +58,7 @@ def handler(event, context):
     chat = session.query(Chat).get(chat_id)
     
     if chat != None:
+
         if validate:
             credit_cost = credit_mapping[chat.chat_type]
             sufficient_credits = credit >= credit_cost
@@ -70,6 +72,7 @@ def handler(event, context):
                     })
                 }
             
+
         if chat.chat_status != ChatStatus.ACTIVE:
             # cannot reserve this chat, it is not active
             session.close()
@@ -81,6 +84,7 @@ def handler(event, context):
             }
 
         # ----------------------- all ok to go ahead and reserve ---------------------------
+
         if validate:
             response = client.update_user_attributes(
                 UserAttributes=[
@@ -91,7 +95,7 @@ def handler(event, context):
                 ],
                 AccessToken=access_token
             )
-            
+
         # credits updated
         if chat.aspiring_professionals == None:
             chat.aspiring_professionals = MutableList.coerce(chat.aspiring_professionals, [user_id])

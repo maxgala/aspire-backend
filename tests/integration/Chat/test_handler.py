@@ -19,6 +19,11 @@ context = ""
 
 class TestChat:
     def test_00_integration_one_on_one_no_date(self):
+        result = get_all.handler({}, context)
+        
+        result_body = json.loads(result["body"])
+        count = int(result_body["count"])
+        
         # create a one-on-one with no date
         event = {}
         event["body"] = json.dumps({
@@ -109,6 +114,14 @@ class TestChat:
         assert result_body["senior_executive"] == "larry@gmail.com"
         assert result_body["aspiring_professionals"] == "[]"
 
+        # get all chats
+
+        result = get_all.handler({}, context)
+        assert result["statusCode"] == 200
+        
+        result_body = json.loads(result["body"])
+        assert result_body["count"] == (count + 1)
+        
         # delete the chat
         event = {}
         event["pathParameters"] = {}

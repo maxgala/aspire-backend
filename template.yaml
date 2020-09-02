@@ -217,7 +217,77 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
   # --- Chats Service ---   
+  # --- SE Connect Service ---
+  CreateConnect:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/CreateConnect
+      Handler: lambda_function.handler
+      Events:
+        CreateConnectEvent:
+          Type: Api
+          Properties:
+            Path: /connect
+            Method: post
+      Layers:
+        - Ref: DatabaseLayer
+ 
+  GetConnectById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/GetConnectById
+      Handler: lambda_function.handler
+      Events:
+        GetConnectEvent:
+          Type: Api
+          Properties:
+            Path: /connect/{connectId}
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
+  EditConnectById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/EditConnectById
+      Handler: lambda_function.handler
+      Events:
+        EditConnectEvent:
+          Type: Api
+          Properties:
+            Path: /connect/{connectId}
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer   
+
+  DeleteConnectById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/DeleteConnectById
+      Handler: lambda_function.handler
+      Events:
+        DeleteConnectEvent:
+          Type: Api
+          Properties:
+            Path: /connect/{connectId}
+            Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+
+  GetAllConnects:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/GetAllConnects
+      Handler: lambda_function.handler
+      Events:
+        GetAllConnectsEvent:
+          Type: Api
+          Properties:
+            Path: /connects
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
+  # --- End SE Connect Service ---
   # --- Jobs Service ---
   CreateJob:
     Type: AWS::Serverless::Function
