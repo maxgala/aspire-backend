@@ -11,8 +11,9 @@ from DeleteJobApplicationById import lambda_function as delete
 from GetAllJobApplications import lambda_function as get_all
 from GetJobApplicationById import lambda_function as get
 from EditJobApplicationById import lambda_function as update
-context = ""
 
+context = ""
+ids_created = []
 
 ########################################################################
 #                          CREATE TEST CASES                           #
@@ -37,17 +38,8 @@ def test_create_201(apigw_create_event):
     event["body"] = json.dumps(request)
     ret = create.handler(event, context)
     assert ret["statusCode"] == 201
-    
-
-    request = apigw_create_event("test2@email.com")
-    event["body"] = json.dumps(request)
-    ret = create.handler(event, context)
-    assert ret["statusCode"] == 201
-
-    request = apigw_create_event("test3@email.com")
-    event["body"] = json.dumps(request)
-    ret = create.handler(event, context)
-    assert ret["statusCode"] == 201
+    ret_body = json.loads(ret["body"])
+    ids_created.append(ret_body["job_application_id"])
 
 # ########################################################################
 # #                          GET ALL TEST CASES                          #
@@ -107,31 +99,6 @@ def test_getId_404(apigw_getId_event):
     data = json.loads(ret["body"])
     assert ret["statusCode"] == 404
 
-
-########################################################################
-#                       DELETE BY ID TEST CASES                        #
-########################################################################
-@pytest.fixture()
-def apigw_deleteId_event():
-    """ Generates API GW Event"""
-    def _gen(jobAppId):
-        return {
-            "body": '{}',
-            "pathParameters": {"jobAppId": "%s" % (jobAppId)}
-        }
-
-    return _gen
-
-def test_deleteId_200(apigw_deleteId_event):
-    ret = delete.handler(apigw_deleteId_event("108"), context)
-    data = json.loads(ret["body"])
-    assert ret["statusCode"] == 200
-
-def test_deleteId_404(apigw_deleteId_event):
-    ret = delete.handler(apigw_deleteId_event("-1"), context)
-    data = json.loads(ret["body"])
-    assert ret["statusCode"] == 404
-
 ########################################################################
 #                       UPDATE BY ID TEST CASES                        #
 ########################################################################
@@ -148,7 +115,7 @@ def apigw_updateId_event():
     return _gen
 
 def test_updateId_200(apigw_updateId_event,apigw_create_event):
-    ret = update.handler(apigw_updateId_event("99"), context)
+    ret = update.handler(apigw_updateId_event(ids_created[0]), context)
     data = json.loads(ret["body"])
     assert ret["statusCode"] == 200
 
@@ -156,3 +123,29 @@ def test_updateId_404(apigw_updateId_event):
     ret = update.handler(apigw_updateId_event("-1"), context)
     data = json.loads(ret["body"])
     assert ret["statusCode"] == 404
+
+
+########################################################################
+#                       DELETE BY ID TEST CASES                        #
+########################################################################
+@pytest.fixture()
+def apigw_deleteId_event():
+    """ Generates API GW Event"""
+    def _gen(jobAppId):
+        return {
+            "body": '{}',
+            "pathParameters": {"jobAppId": "%s" % (jobAppId)}
+        }
+
+    return _gen
+
+def test_deleteId_200(apigw_deleteId_event):
+    ret = delete.handler(apigw_deleteId_event(ids_created[0]), context)
+    data = json.loads(ret["body"])
+    assert ret["statusCode"] == 200
+
+def test_deleteId_404(apigw_deleteId_event):
+    ret = delete.handler(apigw_deleteId_event("-1"), context)
+    data = json.loads(ret["body"])
+    assert ret["statusCode"] == 404
+
