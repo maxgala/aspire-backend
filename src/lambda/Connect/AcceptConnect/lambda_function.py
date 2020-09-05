@@ -13,18 +13,16 @@ def handler(event, context):
     acceptor = "saiima.ali@mail.utoronto.ca"
     requestor = "saiima.ali@mail.utoronto.ca"
 
-    email_subject = "Your Senior Executive connection request was accepted."
-    email_body = "{} has accepted your connection request! You can connect them at {}".format(name, acceptor)
+    email_subject = "Your Senior Executive connection request was accepted"
+    email_body = "{} has accepted your connection request! You can contact them at {}".format(name, acceptor)
     
 
     if connect != None:
-
         try:
-            
             result = client.send_raw_email(
-                Source=acceptor,
-                Destinations=[recipient.email for recipient in recipients],
-                RawMessage={'Data': msg.as_string()}
+                Source=acceptor, # need SES verified email, using mine for now...
+                Destinations=requestor,
+                RawMessage={'Data': email_body}
 
             )
         except ClientError as e:

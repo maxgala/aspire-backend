@@ -287,6 +287,19 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
+  AcceptConnect:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/AcceptConnect
+      Handler: lambda_function.handler
+      Events:
+        AcceptConnectEvent:
+          Type: Api
+          Properties:
+            Path: /connect/{connectId}/accept
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer
   # --- End SE Connect Service ---
   # --- Jobs Service ---
   CreateJob:
