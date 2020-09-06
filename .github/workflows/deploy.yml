@@ -19,6 +19,15 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: Set up .env file
+        run: |
+          touch .env
+          echo "RDS_HOST=$PROD_DB_HOST" >> .env
+          echo "RDS_PORT=$PROD_DB_PORT" >> .env
+          echo "RDS_USERNAME=$PROD_DB_USERNAME" >> .env
+          echo "RDS_PASSWORD=$PROD_DB_PWD" >> .env
+          echo "RDS_DB_NAME=$PROD_DB_NAME" >> .env
+          cat .env
       - run: cd ./src/layers/database && sudo bash database_layer_packages.sh && sudo chown -R runner dependencies && sudo chgrp -R docker dependencies && ls -lt
       - uses: poketapp/gh-action-aws-sam@v2
         env:
