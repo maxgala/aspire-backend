@@ -216,7 +216,25 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer
-  # --- Chats Service ---   
+  # --- Chats Service ---
+
+  # --- Scheduler Service ---
+  DataLoader:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: scheduler
+      Handler: data_loader.handler
+      Description: Lambda function to get data from csv file
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /scheduler_loader
+            Method: post
+      Layers:
+        - Ref: DatabaseLayer
+  ##################         
 
   # --- Jobs Service ---
   CreateJob:
