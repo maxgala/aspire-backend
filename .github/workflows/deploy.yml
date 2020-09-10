@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup
         run: |
+          cd ./src/layers/database
           touch .env
           echo "RDS_HOST=$PROD_DB_HOST" >> .env
           echo "RDS_PORT=$PROD_DB_PORT" >> .env
@@ -28,7 +29,6 @@ jobs:
           echo "RDS_PASSWORD=$PROD_DB_PWD" >> .env
           echo "RDS_DB_NAME=$PROD_DB_NAME" >> .env
           cat .env
-          cd ./src/layers/database
           sudo bash database_layer_packages.sh
           sudo chown -R runner dependencies
           sudo chgrp -R docker dependencies
