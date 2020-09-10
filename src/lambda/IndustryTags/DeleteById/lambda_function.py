@@ -2,7 +2,7 @@ import json
 import logging
 
 from industry_tag import IndustryTag
-from base import Session, engine, Base
+from base import Session
 # from role_validation import UserGroups, assume_role, get_group, validate_group
 
 logger = logging.getLogger()

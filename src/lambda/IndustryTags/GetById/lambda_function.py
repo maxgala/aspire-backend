@@ -2,7 +2,7 @@ import json
 import logging
 
 from industry_tag import IndustryTag
-from base import Session, engine, Base, row2dict
+from base import Session, row2dict
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

@@ -1,17 +1,14 @@
 import json
 import logging
-import enum
-from datetime import datetime
 
 from industry_tag import IndustryTag
-from base import Session, engine, Base, row2dict
+from base import Session, row2dict
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    body = event["body"]
     search = event["queryStringParameters"].get("search", "") if event["queryStringParameters"] else ""
     fuzzy = event["queryStringParameters"].get("fuzzy", "") if event["queryStringParameters"] else ""
 

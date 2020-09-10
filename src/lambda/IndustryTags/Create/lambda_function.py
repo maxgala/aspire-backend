@@ -1,10 +1,8 @@
-import sys
 import json
 import logging
-import uuid
 
 from industry_tag import IndustryTag
-from base import Session, engine, Base
+from base import Session
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
