@@ -19,7 +19,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Set up .env file
+      - name: Setup
         run: |
           touch .env
           echo "RDS_HOST=$PROD_DB_HOST" >> .env
@@ -28,13 +28,16 @@ jobs:
           echo "RDS_PASSWORD=$PROD_DB_PWD" >> .env
           echo "RDS_DB_NAME=$PROD_DB_NAME" >> .env
           cat .env
+          cd ./src/layers/database
+          sudo bash database_layer_packages.sh
+          sudo chown -R runner dependencies
+          sudo chgrp -R docker dependencies
         env:
           PROD_DB_HOST: ${{secrets.PROD_DB_HOST}}
           PROD_DB_PORT: ${{secrets.PROD_DB_PORT}}
           PROD_DB_USERNAME: ${{secrets.PROD_DB_USERNAME}}
           PROD_DB_PWD: ${{secrets.PROD_DB_PWD}}
           PROD_DB_NAME: ${{secrets.PROD_DB_NAME}}
-      - run: cd ./src/layers/database && sudo bash database_layer_packages.sh && sudo chown -R runner dependencies && sudo chgrp -R docker dependencies && ls -lt
       - uses: poketapp/gh-action-aws-sam@v2
         env:
           TEMPLATE: 'template.yaml'
