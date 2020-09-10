@@ -10,3 +10,4 @@ New-Item -ItemType Directory -Name $PKG_DIR
 python -m pip install -r requirements.txt --no-deps -t $PKG_DIR
 New-Item -ItemType File -Name "__init__.py" -Path $PKG_DIR
 Copy-Item -Recurse -Path '..\..\models\*' -Destination $PKG_DIR
+Copy-Item -Recurse -Path '..\..\models\.env' -Destination $PKG_DIR
