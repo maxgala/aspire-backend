@@ -23,12 +23,9 @@ Parameters:
   dbName:
     Type: String
     Default: 'main_db'
-  # cognitoUserPool:
-  #   Type: String
-  #   Default: 'AspireUserPool'
-  # cognitoUserPoolArn:
-  #   Type: String
-  #   Default: ''
+  cognitoUserPoolArn:
+    Type: String
+    Default: 'arn:aws:cognito-idp:us-east-1:143848191537:userpool/us-east-1_T02rYkaXy'
 
 Globals:
   Function:
@@ -68,24 +65,24 @@ Resources:
       CompatibleRuntimes:
         - python3.6
 
-  # AuthLayer:
-  #   Type: AWS::Serverless::LayerVersion
-  #   Properties:
-  #     LayerName: max-aspire-auth
-  #     ContentUri: src/layers/auth/dependencies/
-  #     CompatibleRuntimes:
-  #       - python3.6
+  AuthLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-auth
+      ContentUri: src/layers/auth/dependencies/
+      CompatibleRuntimes:
+        - python3.6
 
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-      # Auth:
-      #   DefaultAuthorizer: !Ref cognitoUserPool
-      #   AddDefaultAuthorizerToCorsPreflight: False
-      #   Authorizers:
-      #     AspireUserPoolTestAuthorizer:
-      #       UserPoolArn: !Ref cognitoUserPoolArn
+      Auth:
+        DefaultAuthorizer: AspireUserPoolAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: False
+        Authorizers:
+          AspireUserPoolAuthorizer:
+            UserPoolArn: !Ref cognitoUserPoolArn
 
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
@@ -489,6 +486,7 @@ Resources:
               Method: post
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   IndustryTagsGetAll:
     Type: AWS::Serverless::Function
@@ -504,6 +502,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   IndustryTagsGetById:
     Type: AWS::Serverless::Function
@@ -519,6 +518,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   IndustryTagsDeleteById:
     Type: AWS::Serverless::Function
@@ -534,7 +534,7 @@ Resources:
               Method: delete
       Layers:
         - Ref: DatabaseLayer
-        # - Ref: AuthLayer
+        - Ref: AuthLayer
   # --- Industry Tags Service ---
 
   # --- Payments Service ---

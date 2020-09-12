@@ -3,22 +3,23 @@ import logging
 
 from industry_tag import IndustryTag
 from base import Session
-# from role_validation import UserGroups, assume_role, get_group, validate_group
+from role_validation import UserGroups, validate_group
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # # check authorization
-    # err, group_response = validate_group(event['requestContext']['authorizer']['claims'], [UserGroups.ADMIN])
-    # if err:
-    #     return {
-    #         "statusCode": 401,
-    #         "body": json.dumps({
-    #             "errorMessage": group_response
-    #         })
-    #     }
+    # check authorization
+    authorized_groups = [UserGroups.ADMIN]
+    err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
+    if err:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": group_response
+            })
+        }
 
     industryTagId = event["pathParameters"].get("industryTagId") if event["pathParameters"] else None
     if not industryTagId:

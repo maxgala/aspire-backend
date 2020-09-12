@@ -1,24 +1,10 @@
 import enum
-import boto3
 
 class UserGroups(enum.Enum):
     ADMIN = 1
     MENTOR = 2
     FREE = 3
     PAID = 4
-
-client = boto3.client('sts')
-
-
-def assume_role(eventAuthorizerClaims, roleSessionName):
-    role = eventAuthorizerClaims.get('cognito:roles', '')
-    if not role:
-        return True, "role not specified"
-    elif len(role.split(',')) > 1:
-        return True, "multiple roles specified"
-
-    response = client.assume_role(RoleArn=role, RoleSessionName=roleSessionName)
-    return False, response
 
 def validate_group(eventAuthorizerClaims, allowedGroups):
     err, group_name = get_group(eventAuthorizerClaims)
@@ -37,8 +23,8 @@ def validate_group(eventAuthorizerClaims, allowedGroups):
 def get_group(eventAuthorizerClaims):
     group = eventAuthorizerClaims.get('cognito:groups', '')
     if not group:
-        return True, "user group not specified"
+        return True, "user doesn't belong to a group"
     elif len(group.split(',')) > 1:
-        return True, "multiple user groups specified"
+        return True, "user belongs to multiple groups"
 
     return False, group
