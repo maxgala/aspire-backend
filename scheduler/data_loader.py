@@ -6,7 +6,7 @@ import json
 from scheduler import *
 
 from base import Session, MutableList
-from sqlalchemy.types import BigInteger
+from sqlalchemy.types import BigInteger, Boolean
 FILEPATH = './sample/data.csv'
 def renameColumns(data):
     return data.rename(columns={
@@ -36,20 +36,20 @@ def loadData(session):
                     'id': row['senior_executive'] + str(chat_index),
                     'email': row['senior_executive'],
                     'type': row['chat_type'],
-                    'end_date': (datetime.strptime(date, '%Y/%m/%d') - datetime(2020, 1, 1)).days,
-                    'booked': False,
+                    'end_date': (datetime.strptime(date, '%Y/%m/%d') - datetime(2020, 1, 1)).days, 
+                    'fixed_date': True,
                 })
                 chat_index += 1
             # assign dates spaced out 365/num_dates_autoassign
-            date_idx = 0
+            date_idx = 1 # Assuming launching on start of 2021
             space_interval = 365 // num_dates_autoassign
-            while date_idx < num_dates_autoassign:
+            while date_idx < num_dates_autoassign + 1:
                 new_data.append({
                     'id': row['senior_executive'] + str(chat_index),
                     'email': row['senior_executive'],
                     'type': row['chat_type'],
                     'end_date': date_idx * space_interval,
-                    'booked': False,
+                    'fixed_date': False,
                 })
                 chat_index += 1
                 date_idx += 1
@@ -57,7 +57,7 @@ def loadData(session):
     for x in new_data:
         if x['type'] == '1on1':
             x['type'] = 'ONE_ON_ONE'
-        row = Scheduler(chat_type = ChatType[x['type']],email = x['email'],end_date = x['end_date'], chat_status = ChatStatus.ACTIVE)
+        row = Scheduler(chat_type = ChatType[x['type']],email = x['email'],end_date = x['end_date'], chat_status = ChatStatus.PENDING, fixed_date = x['fixed_date'])
         session.add(row)
     print(new_data)
 

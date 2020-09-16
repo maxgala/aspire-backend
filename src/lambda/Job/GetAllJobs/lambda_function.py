@@ -20,10 +20,12 @@ def handler(event, context):
     page = None
     user_id = None
     status = None
+    tag = None
     page_size = 3
     if event["queryStringParameters"]:
         page = event["queryStringParameters"].get('page') #returns None if 'page' not in dict
         user_id = event["queryStringParameters"].get('user_id')
+        tag = event["queryStringParameters"].get('tag')
         status = event["queryStringParameters"].get('status')
         page_size = int(event["queryStringParameters"].get('page_size',3))
 
@@ -42,7 +44,9 @@ def handler(event, context):
             job_apps_id.append(app.job_application_id)
         jobdict = row2dict(job)
         jobdict['job_applications'] = job_apps_id
-        joblist.append(jobdict)
+        ###Filtering for tags here
+        if tag == None or tag.upper() in jobdict['job_tags']:
+            joblist.append(jobdict)
         
 
     # # commit and close session

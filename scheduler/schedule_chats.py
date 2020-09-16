@@ -8,6 +8,10 @@ No integration with BE yet.
 # from data_loader import loadData
 import datetime
 import random
+import json
+
+from scheduler import Scheduler
+from base import Session, MutableList,row2dict
 
 CHATS_TO_CHOOSE = 15
 
@@ -17,12 +21,12 @@ def sortByExpiryDate(data):
 
 
 def removeExpiredChats(data, current_day):
-    return list(filter(lambda row: row['end_date'] > current_day, data))
-
+    return list(filter(lambda row: row['end_date'] > current_day and row['chat_status'] != 'RESERVED', data)) #add the status check
 
 def schedule(data):
-    current_day = (datetime.datetime.today() -
+    current_day = (datetime.datetime(2020,1,25) -
                    datetime.datetime(2020, 1, 1)).days
+    print(current_day)
     data = sortByExpiryDate(data)
     data = removeExpiredChats(data, current_day)
 
@@ -31,23 +35,44 @@ def schedule(data):
     remaining_chats = []
     # choose chats occuring in the new 21 days
     for row in data:
-        if row['end_date'] - current_day <= 0:
+        if row['end_date'] - current_day <= 21:
             selected_chats.append(row)
-        else:
+        elif row['fixed_date'] != True:
             remaining_chats.append(row)
-
+    print(len(selected_chats))
+    print(len(remaining_chats))
     # randomly sample from the remaining array and add
     # to selected chats
     # note: dummy logic - can be "smarter" in the future
     remaining = CHATS_TO_CHOOSE - len(selected_chats)
-
-    while remaining > 0 and len(remaining_chats) > 0:
-        r = random.randint(0, len(remaining_chats) - 1)
-        chosen = remaining_chats.pop(r)
+    upcoming_chats = remaining_chats[:50]
+    while remaining > 0 and len(upcoming_chats) > 0:
+        r = random.randint(0, len(upcoming_chats) - 1)
+        chosen = upcoming_chats.pop(r)
         selected_chats.append(chosen)
+        remaining -= 1
 
     return selected_chats
 
 # example input
 # a full read from the database serialized as json will suffice
 # print(schedule(loadData()))
+def handler(event, context):
+
+    # FOR REFERENCE
+    # # create a new session
+    session = Session()
+    chats = session.query(Scheduler).all()
+    chatslist = []
+    for chat in chats:
+        chatdict = row2dict(chat)
+        chatslist.append(chatdict)
+    scheduled_chats = schedule(chatslist)
+    session.close()
+    return {
+        "statusCode": 200,
+        "body": json.dumps({
+            "chats": scheduled_chats,
+            "count": len(scheduled_chats)
+        })
+    }

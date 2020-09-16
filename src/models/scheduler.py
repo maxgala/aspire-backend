@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 from sqlalchemy.schema import Column
-from sqlalchemy.types import String, Integer, BigInteger, Enum, DateTime
+from sqlalchemy.types import String, Integer, BigInteger, Enum, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from base import Base, MutableList
@@ -33,6 +33,6 @@ class Scheduler(Base):
     end_date = Column(BigInteger())
     
     chat_status = Column(Enum(ChatStatus), nullable=False)
-    
+    fixed_date = Column(Boolean(), nullable = False)
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
