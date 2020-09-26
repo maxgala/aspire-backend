@@ -3,7 +3,7 @@
 import csv
 import datetime
 import json
-from scheduler import *
+from chat import *
 
 from base import Session, MutableList
 from sqlalchemy.types import BigInteger, Boolean
@@ -34,10 +34,13 @@ def loadData(session):
             for date in fixed_dates:
                 new_data.append({
                     'id': row['senior_executive'] + str(chat_index),
-                    'email': row['senior_executive'],
+                    'senior_executive': row['senior_executive'],
                     'type': row['chat_type'],
+                    'description': row['description'],
+                    'tags' : row['tags'].split(","),
+                    #'credits' : row['credits'], ### Hard coded it rn, has to be changed depending on the chat_type
                     'end_date': (datetime.strptime(date, '%Y/%m/%d') - datetime(2020, 1, 1)).days, 
-                    'fixed_date': True,
+                    'date': datetime.strptime(date, '%Y/%m/%d') ## For fixed date, date and end_date are same
                 })
                 chat_index += 1
             # assign dates spaced out 365/num_dates_autoassign
@@ -46,10 +49,12 @@ def loadData(session):
             while date_idx < num_dates_autoassign + 1:
                 new_data.append({
                     'id': row['senior_executive'] + str(chat_index),
-                    'email': row['senior_executive'],
+                    'senior_executive': row['senior_executive'],
                     'type': row['chat_type'],
                     'end_date': date_idx * space_interval,
-                    'fixed_date': False,
+                    'tags' : row['tags'].split(","),
+                    'description': row['description'],
+                    #'credits' : row['credits'], ### Hard coded it rn, has to be changed depending on the chat_type
                 })
                 chat_index += 1
                 date_idx += 1
@@ -57,16 +62,24 @@ def loadData(session):
     for x in new_data:
         if x['type'] == '1on1':
             x['type'] = 'ONE_ON_ONE'
-        row = Scheduler(chat_type = ChatType[x['type']],email = x['email'],end_date = x['end_date'], chat_status = ChatStatus.PENDING, fixed_date = x['fixed_date'])
+            x['credits'] = 5
+        if 'date' in x:
+            row = Chat(chat_type = ChatType[x['type']],senior_executive = x['senior_executive'],\
+                 end_date = x['end_date'], chat_status = ChatStatus.PENDING, date = x['date'], \
+                     credits = x['credits'], description = x['description'], tags = x['tags'])
+        else:
+            row = Chat(chat_type = ChatType[x['type']],senior_executive = x['senior_executive'],\
+                 end_date = x['end_date'], chat_status = ChatStatus.PENDING, credits = x['credits'],\
+                     description = x['description'], tags = x['tags'])            
         session.add(row)
-    print(new_data)
+    #print(new_data)
 
 def handler(event, context):
 
     # FOR REFERENCE
     # # create a new session
     session = Session()
-    session.execute('''TRUNCATE TABLE scheduler''')
+    #session.execute('''TRUNCATE TABLE scheduler''')
     loadData(session)
     session.commit()
     session.close()

@@ -6,11 +6,10 @@ No integration with BE yet.
 '''
 
 # from data_loader import loadData
-import datetime
 import random
 import json
-
-from scheduler import Scheduler
+import datetime
+from chat import Chat
 from base import Session, MutableList,row2dict
 
 CHATS_TO_CHOOSE = 15
@@ -26,7 +25,7 @@ def removeExpiredChats(data, current_day):
 def schedule(data):
     current_day = (datetime.datetime(2020,1,25) -
                    datetime.datetime(2020, 1, 1)).days
-    print(current_day)
+    #print(current_day)
     data = sortByExpiryDate(data)
     data = removeExpiredChats(data, current_day)
 
@@ -37,10 +36,10 @@ def schedule(data):
     for row in data:
         if row['end_date'] - current_day <= 21:
             selected_chats.append(row)
-        elif row['fixed_date'] != True:
+        elif row['date'] == None: # to select the chats which didnt have a fixed date (i.e. date field was Null)
             remaining_chats.append(row)
-    print(len(selected_chats))
-    print(len(remaining_chats))
+    #print(len(selected_chats))
+    #print(len(remaining_chats))
     # randomly sample from the remaining array and add
     # to selected chats
     # note: dummy logic - can be "smarter" in the future
@@ -62,7 +61,7 @@ def handler(event, context):
     # FOR REFERENCE
     # # create a new session
     session = Session()
-    chats = session.query(Scheduler).all()
+    chats = session.query(Chat).all()
     chatslist = []
     for chat in chats:
         chatdict = row2dict(chat)

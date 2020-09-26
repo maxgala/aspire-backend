@@ -33,7 +33,8 @@ class Chat(Base):
     
     credits = Column(Integer(), nullable=False)
     
-    date = Column(BigInteger())
+    date = Column(DateTime())
+    end_date = Column(BigInteger())
     
     chat_status = Column(Enum(ChatStatus), nullable=False)
     aspiring_professionals = Column(MutableList.as_mutable(ARRAY(String(100))))
