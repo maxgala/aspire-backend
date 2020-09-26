@@ -23,12 +23,9 @@ Parameters:
   dbName:
     Type: String
     Default: 'main_db'
-  # cognitoUserPool:
-  #   Type: String
-  #   Default: 'AspireUserPool'
-  # cognitoUserPoolArn:
-  #   Type: String
-  #   Default: ''
+  cognitoUserPoolArn:
+    Type: String
+    Default: 'arn:aws:cognito-idp:us-east-1:143848191537:userpool/us-east-1_T02rYkaXy'
 
 Globals:
   Function:
@@ -68,24 +65,24 @@ Resources:
       CompatibleRuntimes:
         - python3.6
 
-  # AuthLayer:
-  #   Type: AWS::Serverless::LayerVersion
-  #   Properties:
-  #     LayerName: max-aspire-auth
-  #     ContentUri: src/layers/auth/dependencies/
-  #     CompatibleRuntimes:
-  #       - python3.6
+  AuthLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-auth
+      ContentUri: src/layers/auth/dependencies/
+      CompatibleRuntimes:
+        - python3.6
 
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-      # Auth:
-      #   DefaultAuthorizer: !Ref cognitoUserPool
-      #   AddDefaultAuthorizerToCorsPreflight: False
-      #   Authorizers:
-      #     AspireUserPoolTestAuthorizer:
-      #       UserPoolArn: !Ref cognitoUserPoolArn
+      Auth:
+        DefaultAuthorizer: AspireUserPoolAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: False
+        Authorizers:
+          AspireUserPoolAuthorizer:
+            UserPoolArn: !Ref cognitoUserPoolArn
 
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
@@ -120,7 +117,7 @@ Resources:
             Method: post
       Layers:
         - Ref: DatabaseLayer
- 
+
   GetChatById:
     Type: AWS::Serverless::Function
     Properties:
@@ -151,7 +148,7 @@ Resources:
             Path: /chat/{chatId}
             Method: put
       Layers:
-        - Ref: DatabaseLayer   
+        - Ref: DatabaseLayer
 
   DeleteChatById:
     Type: AWS::Serverless::Function
@@ -217,8 +214,6 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
   # --- Chats Service ---
-     
-  # --- Chats Service ---   
   # --- SE Connect Service ---
   CreateConnect:
     Type: AWS::Serverless::Function
@@ -233,7 +228,7 @@ Resources:
             Method: post
       Layers:
         - Ref: DatabaseLayer
- 
+
   GetConnectById:
     Type: AWS::Serverless::Function
     Properties:
@@ -260,7 +255,7 @@ Resources:
             Path: /connect/{connectId}
             Method: put
       Layers:
-        - Ref: DatabaseLayer   
+        - Ref: DatabaseLayer
 
   DeleteConnectById:
     Type: AWS::Serverless::Function
@@ -289,7 +284,7 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
-  # --- End SE Connect Service ---
+  # --- SE Connect Service ---
 
  # --- Scheduler Service ---
   DataLoader:
@@ -429,11 +424,10 @@ Resources:
               Path: /job_contact/{jobId}
               Method: get
       Layers:
-        - Ref: DatabaseLayer       
+        - Ref: DatabaseLayer
   # --- Jobs Service ---
 
   # --- Job Applications Service ---
-  
   CreateJobApplication:
     Type: AWS::Serverless::Function
     Properties:
@@ -525,6 +519,7 @@ Resources:
               Method: post
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   IndustryTagsGetAll:
     Type: AWS::Serverless::Function
@@ -540,6 +535,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   IndustryTagsGetById:
     Type: AWS::Serverless::Function
@@ -555,6 +551,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   IndustryTagsDeleteById:
     Type: AWS::Serverless::Function
@@ -570,18 +567,17 @@ Resources:
               Method: delete
       Layers:
         - Ref: DatabaseLayer
-        # - Ref: AuthLayer
+        - Ref: AuthLayer
   # --- Industry Tags Service ---
 
   # --- Payments Service ---
-
   StripePaymentProcessor:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
         CodeUri: src/lambda/payment
         Handler: lambda_function.handler
         Events:
-            Payment:  
+            Payment:
               Type: Api
               Properties:
                 RestApiId: !Ref AspireApi
@@ -589,6 +585,7 @@ Resources:
                 Method: post
         Layers:
           - Ref: DatabaseLayer
+  # --- Payments Service ---
 
 Outputs:
   Region:
@@ -602,4 +599,3 @@ Outputs:
   AspireApiUrl:
     Description: "Aspire API endpoint URL for Prod environment"
     Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
-

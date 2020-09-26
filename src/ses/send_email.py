@@ -1,19 +1,33 @@
 import boto3
 from botocore.exceptions import ClientError
-from icalendar import Calendar, Event
+# import icalendar
+# from icalendar import Calendar, Event
 from datetime import datetime
 
 import uuid
 import pytz
 
 import email
+from email.message import Message
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.base import MIMEBase
 from email import encoders
+COMMASPACE = ', '
 
 LOCAL_TZ = pytz.timezone("US/Eastern")
+
+BODY_HTML = """\
+<html>
+<head></head>
+<body>
+<h1></h1>
+<p>How are you?</p>
+</body>
+</html>
+"""
+CRLF = "\r\n"
 
 class Identity:
     def __init__(self, name, email):
@@ -23,6 +37,7 @@ class Identity:
 def build_cal_event(event_name, event_description, \
                   organizer, attendees,\
                   dtstart, dtend):
+    # cal = icalendar.Calendar()
     str_list = []
     str_list.append('''\
 BEGIN:VCALENDAR
@@ -61,7 +76,7 @@ ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN={0}:
 DESCRIPTION;LANGUAGE=en-US:{0}
 UID:{1}
 SUMMARY;LANGUAGE=en-US:{2}
-'''.format(event_name.lower(), uuid.uuid4(), event_name))
+'''.format(event_description.lower(), uuid.uuid4(), event_name))
     
     dtstart_as_string = dtstart.strftime("%Y%m%dT%H%M%S")
     dtend_as_string = dtend.strftime("%Y%m%dT%H%M%S")
@@ -76,7 +91,7 @@ CLASS:PUBLIC
 PRIORITY:5
 DTSTAMP:{0}
 TRANSP:OPAQUE
-STATUS:UNCONFIRMED
+STATUS:CONFIRMED
 SEQUENCE:0
 LOCATION;LANGUAGE=en-US:
 X-MICROSOFT-CDO-APPT-SEQUENCE:0
@@ -107,34 +122,45 @@ END:VCALENDAR
 def send_email(sender, recipients, subject, body, ics=None):
     aws_region = "us-east-1"
     client = boto3.client('ses',region_name=aws_region)
-    charset = "UTF-8"
+
+    if ics != None:
+        ics_name = "{}.ics".format(subject.replace(" ", "_").upper())
     
-    msg = MIMEMultipart('alternative')
-    
+    msg = MIMEMultipart('mixed')
+
     msg["Subject"] = subject
     msg["From"] = sender.email
     msg["To"] = ', '.join(map(lambda x: x.email, recipients))
-    msg["Content-class"] = "urn:content-classes:calendarmessage"
 
-    part = MIMEText(body)
-    msg.attach(part)
-    
+    msgAlternative = MIMEMultipart('alternative')
+
+    bodycontent= CRLF+body
+    textpart = MIMEText(bodycontent, 'plain')
+    htmlpart = MIMEText(BODY_HTML, 'html')
+    calpart = MIMEText(ics,'calendar;method=REQUEST')
+
+    msgAlternative.attach(textpart)
+    msgAlternative.attach(htmlpart)
+    msgAlternative.attach(calpart)
+
     if ics != None:
         ics_name = "{}.ics".format(subject.replace(" ", "_").upper())
-        part = MIMEBase('text', 'calendar',method='REQUEST',name=ics_name)
-        
-        part.set_payload(ics)
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition', "attachment; filename={}".format(ics_name))
-        part.add_header("Content-class", "urn:content-classes:calendarmessage")
-        msg.attach(part)
+        ical_atch = MIMEBase('text', 'calendar', **{'method' : 'REQUEST', 'name' : ics_name})
+        ical_atch.set_payload(ics)
+        encoders.encode_base64(ical_atch)
+        ical_atch.add_header('Content-Disposition', "attachment; filename={}".format(ics_name))
+        ical_atch.add_header('Content-class', 'urn:content-classes:calendarmessage')
     
+    msg.attach(msgAlternative)
+    msg.attach(ical_atch)
+         
+    # print(msg.as_string())
+
     try:
         result = client.send_raw_email(
             Source=msg['From'],
             Destinations=[recipient.email for recipient in recipients],
             RawMessage={'Data': msg.as_string()}
-
         )
     except ClientError as e:
         print(e.response['Error']['Message'])
@@ -142,20 +168,70 @@ def send_email(sender, recipients, subject, body, ics=None):
         print("Email sent! Message ID:"),
         print(result['MessageId'])
 
+def send_email_Outlook(sender, recipients, subject, body, ics=None):
+    aws_region = "us-east-1"
+    client = boto3.client('ses',region_name=aws_region)
+    charset = "UTF-8"
+
+    msg = MIMEMultipart('alternative')
+    
+    # msg["Subject"] = subject
+    msg["From"] = sender.email
+    msg["To"] = ', '.join(map(lambda x: x.email, recipients))
+    msg["Content-class"] = "urn:content-classes:calendarmessage"
+
+    part_email = MIMEText(BODY_HTML,"html")
+    part_cal = MIMEText(ics,'calendar;method=REQUEST', charset)
+
+    msg.attach(part_email)
+    msg.attach(part_cal)
+
+    # print(msg.as_string())
+    
+    try:
+        result = client.send_raw_email(
+            Source=msg['From'],
+            Destinations=[recipient.email for recipient in recipients],
+            RawMessage={'Data': msg.as_string()}
+        )
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        print("Email sent! Message ID:"),
+        print(result['MessageId'])
+
+
 if __name__ == "__main__":
-    sender = Identity("Saima Ali", "saiima.ali@mail.utoronto.ca")
-    recipients = [sender]
+    outlookrec= []
+    AllOtherrec= []
+    sender = Identity("Abdullah Siddiqui", "siddiquiabdullah92@gmail.com")
+    rec1= Identity("Abdullah", "siddiquiabdullah92@outlook.com")
+    recipients = [rec1]
+    numRecepients= len(recipients)
+    
+    i= 0
+    while i < numRecepients:
+        if "outlook" in recipients[i].email:
+            outlookrec.append(recipients[i])
+        else:
+            AllOtherrec.append(recipients[i])
+        i += 1
+    
     subject = "Hello world"
     body = "lorem ipsum dolor sit amet"
 
-    dtstart = datetime(2020, 8, 26, 21, 30, 0)
-    dtend = datetime(2020, 8, 26, 22, 30, 0)
-    #(event_name, event_description, \
-    #                  organizer, attendees,\
-    #                  dtstart, dtend)
+    dtstart = datetime(2020, 9, 9, 22, 15, 0)
+    dtend = datetime(2020, 9, 9, 22, 30, 0)
+
     ics = build_cal_event("cat_screams", "He is rlly homgry", sender, recipients, dtstart, dtend)
 
     with open("event.ics", 'w') as f:
         f.write(ics)
-        
-    send_email(sender, recipients, subject, body, ics)
+    
+    if len(AllOtherrec) > 0:      
+        send_email(sender, AllOtherrec, subject, body, ics)
+    if len(outlookrec) > 0:
+        send_email_Outlook(sender, outlookrec, subject, body, ics)
+
+
+

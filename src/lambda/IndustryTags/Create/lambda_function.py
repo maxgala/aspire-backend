@@ -1,15 +1,30 @@
-import sys
 import json
 import logging
-import uuid
 
 from industry_tag import IndustryTag
-from base import Session, engine, Base
+from base import Session
+from role_validation import UserGroups, validate_group
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
+    # check authorization
+    authorized_groups = [
+        UserGroups.ADMIN,
+        UserGroups.MENTOR,
+        UserGroups.FREE,
+        UserGroups.PAID
+    ]
+    err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
+    if err:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": group_response
+            })
+        }
+
     body = json.loads(event["body"])
     new_tag = body.get("tag") if body else None
 
