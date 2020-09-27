@@ -62,7 +62,7 @@ def handler(event, context):
 
     
     undated_chats = session.query(Chat).filter(Chat.senior_executive == info["senior_executive"])\
-        .filter(Chat.date == None).filter(Chat.chat_status != "DONE") # filter by status
+        .filter(Chat.date == None).filter(Chat.chat_status != "DONE") # filter by status. To accomadate for next yrs, we can get the intial date of the first chat occurence which is still active/pending. Then add those number of days onto the other chats
     fixed_chats = session.query(Chat).filter(Chat.senior_executive == info["senior_executive"])\
         .filter(Chat.date != None).filter(Chat.chat_status != "DONE")
     

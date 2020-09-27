@@ -52,7 +52,9 @@ def row2dict(row):
         elif isinstance(val, decimal.Decimal):
             val = float(val)
         elif isinstance(val, list):
-            if isinstance(val[0], enum.Enum):
+            if len(val) == 0:
+                val = []
+            elif isinstance(val[0], enum.Enum):
                 val = [v.name for v in val]
         d[key] = val
     return d

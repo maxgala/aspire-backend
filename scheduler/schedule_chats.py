@@ -20,7 +20,7 @@ def sortByExpiryDate(data):
 
 
 def removeExpiredChats(data, current_day):
-    return list(filter(lambda row: row['end_date'] > current_day and row['chat_status'] != 'RESERVED', data)) #add the status check
+    return list(filter(lambda row: row['end_date'] > current_day and row['chat_status'] != 'RESERVED' and row['chat_status'] != 'DONE', data)) #add the status check
 
 def schedule(data):
     current_day = (datetime.datetime(2020,1,25) -
@@ -49,6 +49,7 @@ def schedule(data):
         r = random.randint(0, len(upcoming_chats) - 1)
         chosen = upcoming_chats.pop(r)
         selected_chats.append(chosen)
+        ##### change the status of the chat to active 
         remaining -= 1
 
     return selected_chats
