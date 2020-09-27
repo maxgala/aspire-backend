@@ -1,3 +1,4 @@
+import os
 import boto3
 from botocore.exceptions import ClientError
 # import icalendar
@@ -200,6 +201,58 @@ def send_email_Outlook(sender, recipients, subject, body, ics=None):
         print("Email sent! Message ID:"),
         print(result['MessageId'])
 
+def send_email_Jobs(sender, recipients, subject, body, JobName, JobDate):
+    aws_region = "us-east-1"
+    client = boto3.client('ses',region_name=aws_region)
+    charset = "UTF-8"
+    named_tuple = time.localtime() # get struct_time
+    today = time.strftime("%Y-%m-%d", named_tuple)
+
+    msg = MIMEMultipart('mixed')
+    
+    msg["Subject"] = subject
+    msg["From"] = sender.email
+    msg["To"] = ', '.join(map(lambda x: x.email, recipients))
+
+    bodytext = f"Salaam!\r\n\nWe would like to notify that [Candidate Name] has applied to the job posting {JobName} on {today}. The aforementioned job was posted on MAX Aspire job board on {JobDate}. Kindly login to your account to access the complete profile and application of the candidate. Once the application is reviewed the status can be changed to “Under Review”, “Invite for interview” or “Rejected”.\r\n\n Please note that the candidate is more responsive in the first 2 weeks of applying the job. If the job posting is unavailable for any reason kindly contact the support team ASAP.\r\n\nBest regards,\n[TEAM MAX ASPIRE]\r\n"
+    
+    bodyhtml = """\
+    <html>
+    <head></head>
+    <body>
+    <p>Salaam!</p>
+    <p>We would like to notify that [Candidate Name] has applied to the job posting [POSTING DETAILS] on [Date Applied]
+. The aforementioned job was posted on MAX Aspire job board on [DATE]. Kindly login to your
+        account to access the complete profile and application of the candidate. Once the application is reviewed the the status can be changed to “Under Review”, “Invite for interview” or “Rejected”.
+    <p>Please note that the candidate is more responsive in the first 2 weeks of applying the job. If the job posting is
+unavailable for any reason kindly contact the support team ASAP.</p>
+<p>Best regards,<br>
+[TEAM MAX ASPIRE] </p>
+    </body>
+    </html>
+    """
+
+    msgBody = MIMEMultipart('alternative')
+
+    textpart = MIMEText(bodytext.encode(charset), 'plain', charset)
+    # htmlpart = MIMEText(bodyhtml.encode(charset), 'html', charset)
+
+    msgBody.attach(textpart)
+    # msgBody.attach(htmlpart)
+
+    msg.attach(msgBody)
+    
+    try:
+        result = client.send_raw_email(
+            Source=msg['From'],
+            Destinations=[recipient.email for recipient in recipients],
+            RawMessage={'Data': msg.as_string()}
+        )
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        print("Email sent! Message ID:"),
+        print(result['MessageId'])
 
 if __name__ == "__main__":
     outlookrec= []
