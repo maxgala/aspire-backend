@@ -76,9 +76,6 @@ def handler(event, context):
     # JobDate = time.strftime("%m-%d-%Y", JobDateInt)
     JobDate= datetime.fromtimestamp(JobDateInt).strftime("%Y-%m-%d")
     
-
-    # JobDate= date(year, month, day)
-
     today = date.today().isoformat()
 
     rec1= Identity("Recipient name", "siddiquiabdullah92@outlook.com")
