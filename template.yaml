@@ -214,7 +214,6 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
   # --- Chats Service ---
-
   # --- SE Connect Service ---
   CreateConnect:
     Type: AWS::Serverless::Function
@@ -286,6 +285,40 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
   # --- SE Connect Service ---
+
+ # --- Scheduler Service ---
+  DataLoader:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: scheduler
+      Handler: data_loader.handler
+      Description: Lambda function to get data from csv file
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /scheduler_loader
+            Method: post
+      Layers:
+        - Ref: DatabaseLayer
+  
+  GetSelectedChats:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: scheduler
+      Handler: schedule_chats.handler
+      Description: Lambda function to get chats for a specific day
+      Events:
+        CreateChatEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /scheduler
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
+  ##################    
 
   # --- Jobs Service ---
   CreateJob:
