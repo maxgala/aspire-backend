@@ -101,6 +101,6 @@ def handler(event, context):
         
     
     return {
-        "statusCode": 200,
+        "statusCode": 201,
         "body": json.dumps(chat_dict)
     }
