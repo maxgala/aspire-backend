@@ -1,37 +1,55 @@
 import json
-from connect_se import *
-from base import Session
+import logging
+
+from connect_se import ConnectSE
+from base import Session, row2dict
+# from role_validation import UserGroups, validate_group
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 
 def handler(event, context):
-    connect_id = event["pathParameters"]["connectId"]
+    # # check authorization
+    # authorized_groups = [
+    #     UserGroups.ADMIN,
+    #     UserGroups.MENTOR,
+    #     UserGroups.FREE,
+    #     UserGroups.PAID
+    # ]
+    # err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
+    # if err:
+    #     return {
+    #         "statusCode": 401,
+    #         "body": json.dumps({
+    #             "errorMessage": group_response
+    #         })
+    #     }
+
+    connectId = event["pathParameters"].get("connectId") if event["pathParameters"] else None
+    if not connectId:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({
+                "errorMessage": "missing path parameter(s): 'connectId'"
+            })
+        }
 
     session = Session()
-    connect_se = session.query(ConnectSE).get(connect_id)
+    connect_se = session.query(ConnectSE).get(connectId)
     session.close()
-
-    attribs = []
-    pruned_attribs = ["connect_id"]
-
-    for attrib in dir(ConnectSE):
-        if not (attrib.startswith('_') or attrib.strip() == "metadata"\
-                or attrib in pruned_attribs):
-            attribs.append(attrib)
-    
-    if connect_se != None:
-        # construct JSON-able dictionary
-        json_dict = {}
-        for attrib in attribs:
-            json_dict[attrib] = str(getattr(connect_se, attrib)) 
-            
-        return {"statusCode": 200,
-                "body": json.dumps(json_dict)
-        }
-        
-    
-    else:
+    if not connect_se:
+        session.close()
         return {
             "statusCode": 404,
             "body": json.dumps({
-                "message": "ID {} not found in ConnectSE table".format(connect_id)
+                "errorMessage": "connect senior executive with id '{}' not found".format(connectId)
             })
         }
+
+    return {
+        "statusCode": 200,
+        "body": json.dumps(
+            row2dict(connect_se)
+        )
+    }

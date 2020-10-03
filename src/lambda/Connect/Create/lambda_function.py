@@ -1,76 +1,65 @@
 import json
-from connect_se import *
+import logging
 
+from connect_se import ConnectSE, ConnectStatus
 from base import Session
+from ses_layer import send_email
+# from role_validation import UserGroups, validate_group
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    info = json.loads(event["body"])
-    session = Session()
+    # # check authorization
+    # authorized_groups = [
+    #     UserGroups.ADMIN,
+    #     UserGroups.MENTOR,
+    #     UserGroups.FREE,
+    #     UserGroups.PAID
+    # ]
+    # err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
+    # if err:
+    #     return {
+    #         "statusCode": 401,
+    #         "body": json.dumps({
+    #             "errorMessage": group_response
+    #         })
+    #     }
 
-    connect_se = ConnectSE()
-    attribs = dir(ConnectSE)
-    manual_attribs = ['connect_status']
+    body = json.loads(event["body"])
+    requestor = body.get('requestor')
+    requestee = body.get('requestee')
 
-    for attrib in attribs:
-        if attrib in manual_attribs:
-            if attrib == "connect_status":
-                #default to pending
-                setattr(connect_se, attrib, ConnectStatus.PENDING)
-        elif not (attrib.startswith('_') or attrib.strip() == "metadata"):
-            try:
-                setattr(connect_se, attrib, info[attrib])
-            except: # in case underspecified?
-                continue
-            
-    name = "Saima"
-    recipient = "saiima.ali@mail.utoronto.ca"
-    requestor = "saiima.ali@mail.utoronto.ca"
-
-    email_subject = "You have received a new Senior Executive connection request"
-    email_body = "{} has requested to connect with you. Click here to accept.".format(name)
-    # need to link to api ... force log in session
-                
-    try:
-        result = client.send_raw_email(
-            Source=requestor, # need SES verified email, using mine for now...
-            Destinations=recipient,
-            RawMessage={'Data': email_body}
-
-        )
-    except ClientError as e:
+    if not requestor:
         return {
             "statusCode": 400,
             "body": json.dumps({
-            "message": "Cannot send email to {}".format(requestor)
-        })
-    }
-    else:
+                "errorMessage": "missing body attribute(s): 'requestor'"
+            })
+        }
+    if not requestee:
         return {
-            "statusCode": 200,
+            "statusCode": 400,
             "body": json.dumps({
-            "message": "Accepted Connect, with ID {}".format(connect_id)
-        })
-    }
-    
-    session.add(connect_se)
-    session.commit()
-    session.refresh(connect_se)
-    session.close()
-    
-    attribs = []
-    pruned_attribs = ["connect_id"]
+                "errorMessage": "missing body attribute(s): 'requestee'"
+            })
+        }
 
-    for attrib in dir(ConnectSE):
-        if not (attrib.startswith('_') or attrib.strip() == "metadata"\
-                or attrib in pruned_attribs):
-            attribs.append(attrib)
-            
-    json_dict = {}
-    for attrib in attribs:
-        json_dict[attrib] = str(getattr(connect_se, attrib)) 
+    ConnectSE_new = ConnectSE(requestor=requestor, requestee=requestee, connect_status=ConnectStatus.PENDING)
+
+    # TODO: dynamic user_email
+    # TODO: update email subject/body
+    user_email = "saleh.bakhit@hotmail.com"
+    email_subject = "You have received a new Senior Executive connection request"
+    email_body = "<name> has requested to connect with you"
+    send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
+
+    session = Session()
+    session.add(ConnectSE_new)
+    session.commit()
+    session.close()
 
     return {
-        "statusCode": 200,
-        "body": json.dumps(json_dict)
+        "statusCode": 201
     }

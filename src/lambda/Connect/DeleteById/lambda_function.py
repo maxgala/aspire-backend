@@ -1,30 +1,55 @@
 import json
-from connect_se import *
+import logging
+
+from connect_se import ConnectSE
 from base import Session
+# from role_validation import UserGroups, validate_group
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 
 def handler(event, context):
-    connect_id = event["pathParameters"]["connectId"]
+    # # check authorization
+    # authorized_groups = [
+    #     UserGroups.ADMIN,
+    #     UserGroups.MENTOR,
+    #     UserGroups.FREE,
+    #     UserGroups.PAID
+    # ]
+    # err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
+    # if err:
+    #     return {
+    #         "statusCode": 401,
+    #         "body": json.dumps({
+    #             "errorMessage": group_response
+    #         })
+    #     }
 
-    session = Session()
-    connect = session.query(ConnectSE).get(connect_id)
-
-    if connect != None:
-        session.delete(connect)
-        session.commit()
-        session.close()
-        
+    connectId = event["pathParameters"].get("connectId") if event["pathParameters"] else None
+    if not connectId:
         return {
-            "statusCode": 200,
+            "statusCode": 400,
             "body": json.dumps({
-                "message": "Connect Row with ID {} deleted".format(connect_id)
+                "errorMessage": "missing path parameter(s): 'connectId'"
             })
         }
 
-    else:
+    session = Session()
+    connect_se = session.query(ConnectSE).get(connectId)
+    if not connect_se:
         session.close()
         return {
             "statusCode": 404,
             "body": json.dumps({
-                "message": "ID {} not found in Connect table".format(connect_id)
+                "errorMessage": "connect senior executive with id '{}' not found".format(connectId)
             })
         }
+
+    session.delete(connect_se)
+    session.commit()
+    session.close()
+
+    return {
+        "statusCode": 200
+    }

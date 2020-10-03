@@ -73,6 +73,14 @@ Resources:
       CompatibleRuntimes:
         - python3.6
 
+  SesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-email
+      ContentUri: src/layers/ses_layer/dependencies/
+      CompatibleRuntimes:
+        - python3.6
+
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -230,6 +238,7 @@ Resources:
             Method: post
       Layers:
         - Ref: DatabaseLayer
+        - Ref: SesLayer
 
   ConnectGetAll:
     Type: AWS::Serverless::Function
@@ -275,6 +284,7 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer
+        - Ref: SesLayer
 
   ConnectDeleteById:
     Type: AWS::Serverless::Function
@@ -288,21 +298,6 @@ Resources:
             RestApiId: !Ref AspireApi
             Path: /connect/{connectId}
             Method: delete
-      Layers:
-        - Ref: DatabaseLayer
-
-  ConnectAccept:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/lambda/Connect/Accept
-      Handler: lambda_function.handler
-      Events:
-        ConnectAcceptEvent:
-          Type: Api
-          Properties:
-            RestApiId: !Ref AspireApi
-            Path: /connect/{connectId}/accept
-            Method: put
       Layers:
         - Ref: DatabaseLayer
   # --- SE Connect Service ---
