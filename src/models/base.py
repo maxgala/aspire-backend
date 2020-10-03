@@ -1,6 +1,10 @@
 import enum
 import decimal
+import os
+from dotenv import load_dotenv
 from datetime import datetime
+
+load_dotenv()
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -48,20 +52,20 @@ def row2dict(row):
         elif isinstance(val, decimal.Decimal):
             val = float(val)
         elif isinstance(val, list):
-            if isinstance(val[0], enum.Enum):
+            if len(val) == 0:
+                val = []
+            elif isinstance(val[0], enum.Enum):
                 val = [v.name for v in val]
         d[key] = val
     return d
 
+rdsHost= os.getenv('RDS_HOST')
+rdsPort= os.getenv('RDS_PORT')
+rdsUsername= os.getenv('RDS_USERNAME')
+rdsPassword= os.getenv('RDS_PASSWORD')
+rdsDbName= os.getenv('RDS_DB_NAME') 
 
-#rds settings
-rds_host  = "aspire-db-master.c42zh1ryp8o3.us-east-1.rds.amazonaws.com"
-rds_port = "5432"
-name = "master"
-password = "password"
-db_name = "main_db"
-
-engine = create_engine('postgresql://{}:{}@{}:{}/{}'.format(name, password, rds_host, rds_port, db_name))
+engine = create_engine('postgresql://{}:{}@{}:{}/{}'.format(rdsUsername, rdsPassword, rdsHost, rdsPort, rdsDbName))
 Session = sessionmaker(bind=engine)
 
 Base = declarative_base()

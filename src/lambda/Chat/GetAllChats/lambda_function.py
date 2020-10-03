@@ -2,6 +2,8 @@ import json
 from chat import *
 from base import Session
 from datetime import datetime
+import boto3
+client = boto3.client('cognito-idp')
 
 def handler(event, context):
     session = Session()
@@ -22,7 +24,22 @@ def handler(event, context):
         chat_dict = {}
         for attrib in chat_attribs:
             chat_dict[attrib] = str(getattr(chats[i], attrib))
-            
+        response = client.list_users(
+            UserPoolId='us-east-1_T02rYkaXy',
+            AttributesToGet=[
+                'given_name','family_name','custom:company'
+            ],
+            Filter = 'email="{}"'.format(chats[i].senior_executive)
+        )
+        atts = response['Users'][0]['Attributes']
+        for att in atts:
+            if att['Name'] == 'given_name':
+                chat_dict['given_name'] = att['Value']
+            elif att['Name'] == 'family_name':
+                chat_dict['family_name'] = att['Value']
+            elif att['Name'] == 'custom:company':
+                chat_dict['custom:company'] = att['Value']
+        
         chats_list[i] = chat_dict
 
     chats_dict = {}
