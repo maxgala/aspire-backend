@@ -26,8 +26,20 @@ def handler(event, context):
     #         })
     #     }
 
+    status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
+    requestor_filter = event["queryStringParameters"].get("requestor", "") if event["queryStringParameters"] else ""
+    requestee_filter = event["queryStringParameters"].get("requestee", "") if event["queryStringParameters"] else ""
+
     session = Session()
-    connect_ses = session.query(ConnectSE).all()
+    filtered_query = session.query(ConnectSE)
+    if status_filter:
+        filtered_query = filtered_query.filter(ConnectSE.connect_status == status_filter)
+    if requestor_filter:
+        filtered_query = filtered_query.filter(ConnectSE.requestor == requestor_filter)
+    if requestee_filter:
+        filtered_query = filtered_query.filter(ConnectSE.requestee == requestee_filter)
+
+    connect_ses = filtered_query.all()
     session.close()
 
     return {
