@@ -53,3 +53,4 @@ def handler(event, context):
             row2dict(connect_se)
         )
     }
+

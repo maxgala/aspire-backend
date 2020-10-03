@@ -229,6 +229,14 @@ Resources:
     Properties:
       CodeUri: src/lambda/Connect/Create
       Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
       Events:
         ConnectCreateEvent:
           Type: Api
@@ -275,6 +283,14 @@ Resources:
     Properties:
       CodeUri: src/lambda/Connect/EditById
       Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
       Events:
         ConnectEditByIdEvent:
           Type: Api

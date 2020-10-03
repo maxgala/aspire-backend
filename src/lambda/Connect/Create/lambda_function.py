@@ -3,7 +3,7 @@ import logging
 
 from connect_se import ConnectSE, ConnectStatus
 from base import Session
-from ses_layer import send_email
+from send_email import send_email
 # from role_validation import UserGroups, validate_group
 
 logger = logging.getLogger()
@@ -63,3 +63,4 @@ def handler(event, context):
     return {
         "statusCode": 201
     }
+

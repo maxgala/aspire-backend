@@ -3,7 +3,7 @@ import logging
 
 from connect_se import ConnectSE, ConnectStatus
 from base import Session, row2dict
-from ses_layer import send_email
+from send_email import send_email
 # from role_validation import UserGroups, validate_group
 
 logger = logging.getLogger()
@@ -59,7 +59,7 @@ def handler(event, context):
         }
 
     if connect_status_new:
-        if connect_se['connect_status'] == ConnectStatus.PENDING and connect_status_new == 'ACCEPTED':
+        if connect_se.connect_status == ConnectStatus.PENDING and connect_status_new == 'ACCEPTED':
             # TODO: dynamic user_email
             # TODO: update email subject/body
             user_email = "saleh.bakhit@hotmail.com"
@@ -67,9 +67,10 @@ def handler(event, context):
             email_body = "<name> has accepted your connection request!"
             send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
 
-        connect_se['connect_status'] = ConnectStatus[connect_status_new]
-        session.commit()
+        connect_se.connect_status = ConnectStatus[connect_status_new]
 
+    session.commit()
+    session.refresh(connect_se)
     session.close()
 
     return {
@@ -78,3 +79,4 @@ def handler(event, context):
             row2dict(connect_se)
         )
     }
+

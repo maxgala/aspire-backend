@@ -20,6 +20,7 @@ class ConnectSE(Base):
     requestee = Column(String(100), nullable=False)
 
     connect_status = Column(Enum(ConnectStatus), nullable=False)
-    
+
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
+
