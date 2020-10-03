@@ -26,9 +26,9 @@ def handler(event, context):
         }
 
     body = json.loads(event["body"])
-    new_tag = body.get("tag") if body else None
+    tag = body.get("tag") if body else None
 
-    if not new_tag:
+    if not tag:
         return {
             "statusCode": 400,
             "body": json.dumps({
@@ -36,10 +36,10 @@ def handler(event, context):
             })
         }
 
-    Job_row = IndustryTag(tag=new_tag.lower())
+    IndustryTag_new = IndustryTag(tag=tag.lower())
 
     session = Session()
-    session.add(Job_row)
+    session.add(IndustryTag_new)
     session.commit()
     session.close()
 
