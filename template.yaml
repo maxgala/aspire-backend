@@ -30,7 +30,7 @@ Parameters:
 Globals:
   Function:
     Runtime: python3.6
-    Timeout: 30
+    Timeout: 120
   Api:
     Cors:
       AllowMethods: "'OPTIONS,GET,POST,PUT'"
@@ -121,7 +121,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
-            Path: /chat
+            Path: /chats
             Method: post
       Layers:
         - Ref: DatabaseLayer
@@ -137,7 +137,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
-            Path: /chat/{chatId}
+            Path: /chats/{chatId}
             Method: get
       Layers:
         - Ref: DatabaseLayer
@@ -153,7 +153,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
-            Path: /chat/{chatId}
+            Path: /chats/{chatId}
             Method: put
       Layers:
         - Ref: DatabaseLayer
@@ -169,7 +169,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
-            Path: /chat/{chatId}
+            Path: /chats/{chatId}
             Method: delete
       Layers:
         - Ref: DatabaseLayer
@@ -201,7 +201,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
-            Path: /chat/{chatId}/reserve
+            Path: /chats/{chatId}/reserve
             Method: put
       Layers:
         - Ref: DatabaseLayer
@@ -217,7 +217,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
-            Path: /chat/{chatId}/unreserve
+            Path: /chats/{chatId}/unreserve
             Method: put
       Layers:
         - Ref: DatabaseLayer

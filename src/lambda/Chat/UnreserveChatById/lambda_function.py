@@ -5,54 +5,31 @@ from base import Session
 from sqlalchemy.types import DateTime
 from datetime import datetime
 import boto3
+import jwt
 
 client = boto3.client('cognito-idp')
 
 
 def handler(event, context):
 
-    validate = False
-    if validate:
-        # ----------------- User validation ------------------
-        try:
-            access_token = (event['headers']['Authorization']).replace('Bearer ', '')
-        except:
-            return {
-            "statusCode": 401,
+    access_token = event['headers']['X-Aspire-Access-Token']
+
+    # ----------------- User validation ------------------
+    id_token = (event['headers']['Authorization']).split('Bearer ')[1]
+    user = jwt.decode(id_token, verify=False)
+    user_id = user['email']
+    user_type = user['custom:user_type']
+    credit = int(user['custom:credits'])
+
+    user_type = "Mentee"
+
+    if user_type != "Mentee":
+        return{
+            "statusCode": 409,
             "body": json.dumps({
-                "message": "Authorization header is expected"
-            }),
+            "message": "Invalid user type. Only Aspiring Professionals may reserve chats."
+            })
         }
-        
-        getuserresponse = client.get_user(
-                AccessToken=access_token
-            )
-        
-        user_att = getuserresponse['UserAttributes']
-        user_id = getuserresponse['Username']
-
-        user_type = ''
-        mem_type = ''
-        credit = 0
-        
-        for att in user_att:
-            if att['Name'] == 'custom:user_type':
-                user_type = att['Value']
-            if att['Name'] == 'custom:membership_type':
-                mem_type = att['Value']
-            if att['Name'] == 'custom:credits':
-                credit = int(att['Value'])
-
-        if user_type != "Mentee":
-            return{
-                "statusCode": 409,
-                "body": json.dumps({
-                "message": "Invalid user type. Only Aspiring Professionals may (un)reserve chats."
-                })
-            }
-    else:
-        user_id = ""
-
     # ----------------------- End user validation ------------------------------
     
     chat_id = event["pathParameters"]["chatId"]

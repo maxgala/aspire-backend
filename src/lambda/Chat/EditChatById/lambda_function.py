@@ -16,9 +16,9 @@ def handler(event, context):
         attrs_to_update = info.keys()
         for attr in attrs_to_update:
             if attr == "chat_status":
-                setattr(chat, attr, ChatStatus(int(info[attr])))
+                setattr(chat, attr, ChatStatus(eval(ChatStatus.__name__ + '.' + info[attr])))
             elif attr == "chat_type":
-                setattr(chat, attr, ChatType(int(info[attr])))
+                setattr(chat, attr, ChatType(eval(ChatType.__name__ + '.' + info[attr])))
             else:
                 setattr(chat, attr, info[attr])
             

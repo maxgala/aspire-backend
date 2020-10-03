@@ -3,3 +3,4 @@ SQLAlchemy==1.3.17
 boto3==1.0.0
 python-dotenv==0.14.0
 pytz
+pyjwt

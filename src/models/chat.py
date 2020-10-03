@@ -9,7 +9,7 @@ from base import Base, MutableList
 
 class ChatType(enum.Enum):
     ONE_ON_ONE = 1
-    ONE_ON_FOUR = 2
+    FOUR_ON_ONE = 2
     MOCK_INTERVIEW = 3
     
 class ChatStatus(enum.Enum):
@@ -19,10 +19,10 @@ class ChatStatus(enum.Enum):
     DONE = 4 # ????
     CANCELED = 5 # only through the editchat
 
-credit_mapping = {ChatType.ONE_ON_ONE: 5, ChatType.ONE_ON_FOUR: 3, \
+credit_mapping = {ChatType.ONE_ON_ONE: 5, ChatType.FOUR_ON_ONE: 3, \
                   ChatType.MOCK_INTERVIEW: 5}
 
-mandatory_date = [ChatType.ONE_ON_FOUR, ChatType.MOCK_INTERVIEW]
+mandatory_date = [ChatType.FOUR_ON_ONE, ChatType.MOCK_INTERVIEW]
 
 class Chat(Base):
     __tablename__ = 'chats'

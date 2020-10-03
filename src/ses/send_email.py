@@ -186,8 +186,6 @@ def send_email_Outlook(sender, recipients, subject, body, ics=None):
 
     msg.attach(part_email)
     msg.attach(part_cal)
-
-    # print(msg.as_string())
     
     try:
         result = client.send_raw_email(
@@ -200,6 +198,7 @@ def send_email_Outlook(sender, recipients, subject, body, ics=None):
     else:
         print("Email sent! Message ID:"),
         print(result['MessageId'])
+
 
 def send_email_Jobs(sender, recipients, subject, body, JobName, JobDate):
     aws_region = "us-east-1"
@@ -278,13 +277,10 @@ if __name__ == "__main__":
 
     ics = build_cal_event("cat_screams", "He is rlly homgry", sender, recipients, dtstart, dtend)
 
-    with open("event.ics", 'w') as f:
+    with open("/tmp/event.ics", 'w') as f:
         f.write(ics)
     
     if len(AllOtherrec) > 0:      
         send_email(sender, AllOtherrec, subject, body, ics)
     if len(outlookrec) > 0:
         send_email_Outlook(sender, outlookrec, subject, body, ics)
-
-
-
