@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-from sqlalchemy.schema import Column
+from sqlalchemy.schema import Column, UniqueConstraint
 from sqlalchemy.types import String, Integer, Enum, DateTime
 
 from base import Base
@@ -15,6 +15,8 @@ class ConnectStatus(enum.Enum):
 
 class ConnectSE(Base):
     __tablename__ = 'senior-exec-connect'
+    __table_args__ = (UniqueConstraint('requestor', 'requestee', name='_requestor_requestee_uc'),)
+
     connect_id = Column(Integer(), primary_key=True)
     requestor = Column(String(100), nullable=False)
     requestee = Column(String(100), nullable=False)
@@ -23,4 +25,3 @@ class ConnectSE(Base):
 
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
-

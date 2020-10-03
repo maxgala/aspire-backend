@@ -37,4 +37,3 @@ def handler(event, context):
             "count": len(connect_ses)
         })
     }
-
