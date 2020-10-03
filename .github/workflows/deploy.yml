@@ -36,6 +36,10 @@ jobs:
           sudo bash auth_layer_packages.sh
           sudo chown -R runner dependencies
           sudo chgrp -R docker dependencies
+          cd ../ses_layer
+          sudo bash ses_layer_packages.sh
+          sudo chown -R runner dependencies
+          sudo chgrp -R docker dependencies
         env:
           PROD_DB_HOST: ${{secrets.PROD_DB_HOST}}
           PROD_DB_PORT: ${{secrets.PROD_DB_PORT}}
