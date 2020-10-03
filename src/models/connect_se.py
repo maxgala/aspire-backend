@@ -15,7 +15,8 @@ class ConnectStatus(enum.Enum):
 
 class ConnectSE(Base):
     __tablename__ = 'senior-exec-connect'
-    __table_args__ = (UniqueConstraint('requestor', 'requestee', name='_requestor_requestee_uc'),)
+    __table_args__ = (UniqueConstraint('requestor', 'requestee', name='_requestor_requestee_uc'), \
+        UniqueConstraint('requestee', 'requestor', name='_requestee_requestor_uc'),)
 
     connect_id = Column(Integer(), primary_key=True)
     requestor = Column(String(100), nullable=False)
