@@ -216,84 +216,91 @@ Resources:
   # --- Chats Service ---
 
   # --- SE Connect Service ---
-  CreateConnect:
+  ConnectCreate:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/CreateConnect
+      CodeUri: src/lambda/Connect/Create
       Handler: lambda_function.handler
       Events:
-        CreateConnectEvent:
+        ConnectCreateEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect
             Method: post
       Layers:
         - Ref: DatabaseLayer
 
-  GetConnectById:
+  ConnectGetAll:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/GetConnectById
+      CodeUri: src/lambda/Connect/GetAll
       Handler: lambda_function.handler
       Events:
-        GetConnectEvent:
+        ConnectGetAllEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
+
+  ConnectGetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/GetById
+      Handler: lambda_function.handler
+      Events:
+        ConnectGetByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect/{connectId}
             Method: get
       Layers:
         - Ref: DatabaseLayer
 
-  EditConnectById:
+  ConnectEditById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/EditConnectById
+      CodeUri: src/lambda/Connect/EditById
       Handler: lambda_function.handler
       Events:
-        EditConnectEvent:
+        ConnectEditByIdEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect/{connectId}
             Method: put
       Layers:
         - Ref: DatabaseLayer
 
-  DeleteConnectById:
+  ConnectDeleteById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/DeleteConnectById
+      CodeUri: src/lambda/Connect/DeleteById
       Handler: lambda_function.handler
       Events:
-        DeleteConnectEvent:
+        ConnectDeleteByIdEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect/{connectId}
             Method: delete
       Layers:
         - Ref: DatabaseLayer
 
-  GetAllConnects:
+  ConnectAccept:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/GetAllConnects
+      CodeUri: src/lambda/Connect/Accept
       Handler: lambda_function.handler
       Events:
-        GetAllConnectsEvent:
+        ConnectAcceptEvent:
           Type: Api
           Properties:
-            Path: /connects
-            Method: get
-      Layers:
-        - Ref: DatabaseLayer
-  AcceptConnect:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/lambda/Connect/AcceptConnect
-      Handler: lambda_function.handler
-      Events:
-        AcceptConnectEvent:
-          Type: Api
-          Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect/{connectId}/accept
             Method: put
       Layers:
