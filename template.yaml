@@ -73,6 +73,14 @@ Resources:
       CompatibleRuntimes:
         - python3.6
 
+  SesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-email
+      ContentUri: src/layers/ses_layer/dependencies/
+      CompatibleRuntimes:
+        - python3.6
+
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -214,74 +222,82 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
   # --- Chats Service ---
+
   # --- SE Connect Service ---
-  CreateConnect:
+  ConnectCreate:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/CreateConnect
+      CodeUri: src/lambda/Connect/Create
       Handler: lambda_function.handler
       Events:
-        CreateConnectEvent:
+        ConnectCreateEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect
             Method: post
       Layers:
         - Ref: DatabaseLayer
+        - Ref: SesLayer
 
-  GetConnectById:
+  ConnectGetAll:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/GetConnectById
+      CodeUri: src/lambda/Connect/GetAll
       Handler: lambda_function.handler
       Events:
-        GetConnectEvent:
+        ConnectGetAllEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
+
+  ConnectGetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/GetById
+      Handler: lambda_function.handler
+      Events:
+        ConnectGetByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect/{connectId}
             Method: get
       Layers:
         - Ref: DatabaseLayer
 
-  EditConnectById:
+  ConnectEditById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/EditConnectById
+      CodeUri: src/lambda/Connect/EditById
       Handler: lambda_function.handler
       Events:
-        EditConnectEvent:
+        ConnectEditByIdEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect/{connectId}
             Method: put
       Layers:
         - Ref: DatabaseLayer
+        - Ref: SesLayer
 
-  DeleteConnectById:
+  ConnectDeleteById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/DeleteConnectById
+      CodeUri: src/lambda/Connect/DeleteById
       Handler: lambda_function.handler
       Events:
-        DeleteConnectEvent:
+        ConnectDeleteByIdEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref AspireApi
             Path: /connect/{connectId}
             Method: delete
-      Layers:
-        - Ref: DatabaseLayer
-
-  GetAllConnects:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/lambda/Connect/GetAllConnects
-      Handler: lambda_function.handler
-      Events:
-        GetAllConnectsEvent:
-          Type: Api
-          Properties:
-            Path: /connects
-            Method: get
       Layers:
         - Ref: DatabaseLayer
   # --- SE Connect Service ---
