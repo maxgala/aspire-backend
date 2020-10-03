@@ -72,13 +72,17 @@ def handler(event, context):
                 session.close()
                 return {
                     "statusCode": 409,
-                    "errorMessage": "connections request already sent"
+                    "body": json.dumps({
+                        "errorMessage": "connections request already sent"
+                    })
                 }
             elif connection.connect_status == ConnectStatus.ACCEPTED:
                 session.close()
                 return {
                     "statusCode": 409,
-                    "errorMessage": "connections request already established"
+                    "body": json.dumps({
+                        "errorMessage": "connections request already established"
+                    })
                 }
 
     if create_conn:
