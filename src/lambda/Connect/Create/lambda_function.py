@@ -46,17 +46,52 @@ def handler(event, context):
             })
         }
 
-    ConnectSE_new = ConnectSE(requestor=requestor, requestee=requestee, connect_status=ConnectStatus.PENDING)
-
-    # TODO: dynamic user_email
-    # TODO: update email subject/body
-    user_email = "saleh.bakhit@hotmail.com"
-    email_subject = "You have received a new Senior Executive connection request"
-    email_body = "<name> has requested to connect with you"
-    send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
-
+    # if ACCEPTED exists (in either direction) => Conflict (409)
+    # if PENDING exists (in the direction of the request) => Conflict (409)
+    # if PENDING exists (in the direction opposite to the request) => change status to ACCEPTED
+    # else => create new record with PENDING status
     session = Session()
-    session.add(ConnectSE_new)
+    connect_ses = session.query(ConnectSE).all()
+    create_conn = True
+    for connection in connect_ses:
+        if (connection.requestor == requestor and connection.requestee == requestee) \
+            or (connection.requestor == requestee and connection.requestee == requestor):
+            if connection.connect_status == ConnectStatus.PENDING:
+                if connection.requestor == requestee and connection.requestee == requestor:
+                    connection.connect_status = ConnectStatus.ACCEPTED
+                    # TODO: dynamic user_email
+                    # TODO: update email subject/body
+                    user_email = "saleh.bakhit@hotmail.com"
+                    email_subject = "Your Senior Executive connection request was accepted"
+                    email_body = "<name> has accepted your connection request!"
+                    send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
+
+                    create_conn = False
+                    break
+
+                session.close()
+                return {
+                    "statusCode": 409,
+                    "errorMessage": "connections request already sent"
+                }
+            elif connection.connect_status == ConnectStatus.ACCEPTED:
+                session.close()
+                return {
+                    "statusCode": 409,
+                    "errorMessage": "connections request already established"
+                }
+
+    if create_conn:
+        ConnectSE_new = ConnectSE(requestor=requestor, requestee=requestee, connect_status=ConnectStatus.PENDING)
+        session.add(ConnectSE_new)
+
+        # TODO: dynamic user_email
+        # TODO: update email subject/body
+        user_email = "saleh.bakhit@hotmail.com"
+        email_subject = "You have received a new Senior Executive connection request"
+        email_body = "<name> has requested to connect with you"
+        send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
+
     session.commit()
     session.close()
 
