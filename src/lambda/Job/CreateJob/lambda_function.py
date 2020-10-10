@@ -8,7 +8,6 @@ from datetime import datetime
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
-import boto3
 import jwt
 
 logger = logging.getLogger()
