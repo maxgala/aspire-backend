@@ -634,7 +634,20 @@ Resources:
                 Method: get
         Layers:
           - Ref: DatabaseLayer
-
+  GetMentorsPendingApproval:
+    Type: AWS::Serverless::Function
+    Properties:
+        CodeUri: src/lambda/Users/GetMentors
+        Handler: lambda_function.handler
+        Events:
+            Payment:
+              Type: Api
+              Properties:
+                RestApiId: !Ref AspireApi
+                Path: /users/mentors/pending
+                Method: get
+        Layers:
+          - Ref: DatabaseLayer
 
 Outputs:
   Region:
