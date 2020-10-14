@@ -606,7 +606,7 @@ Resources:
   StripePaymentProcessor:
     Type: AWS::Serverless::Function
     Properties:
-        CodeUri: src/lambda/payment
+        CodeUri: src/lambda/Payment
         Handler: lambda_function.handler
         Events:
             Payment:
@@ -618,6 +618,23 @@ Resources:
         Layers:
           - Ref: DatabaseLayer
   # --- Payments Service ---
+
+  # --- Users Service ---
+  GetAllUsers:
+    Type: AWS::Serverless::Function
+    Properties:
+        CodeUri: src/lambda/Users/GetAll
+        Handler: lambda_function.handler
+        Events:
+            Payment:
+              Type: Api
+              Properties:
+                RestApiId: !Ref AspireApi
+                Path: /users
+                Method: get
+        Layers:
+          - Ref: DatabaseLayer
+
 
 Outputs:
   Region:
