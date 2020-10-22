@@ -17,18 +17,17 @@ def handler(event, context):
         if not (attrib.startswith('_') or attrib.strip() == "metadata"\
                 or attrib in pruned_attribs):
             chat_attribs.append(attrib)
-    
+
     if chat != None:
         # construct JSON-able dictionary
         chat_dict = {}
         for attrib in chat_attribs:
-            chat_dict[attrib] = str(getattr(chat, attrib)) 
-            
-        return {"statusCode": 200,
-                "body": json.dumps(chat_dict)
+            chat_dict[attrib] = str(getattr(chat, attrib))
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps(chat_dict)
         }
-        
-    
     else:
         return {
             "statusCode": 404,

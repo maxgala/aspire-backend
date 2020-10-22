@@ -32,23 +32,23 @@ def handler(event, context):
     # user is mentee
 
     chat_id = event["pathParameters"]["chatId"]
-    
+
     session = Session()
     chat = session.query(Chat).get(chat_id)
-    
+
     if chat != None:
         credit_cost = credit_mapping[chat.chat_type]
         sufficient_credits = credit >= credit_cost
-        
+
         if not sufficient_credits:
             session.close()
             return {
-                "statusCode": 409, 
+                "statusCode": 409,
                 "body": json.dumps({
                 "message": "Insufficient credits, need {} but have {}".format(credit_cost, credit)
                 })
             }
-            
+
 
         if chat.chat_status != ChatStatus.ACTIVE:
             # cannot reserve this chat, it is not active
@@ -89,7 +89,7 @@ def handler(event, context):
                 #modify existing entry
                 chat.aspiring_professionals.append(user_id)
 
-        # check if chat is reserved        
+        # check if chat is reserved
         if chat.chat_type == ChatType.ONE_ON_ONE:
             # one on one, reserve chat
             chat.chat_status = ChatStatus.RESERVED #reserved
@@ -97,7 +97,7 @@ def handler(event, context):
             num_mentees = len(chat.aspiring_professionals)
             if num_mentees == 4:
                 chat.chat_status = ChatStatus.RESERVED # reserved
-   
+
         session.commit()
         session.close()
 
@@ -114,7 +114,7 @@ def handler(event, context):
         outlookrec= []
         AllOtherrec= []
         numRecepients= len(recipients)
-        
+
         i= 0
         while i < numRecepients:
             if "outlook" in recipients[i].email:
@@ -122,7 +122,7 @@ def handler(event, context):
             else:
                 AllOtherrec.append(recipients[i])
             i += 1
-        
+
         subject = "Hello world"
         body = "lorem ipsum dolor sit amet"
 
@@ -133,8 +133,8 @@ def handler(event, context):
 
         with open("/tmp/event.ics", 'w') as f:
             f.write(ics)
-        
-        if len(AllOtherrec) > 0:      
+
+        if len(AllOtherrec) > 0:
             send_email(sender, AllOtherrec, subject, body, ics)
         if len(outlookrec) > 0:
             send_email_Outlook(sender, outlookrec, subject, body, ics)
@@ -146,7 +146,7 @@ def handler(event, context):
             "message": "Reserved Chat with ID {} for User {}".format(chat_id, user_id)
             })
         }
-    
+
     else:
         session.close()
         return {

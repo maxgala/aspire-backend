@@ -13,7 +13,7 @@ def handler(event, context):
         session.delete(chat)
         session.commit()
         session.close()
-        
+
         return {
             "statusCode": 200,
             "body": json.dumps({

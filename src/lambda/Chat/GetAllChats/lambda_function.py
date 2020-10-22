@@ -19,7 +19,7 @@ def handler(event, context):
             chat_attribs.append(attrib)
 
     chats_list = [None] * len(chats) # preallocate in case table is large
-    
+
     for i in range(len(chats)):
         chat_dict = {}
         for attrib in chat_attribs:
@@ -39,12 +39,12 @@ def handler(event, context):
                 chat_dict['family_name'] = att['Value']
             elif att['Name'] == 'custom:company':
                 chat_dict['custom:company'] = att['Value']
-        
+
         chats_list[i] = chat_dict
 
     chats_dict = {}
-    chats_dict["chats"] = chats_list;
-    chats_dict["count"] = len(chats_list);
+    chats_dict["chats"] = chats_list
+    chats_dict["count"] = len(chats_list)
     return {"statusCode": 200,
             "body": json.dumps(chats_dict)
     }

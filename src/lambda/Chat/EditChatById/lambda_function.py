@@ -8,7 +8,7 @@ from datetime import datetime
 def handler(event, context):
     info = json.loads(event["body"])
     chat_id = event["pathParameters"]["chatId"]
-    
+
     session = Session()
     chat = session.query(Chat).get(chat_id)
 
@@ -21,7 +21,7 @@ def handler(event, context):
                 setattr(chat, attr, ChatType(eval(ChatType.__name__ + '.' + info[attr])))
             else:
                 setattr(chat, attr, info[attr])
-            
+
         session.commit()
         session.close()
 
@@ -31,10 +31,10 @@ def handler(event, context):
             "message": "Updated Chat Row, with ID {}".format(chat_id)
             })
         }
-    
+
     else:
         session.close()
-        
+
         return {
             "statusCode": 404,
             "body": json.dumps({

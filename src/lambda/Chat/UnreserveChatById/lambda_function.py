@@ -31,9 +31,9 @@ def handler(event, context):
             })
         }
     # ----------------------- End user validation ------------------------------
-    
+
     chat_id = event["pathParameters"]["chatId"]
-    
+
     session = Session()
     chat = session.query(Chat).get(chat_id)
 
@@ -54,7 +54,7 @@ def handler(event, context):
                 "body": json.dumps({
                     "message": "User {} has un-reserved Chat with ID {}".format(user_id, chat_id)
                 })
-            }            
+            }
         else:
             session.close() # didn't even reserve this chat yet my dude
             return {
@@ -63,10 +63,10 @@ def handler(event, context):
                     "message": "User {} has not reserved Chat with ID {}, cannot un-reserve".format(user_id, chat_id)
                 })
             }
-    
+
     else:
         session.close()
-        
+
         return {
             "statusCode": 404,
             "body": json.dumps({
