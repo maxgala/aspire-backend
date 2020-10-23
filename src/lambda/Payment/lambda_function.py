@@ -3,7 +3,7 @@ import stripe
 import requests
 import logging
 
-stripe.api_key= "sk_test_51H0cpsGPqNNATumTocDFOQBCm29E08vroVYDfbduGfSf2bOUzjX0fbOUtPtuJ7xJRi7xGLZIU9SnZXK6cKE1ld0T00MOwM7rEP"
+stripe.api_key= STRIPE_API_KEY
 
 def handler(event, context):
 
