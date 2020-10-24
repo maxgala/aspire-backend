@@ -46,7 +46,7 @@ jobs:
           PROD_DB_USERNAME: ${{secrets.PROD_DB_USERNAME}}
           PROD_DB_PWD: ${{secrets.PROD_DB_PWD}}
           PROD_DB_NAME: ${{secrets.PROD_DB_NAME}}
-          STRIPE_API_KEY: ${{secret.STRIPE_API_KEY}}
+          STRIPE_API_KEY: ${{secrets.STRIPE_API_KEY}}
       - uses: poketapp/gh-action-aws-sam@v1
         env:
           TEMPLATE: 'template.yaml'
