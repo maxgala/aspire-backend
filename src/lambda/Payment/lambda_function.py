@@ -1,6 +1,8 @@
 import json
 import stripe
 import requests
+import os
+from dotenv import load_dotenv
 import logging
 
 stripe.api_key= STRIPE_API_KEY
