@@ -5,7 +5,9 @@ import os
 from dotenv import load_dotenv
 import logging
 
-stripe.api_key= STRIPE_API_KEY
+load_dotenv()
+
+stripe.api_key= os.environ.get('STRIPE_API_KEY')
 
 def handler(event, context):
 
