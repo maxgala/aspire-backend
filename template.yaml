@@ -110,14 +110,14 @@ Resources:
 
 # --- Chats Service ---
 # git is not tracking this change?
-  CreateChat:
+  ChatCreate:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/CreateChat
+      CodeUri: src/lambda/Chat/Create
       Handler: lambda_function.handler
       Description: Lambda function to create new chat
       Events:
-        CreateChatEvent:
+        ChatCreateEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -126,14 +126,14 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  GetChatById:
+  ChatGetById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/GetChatById
+      CodeUri: src/lambda/Chat/GetById
       Handler: lambda_function.handler
       Description: Lambda function to get chat by Id
       Events:
-        CreateChatEvent:
+        ChatGetByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -142,14 +142,14 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  EditChatById:
+  ChatEditById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/EditChatById
+      CodeUri: src/lambda/Chat/EditById
       Handler: lambda_function.handler
       Description: Lambda function to edit chat by Id
       Events:
-        CreateChatEvent:
+        ChatEditById:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -158,14 +158,14 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  DeleteChatById:
+  ChatDeleteById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/DeleteChatById
+      CodeUri: src/lambda/Chat/DeleteById
       Handler: lambda_function.handler
       Description: Lambda function to delete chat by Id
       Events:
-        CreateChatEvent:
+        ChatDeleteById:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -174,14 +174,14 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  GetAllChats:
+  ChatGetAll:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/GetAllChats
+      CodeUri: src/lambda/Chat/GetAll
       Handler: lambda_function.handler
       Description: Lambda function to get all chats
       Events:
-        CreateChatEvent:
+        ChatGetAll:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -190,14 +190,14 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  ReserveChatById:
+  ChatReserveById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/ReserveChatById
+      CodeUri: src/lambda/Chat/ReserveById
       Handler: lambda_function.handler
       Description: Lambda function to reserve a chat
       Events:
-        CreateChatEvent:
+        ChatReserveById:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -206,14 +206,14 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  UnReserveChatById:
+  ChatUnReserveById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/UnreserveChatById
+      CodeUri: src/lambda/Chat/UnreserveById
       Handler: lambda_function.handler
-      Description: Lambda function to reserve a chat
+      Description: Lambda function to unreserve a chat
       Events:
-        CreateChatEvent:
+        ChatUnReserveById:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
