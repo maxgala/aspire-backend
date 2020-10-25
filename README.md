@@ -1,8 +1,5 @@
 # aspire-sam
 
-[![Build Status](https://travis-ci.com/maxgala/aspire-sam.svg?token=tsFY5SLhCWysCtqaoSpb&branch=master)](https://travis-ci.com/maxgala/aspire-sam)
-
-
 The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
 If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
@@ -14,7 +11,8 @@ The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI
 * [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
 
 ## Build Project Dependencies
-First, we need to install the dependencies and move the model files to `src/layers/database/dependencies`
+1. Set up the local environment by adding RDS connection information to `src/models/.env`. You can get this information from a team member
+2. Install the dependencies and move the model files to `src/layers/database/dependencies`
 ```bash
 cd src/layers/database
 ./database_layer_packages.sh
