@@ -8,6 +8,7 @@ from role_validation import UserGroups, check_auth
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 def handler(event, context):
     # check authorization
     authorized_groups = [
