@@ -16,7 +16,7 @@ def handler(event, context):
         UserGroups.PAID,
         UserGroups.FREE
     ]
-    success, _ = read_auth(event['headers']['Authorization'], authorized_groups)
+    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
     if not success:
         return {
             "statusCode": 401,
