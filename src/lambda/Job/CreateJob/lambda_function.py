@@ -8,24 +8,24 @@ from datetime import datetime
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
-from role_validation import UserGroups, validate_group
+from role_validation import UserGroups, check_auth
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
-    #### The following code until the end of return should be commented out in order to run the functions locally
+    # check authorization
     authorized_groups = [
         UserGroups.ADMIN,
         UserGroups.MENTOR,
-        UserGroups.PAID
+        UserGroups.PAID,
     ]
-    err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
-    if err:
+    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
+    if not success:
         return {
             "statusCode": 401,
             "body": json.dumps({
-                "errorMessage": group_response
+                "errorMessage": "unauthorized"
             })
         }
     
