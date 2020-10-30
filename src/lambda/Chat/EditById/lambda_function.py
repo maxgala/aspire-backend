@@ -3,26 +3,26 @@ import logging
 
 from chat import Chat, ChatType, ChatStatus
 from base import Session, row2dict
-# from role_validation import UserGroups, validate_group
+from role_validation import UserGroups, check_auth, edit_auth
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # # check authorization
-    # authorized_groups = [
-    #     UserGroups.ADMIN,
-    #     UserGroups.MENTOR
-    # ]
-    # err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
-    # if err:
-    #     return {
-    #         "statusCode": 401,
-    #         "body": json.dumps({
-    #             "errorMessage": group_response
-    #         })
-    #     }
+    # validate authorization
+    authorized_groups = [
+        UserGroups.ADMIN,
+        UserGroups.MENTOR
+    ]
+    success, user = check_auth(event['headers']['Authorization'], authorized_groups)
+    if not success:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": "unauthorized"
+            })
+        }
 
     chatId = event["pathParameters"].get("chatId") if event["pathParameters"] else None
     if not chatId:
@@ -43,6 +43,15 @@ def handler(event, context):
                 "errorMessage": "chat with id '{}' not found".format(chatId)
             })
         }
+    success = edit_auth(user, chat.senior_executive)
+    if not success:
+        # caller does not own the resource
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": "unauthorized"
+            })
+        }
 
     body = json.loads(event["body"])
     chat_status_new = body.get('chat_status')
@@ -56,9 +65,14 @@ def handler(event, context):
         }
 
     # TODO: attributes that can be updated:
-    # - chat_status, description, tags
+    # - description, tags
     # - date, end_date
-    # - aspiring_professionals
+    # - credits
+
+    # chat_status:
+    ## PENDING => ACTIVE, CANCELED
+    ## ACTIVE => PENDING, RESERVED, CANCLED
+    ## RESERVED => PENDING, ACTIVE, DONE, CANCLED
 
     session.commit()
     session.refresh(chat)

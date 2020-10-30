@@ -38,7 +38,7 @@ class Chat(Base):
     chat_id = Column(Integer(), primary_key=True)
     chat_type = Column(Enum(ChatType), nullable=False)
     description = Column(String(255))
-    tags = Column(MutableList.as_mutable(ARRAY(String(100)))) #need to filter by these
+    tags = Column(MutableList.as_mutable(ARRAY(String(100))))
     credits = Column(Integer(), nullable=False)
     chat_status = Column(Enum(ChatStatus), nullable=False)
     aspiring_professionals = Column(MutableList.as_mutable(ARRAY(String(100))))

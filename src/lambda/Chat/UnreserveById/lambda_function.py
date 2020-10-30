@@ -1,75 +1,100 @@
 import json
-from chat import *
-
-from base import Session
-from sqlalchemy.types import DateTime
-from datetime import datetime
+import logging
 import boto3
-import jwt
+
+from chat import Chat, ChatType, ChatStatus, credit_mapping
+from base import Session
+from role_validation import UserGroups, check_auth
 
 client = boto3.client('cognito-idp')
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
+def edit_user_credits(user, access_token, value):
+    user_credits = user.get('custom:user_credits')
+    response = client.update_user_attributes(
+        UserAttributes=[
+            {
+                'Name': 'custom:user_credits',
+                'Value': user_credits + value
+            },
+        ],
+        AccessToken=access_token
+    )
+    logger.info(response)
 
 def handler(event, context):
-
-    access_token = event['headers']['X-Aspire-Access-Token']
-
-    # ----------------- User validation ------------------
-    id_token = (event['headers']['Authorization']).split('Bearer ')[1]
-    user = jwt.decode(id_token, verify=False)
-    user_id = user['email']
-    user_type = user['custom:user_type']
-    credit = int(user['custom:credits'])
-
-    user_type = "Mentee"
-
-    if user_type != "Mentee":
-        return{
-            "statusCode": 409,
+    # validate authorization
+    authorized_groups = [
+        UserGroups.PAID
+    ]
+    success, user = check_auth(event['headers']['Authorization'], authorized_groups)
+    if not success:
+        return {
+            "statusCode": 401,
             "body": json.dumps({
-            "message": "Invalid user type. Only Aspiring Professionals may reserve chats."
+                "errorMessage": "unauthorized"
             })
         }
-    # ----------------------- End user validation ------------------------------
+    access_token = event['headers']['X-Aspire-Access-Token']
+    if not access_token:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({
+                "errorMessage": "access token header required"
+            })
+        }
 
-    chat_id = event["pathParameters"]["chatId"]
+    chatId = event["pathParameters"].get("chatId") if event["pathParameters"] else None
+    if not chatId:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({
+                "errorMessage": "missing path parameter(s): 'chatId'"
+            })
+        }
 
     session = Session()
-    chat = session.query(Chat).get(chat_id)
-
-    if chat != None:
-        # check if user is in the list
-        if user_id in chat.aspiring_professionals:
-            i = chat.aspiring_professionals.index(user_id)
-            chat.aspiring_professionals.pop(i)
-
-            #check if we need to modify the status
-            if chat.chat_status == ChatStatus.RESERVED:
-                chat.chat_status = ChatStatus.ACTIVE
-
-            session.commit()
-            session.close()
-            return {
-                "statusCode": 200,
-                "body": json.dumps({
-                    "message": "User {} has un-reserved Chat with ID {}".format(user_id, chat_id)
-                })
-            }
-        else:
-            session.close() # didn't even reserve this chat yet my dude
-            return {
-                "statusCode": 400,
-                "body": json.dumps({
-                    "message": "User {} has not reserved Chat with ID {}, cannot un-reserve".format(user_id, chat_id)
-                })
-            }
-
-    else:
+    chat = session.query(Chat).get(chatId)
+    if not chat:
         session.close()
-
         return {
             "statusCode": 404,
             "body": json.dumps({
-                "message": "ID {} not found in Chats table".format(chat_id)
+                "errorMessage": "chat with id '{}' not found".format(chatId)
             })
         }
+
+    # to unreserve, chat must be either active(multi aspiring professional chats) or reserved(single aspiring professional chats)
+    # in addition, user must have reserved this chat
+    #
+    # if chat_status is RESERVED => set to ACTIVE
+    if chat.chat_status != ChatStatus.ACTIVE or chat.chat_status != ChatStatus.RESERVED:
+        return {
+            "statusCode": 403,
+            "body": json.dumps({
+                "errorMessage": "cannot unreserve inactive or unreserved chat with id '{}'".format(chatId)
+            })
+        }
+    if user['email'] not in chat.aspiring_professionals:
+        return {
+            "statusCode": 403,
+            "body": json.dumps({
+                "errorMessage": "user '{}' did not reserve chat with id '{}'".format(user['email'], chatId)
+            })
+        }
+
+    chat.aspiring_professionals.remove(user['email'])
+    edit_user_credits(user, access_token, credit_mapping[chat.chat_type])
+    if chat.chat_status == ChatStatus.RESERVED:
+        # TODO: increment senior executive's remaining chat frequency in Cognito
+        chat.chat_status = ChatStatus.ACTIVE
+
+    session.commit()
+    session.close()
+
+    return {
+        "statusCode": 201
+    }
