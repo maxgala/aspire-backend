@@ -24,6 +24,8 @@ def check_auth(auth_header, allowedReadGroups):
 
 def edit_auth(user, allowedWriteUser):
     success, user_group = get_group(user)
+    if not success:
+        return False
     if user_group != UserGroups.ADMIN and user['email'] != allowedWriteUser:
         return False
     return True
