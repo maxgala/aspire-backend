@@ -8,11 +8,27 @@ from datetime import datetime
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
+from role_validation import UserGroups, validate_group
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
+
+    authorized_groups = [
+        UserGroups.ADMIN,
+        UserGroups.MENTOR,
+        UserGroups.FREE,
+        UserGroups.PAID
+    ]
+    err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
+    if err:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": group_response
+            })
+        }
 
     # FOR REFERENCE
     # # create a new session
@@ -29,13 +45,15 @@ def handler(event, context):
             job_apps_id.append(app.job_application_id)
         jobdict = row2dict(job)
         jobdict['job_applications'] = job_apps_id
+        session.close()
         return {
             "statusCode": 200,
             "body": json.dumps(jobdict)
         }
         # # commit and close session
-        session.close()
+        
     else:
+        session.close()
         return {
             "statusCode" : 404,
             "body" : json.dumps({

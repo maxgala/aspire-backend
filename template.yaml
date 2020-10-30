@@ -333,6 +333,7 @@ Resources:
               Method: post
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   GetAllJobs:
     Type: AWS::Serverless::Function
@@ -348,6 +349,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   GetJobById:
     Type: AWS::Serverless::Function
@@ -363,6 +365,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   DeleteJobById:
     Type: AWS::Serverless::Function
@@ -378,6 +381,7 @@ Resources:
               Method: delete
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   EditJobById:
     Type: AWS::Serverless::Function
@@ -393,6 +397,7 @@ Resources:
               Method: put
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   CloseJobById:
     Type: AWS::Serverless::Function
@@ -408,6 +413,7 @@ Resources:
               Method: put
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   JobContactById:
     Type: AWS::Serverless::Function
@@ -423,6 +429,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
   # --- Jobs Service ---
 
   # --- Job Applications Service ---
