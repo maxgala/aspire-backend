@@ -1,5 +1,4 @@
 import enum
-import jwt
 
 class UserGroups(enum.Enum):
     ADMIN = 1
@@ -7,37 +6,25 @@ class UserGroups(enum.Enum):
     FREE = 3
     PAID = 4
 
-def check_auth(auth_header, allowedReadGroups):
-    id_token = auth_header.split('Bearer ')[1]
-    if not id_token:
-        return False
+def validate_group(eventAuthorizerClaims, allowedGroups):
+    err, group_name = get_group(eventAuthorizerClaims)
+    if err:
+        return err, group_name
 
-    user = jwt.decode(id_token, verify=False)
-    success, user_group = get_group(user)
-    if not success:
-        return False, None
+    try:
+        group = UserGroups[group_name]
+        if group not in allowedGroups:
+            return True, "unauthorized"
 
-    success = validate_user(user_group, allowedReadGroups)
-    if not success:
-        return False, None
-    return True, user
+        return False, "authorized"
+    except KeyError:
+        return True, "unauthorized"
 
-def edit_auth(user, allowedWriteUser):
-    success, user_group = get_group(user)
-    if user_group != UserGroups.ADMIN and user['email'] != allowedWriteUser:
-        return False
-    return True
+def get_group(eventAuthorizerClaims):
+    group = eventAuthorizerClaims.get('cognito:groups', '')
+    if not group:
+        return True, "user doesn't belong to a group"
+    elif len(group.split(',')) > 1:
+        return True, "user belongs to multiple groups"
 
-def validate_user(user_group, allowedGroups):
-    if user_group not in UserGroups.__members__ or \
-        UserGroups[user_group] not in allowedGroups:
-        return False
-    return True
-
-def get_group(user):
-    user_groups = user.get('cognito:groups')
-    if not user_groups:
-        return False, None
-    elif len(user_groups) > 1:
-        return False, None
-    return True, user_groups[0]
+    return False, group
