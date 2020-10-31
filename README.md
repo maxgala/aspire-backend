@@ -123,6 +123,7 @@ aws cloudformation delete-stack --stack-name aspire-sam
 
 The following users can be used for testing:
 1. test_mentor1@aspire.com/Password123!
+2. test_mentee1@aspire.com/Password123!
 
 ## Resources
 
