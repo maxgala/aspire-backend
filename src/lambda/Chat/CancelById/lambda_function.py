@@ -11,13 +11,14 @@ client = boto3.client('cognito-idp')
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def edit_chats_frequency(user, access_token, value):
-    user_chats_frequency = user.get('custom:chats_frequency')
+
+def edit_remaining_chats_frequency(user, access_token, value):
+    remaining_chats_frequency = user.get('custom:remaining_chats_frequency')
     response = client.update_user_attributes(
         UserAttributes=[
             {
-                'Name': 'custom:chats_frequency',
-                'Value': str(int(user_chats_frequency) + value)
+                'Name': 'custom:remaining_chats_frequency',
+                'Value': str(int(remaining_chats_frequency) + value)
             },
         ],
         AccessToken=access_token
@@ -25,7 +26,7 @@ def edit_chats_frequency(user, access_token, value):
     logger.info(response)
 
 def handler(event, context):
-    # validate authorization
+    # check authorization
     authorized_groups = [
         UserGroups.ADMIN,
         UserGroups.MENTOR
@@ -79,41 +80,45 @@ def handler(event, context):
     # CANCELED state can be achieved from PENDING, ACTIVE or RESERVED
     #
     # if chat to be canceled is dated (i.e. cannot be rescheduled):
-    ## if RESERVED          => set to CANCELED
-    ## if PENDING or ACTIVE => set to CANCELED and decrement remaining chat frequency in Cognito
+    #   - if ACTIVE or RESERVED  => set to CANCELED
+    #   - if PENDING             => set to CANCELED and decrement remaining chat frequency in Cognito
     #
     # if chat to be canceled is undated (i.e. can be rescheduled):
-    ## if RESERVED          => set to CANCELED and create a new PENDING chat to be rescheduled
-    ##                         and increment remaining chat frequency in Cognito
-    ## if PENDING or ACTIVE => set to CANCELED and create a new PENDING chat to be rescheduled
+    #   - if ACTIVE or RESERVED
+    #       - set to CANCELED
+    #       - create a new PENDING chat to be rescheduled
+    #       - increment remaining chat frequency in Cognito
+    #   - if PENDING
+    #       - set to CANCELED
+    #       - create a new PENDING chat to be rescheduled
     if chat.chat_status == ChatStatus.DONE or chat.chat_status == ChatStatus.CANCLED:
         return {
             "statusCode": 304
         }
 
     chat.chat_status == ChatStatus.CANCELED
-    if chat.chat_status == ChatStatus.RESERVED and not chat.date:
-        # increment chats_frequency
-        edit_chats_frequency(user, access_token, 1)
+    if chat.chat_status == ChatStatus.ACTIVE or chat.chat_status == ChatStatus.RESERVED:
+        if not chat.fixed_date:
+            # increment remaining_chats_frequency
+            edit_remaining_chats_frequency(user, access_token, 1)
 
-        # create new pending chat
-        chat_new = Chat(
-            chat_type=chat.chat_type, description=chat.description,
-            credits=credit_mapping[chat.chat_type], chat_status=ChatStatus.PENDING,
-            senior_executive=chat.senior_executive, tags=chat.tags
-        )
-        session.add(chat_new)
-    elif chat.chat_status != ChatStatus.RESERVED:
-        # PENDING or ACTIVE
-        if chat.date:
-            # decrement chats_frequency
-            edit_chats_frequency(user, access_token, -1)
+            # create new pending chat
+            chat_new = Chat(
+                chat_type=chat.chat_type, description=chat.description,
+                chat_status=ChatStatus.PENDING, tags=chat.tags,
+                senior_executive=chat.senior_executive
+            )
+            session.add(chat_new)
+    if chat.chat_status == ChatStatus.PENDING:
+        if chat.fixed_date:
+            # decrement remaining_chats_frequency
+            edit_remaining_chats_frequency(user, access_token, -1)
         else:
             # create new pending chat
             chat_new = Chat(
                 chat_type=chat.chat_type, description=chat.description,
-                credits=credit_mapping[chat.chat_type], chat_status=ChatStatus.PENDING,
-                senior_executive=chat.senior_executive, tags=chat.tags
+                chat_status=ChatStatus.PENDING, tags=chat.tags,
+                senior_executive=chat.senior_executive
             )
             session.add(chat_new)
 

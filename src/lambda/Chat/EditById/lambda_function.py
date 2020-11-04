@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # validate authorization
+    # check authorization
     authorized_groups = [
         UserGroups.ADMIN,
         UserGroups.MENTOR
@@ -66,13 +66,12 @@ def handler(event, context):
 
     # TODO: attributes that can be updated:
     # - description, tags
-    # - date, end_date
-    # - credits
+    # - fixed_date, expiry_date
 
     # chat_status:
     ## PENDING => ACTIVE, CANCELED
     ## ACTIVE => PENDING, RESERVED, CANCLED
-    ## RESERVED => PENDING, ACTIVE, DONE, CANCLED
+    ## RESERVED => ACTIVE, DONE, CANCLED
 
     session.commit()
     session.refresh(chat)

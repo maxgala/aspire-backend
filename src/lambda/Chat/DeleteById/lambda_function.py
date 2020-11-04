@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # validate authorization
+    # check authorization
     authorized_groups = [
         UserGroups.ADMIN
     ]

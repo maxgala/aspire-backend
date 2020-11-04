@@ -10,11 +10,12 @@ logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # validate authorization
+    # check authorization
     authorized_groups = [
         UserGroups.ADMIN,
         UserGroups.MENTOR,
         UserGroups.PAID,
+        UserGroups.FREE
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
     if not success:

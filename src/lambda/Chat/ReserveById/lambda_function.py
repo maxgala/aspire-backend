@@ -12,19 +12,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def edit_chats_frequency(user, access_token, value):
-    user_chats_frequency = user.get('custom:chats_frequency')
-    response = client.update_user_attributes(
-        UserAttributes=[
-            {
-                'Name': 'custom:chats_frequency',
-                'Value': str(int(user_chats_frequency) + value)
-            },
-        ],
-        AccessToken=access_token
-    )
-    logger.info(response)
-
 def edit_user_credits(user, access_token, value):
     user_credits = user.get('custom:user_credits')
     response = client.update_user_attributes(
@@ -39,7 +26,7 @@ def edit_user_credits(user, access_token, value):
     logger.info(response)
 
 def handler(event, context):
-    # validate authorization
+    # check authorization
     authorized_groups = [
         UserGroups.PAID
     ]
@@ -82,9 +69,9 @@ def handler(event, context):
 
     # RESERVED state can be achieved from ACTIVE state only (must have sufficient funds)
     # if chat_type is ONE_ON_ONE or MOCK_INTERVIEW, mark as reserved:
-    ## append aspiring_professional, set to RESERVED and decrement remaining chat frequency in Cognito
+    ## append aspiring_professional, set to RESERVED
     # if chat_type is FOUR_ON_ONE:
-    ## append aspiring_professional, set to RESERVED and decrement remaining chat frequency in Cognito (if all four booked)
+    ## append aspiring_professional, set to RESERVED (if all four booked)
     if chat.chat_status != ChatStatus.ACTIVE:
         return {
             "statusCode": 403,
@@ -118,11 +105,9 @@ def handler(event, context):
 
         if len(chat.aspiring_professionals) == 4:
             chat.chat_status = ChatStatus.RESERVED
-            edit_chats_frequency(user, access_token, -1)
     else:
         chat.chat_status = ChatStatus.RESERVED
         chat.aspiring_professionals = [user['email']]
-        edit_chats_frequency(user, access_token, -1)
 
     session.commit()
     session.close()

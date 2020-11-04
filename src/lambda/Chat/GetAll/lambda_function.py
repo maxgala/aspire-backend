@@ -1,16 +1,19 @@
 import json
 import logging
+import boto3
 
 from chat import Chat, ChatType, ChatStatus
 from base import Session, row2dict
 from role_validation import UserGroups, check_auth
+
+client = boto3.client('cognito-idp')
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # validate authorization
+    # check authorization
     authorized_groups = [
         UserGroups.ADMIN,
         UserGroups.MENTOR,
@@ -43,11 +46,28 @@ def handler(event, context):
     chats = filtered_query.all()
     session.close()
 
-    # TODO: return user info? add SE's first and last names and company
+    chats_modified = [row2dict(r) for r in chats]
+    for chat in chats_modified:
+        response = client.list_users(
+            UserPoolId='us-east-1_T02rYkaXy',
+            AttributesToGet=[
+                'given_name','family_name','custom:company'
+            ],
+            Filter = 'email="{}"'.format(chat["senior_executive"])
+        )
+        attributes = response['Users'][0]['Attributes']
+        for attr in attributes:
+            if attr['Name'] == 'given_name':
+                chat['given_name'] = attr['Value']
+            elif attr['Name'] == 'family_name':
+                chat['family_name'] = attr['Value']
+            elif attr['Name'] == 'custom:company':
+                chat['custom:company'] = attr['Value']
+
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "chats": [row2dict(r) for r in chats],
-            "count": len(chats)
+            "chats": chats_modified,
+            "count": len(chats_modified)
         })
     }

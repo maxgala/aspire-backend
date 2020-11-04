@@ -26,7 +26,7 @@ def edit_user_credits(user, access_token, value):
     logger.info(response)
 
 def handler(event, context):
-    # validate authorization
+    # check authorization
     authorized_groups = [
         UserGroups.PAID
     ]
@@ -89,7 +89,6 @@ def handler(event, context):
     chat.aspiring_professionals.remove(user['email'])
     edit_user_credits(user, access_token, credit_mapping[chat.chat_type])
     if chat.chat_status == ChatStatus.RESERVED:
-        # TODO: increment senior executive's remaining chat frequency in Cognito
         chat.chat_status = ChatStatus.ACTIVE
 
     session.commit()
