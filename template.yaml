@@ -133,7 +133,7 @@ Resources:
       Handler: lambda_function.handler
       Description: Lambda function to get chat by Id
       Events:
-        CreateChatEvent:
+        GetChatByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -181,7 +181,7 @@ Resources:
       Handler: lambda_function.handler
       Description: Lambda function to get all chats
       Events:
-        CreateChatEvent:
+        GetAllChatsEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -197,7 +197,7 @@ Resources:
       Handler: lambda_function.handler
       Description: Lambda function to reserve a chat
       Events:
-        CreateChatEvent:
+        ReserveChatEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -213,7 +213,7 @@ Resources:
       Handler: lambda_function.handler
       Description: Lambda function to reserve a chat
       Events:
-        CreateChatEvent:
+        UnreserveChatEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
