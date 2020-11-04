@@ -14,23 +14,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
-
-    # check authorization
-    authorized_groups = [
-        UserGroups.ADMIN,
-        UserGroups.MENTOR,
-        UserGroups.PAID,
-        UserGroups.FREE
-    ]
-    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
-    if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
-    # # create a new session
     session = Session()
     page = None
     user_id = None
