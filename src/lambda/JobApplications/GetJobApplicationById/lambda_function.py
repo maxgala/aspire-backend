@@ -4,7 +4,6 @@ import logging
 import uuid
 from datetime import datetime
 
-# FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
@@ -34,7 +33,7 @@ def handler(event, context):
     # FOR REFERENCE
     # # create a new session
     session = Session()
-    jobAppId = event["pathParameters"]["jobAppId"]
+    jobAppId = event["pathParameters"]["id"]
     jobApp = session.query(JobApplication).get(jobAppId)
     
     # # commit and close session
@@ -51,7 +50,7 @@ def handler(event, context):
         return {
             "statusCode": 404,
             "body": json.dumps({
-                "message": "Record with that ID was not found"
+                "message": "Not Found"
             })
         }
     

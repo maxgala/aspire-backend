@@ -33,7 +33,7 @@ def handler(event, context):
     # FOR REFERENCE
     # # create a new session
     session = Session()
-    jobAppId = event["pathParameters"]["jobAppId"]
+    jobAppId = event["pathParameters"]["id"]
     jobApp = session.query(JobApplication).get(jobAppId)
 
     # # commit and close session

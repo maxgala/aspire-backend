@@ -120,7 +120,7 @@ END:VCALENDAR
     cal = ''.join(str_list)
     return cal
 
-def send_email(sender, recipients, subject, body, ics=None):
+def send_email(sender, recipients, subject, body_text, body_html, ics=None):
     aws_region = "us-east-1"
     client = boto3.client('ses',region_name=aws_region)
 
@@ -135,9 +135,9 @@ def send_email(sender, recipients, subject, body, ics=None):
 
     msgAlternative = MIMEMultipart('alternative')
 
-    bodycontent= CRLF+body
+    bodycontent= CRLF+body_text
     textpart = MIMEText(bodycontent, 'plain')
-    htmlpart = MIMEText(BODY_HTML, 'html')
+    htmlpart = MIMEText(body_html, 'html')
     calpart = MIMEText(ics,'calendar;method=REQUEST')
 
     msgAlternative.attach(textpart)
@@ -155,8 +155,6 @@ def send_email(sender, recipients, subject, body, ics=None):
     msg.attach(msgAlternative)
     msg.attach(ical_atch)
          
-    # print(msg.as_string())
-
     try:
         result = client.send_raw_email(
             Source=msg['From'],
@@ -186,8 +184,6 @@ def send_email_Outlook(sender, recipients, subject, body, ics=None):
 
     msg.attach(part_email)
     msg.attach(part_cal)
-
-    # print(msg.as_string())
     
     try:
         result = client.send_raw_email(
@@ -235,10 +231,8 @@ unavailable for any reason kindly contact the support team ASAP.</p>
     msgBody = MIMEMultipart('alternative')
 
     textpart = MIMEText(bodytext.encode(charset), 'plain', charset)
-    # htmlpart = MIMEText(bodyhtml.encode(charset), 'html', charset)
 
     msgBody.attach(textpart)
-    # msgBody.attach(htmlpart)
 
     msg.attach(msgBody)
     

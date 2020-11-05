@@ -34,7 +34,7 @@ def handler(event, context):
     # # create a new session
     session = Session()
     info = json.loads(event["body"])
-    jobAppId = event["pathParameters"]["jobAppId"]
+    jobAppId = event["pathParameters"]["id"]
     jobApp = session.query(JobApplication).get(jobAppId)
 
     if jobApp != None:
