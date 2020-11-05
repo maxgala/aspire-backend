@@ -14,6 +14,7 @@ class JobType(enum.Enum):
 class JobStatus(enum.Enum):
     OPEN = 1
     CLOSED = 2
+    EXPIRED = 3
 
 
 class JobTags(enum.Enum):
