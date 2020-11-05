@@ -53,7 +53,7 @@ def handler(event, context):
     job_title = info["title"]
     today = datetime.today().strftime("%Y-%m-%d")
     hiring_manager = info["posted_by"]    
-    subject = "[MAX Aspire] Your job is now posted!"
+    subject = "[MAX Aspire] The job you posted is under review"
     body = f"Salaam!\r\n\nThank you for choosing MAX Aspire as your entrusted partner. I am delighted to confirm that we have received your job posting {job_title} on {today}. A member of our team is currently reviewing the job posting to make sure it meets all the necessary requirements.\r\n\nOnce approved, you will be notified via email/member portal. Subsequently you will be notified if any additional information is required. Kindly bear with us 2-3 days before the job is approved and posted on MAX Aspire Job Board. Thank you.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
     send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
     

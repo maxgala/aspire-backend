@@ -404,6 +404,14 @@ Resources:
     Properties:
       CodeUri: src/lambda/Job/EditJobById
       Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
       Events:
           CreateJobEvent:
             Type: Api
@@ -414,6 +422,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: SesLayer
 
   CloseJobById:
     Type: AWS::Serverless::Function
