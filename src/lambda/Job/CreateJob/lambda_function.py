@@ -29,9 +29,7 @@ def handler(event, context):
             })
         }
     
-    
     session = Session()
-
 
     info = json.loads(event["body"])
     
@@ -52,6 +50,6 @@ def handler(event, context):
     
     return {
         "statusCode": 201,
-        "body": json.dumps({job_dict}),
+        "body": job_dict
     }
     
