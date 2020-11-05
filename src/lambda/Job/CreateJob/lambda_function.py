@@ -52,9 +52,6 @@ def handler(event, context):
     
     return {
         "statusCode": 201,
-        "body": json.dumps({
-            "message": "Created Job Row",
-            "job": job_dict
-        }),
+        "body": json.dumps({job_dict}),
     }
     
