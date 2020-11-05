@@ -10,7 +10,7 @@ from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
 import jwt
 import boto3
-from role_validation import UserGroups, validate_group
+from role_validation import UserGroups, check_auth
 
 client = boto3.client('cognito-idp')
 
@@ -19,24 +19,22 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
 
+    # check authorization
     authorized_groups = [
         UserGroups.ADMIN,
         UserGroups.MENTOR,
         UserGroups.PAID
     ]
-    err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
-    if err:
+    success, user = check_auth(event['headers']['Authorization'], authorized_groups)
+    if not success:
         return {
             "statusCode": 401,
             "body": json.dumps({
-                "errorMessage": group_response
+                "errorMessage": "unauthorized"
             })
         }
 
     access_token = event['headers']['X-Aspire-Access-Token']
-    
-    id_token = (event['headers']['Authorization']).split('Bearer ')[1]
-    user = jwt.decode(id_token, verify=False)
 
     # FOR REFERENCE
     # # create a new session

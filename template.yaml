@@ -184,6 +184,13 @@ Resources:
       CodeUri: src/lambda/Chat/GetAll
       Handler: lambda_function.handler
       Description: Lambda function to get all chats
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+            Resource: '*'
       Events:
         ChatGetAll:
           Type: Api

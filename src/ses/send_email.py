@@ -120,7 +120,7 @@ END:VCALENDAR
     cal = ''.join(str_list)
     return cal
 
-def send_email(sender, recipients, subject, body, ics=None):
+def send_email(sender, recipients, subject, body_text, body_html, ics=None):
     aws_region = "us-east-1"
     client = boto3.client('ses',region_name=aws_region)
 
@@ -135,9 +135,9 @@ def send_email(sender, recipients, subject, body, ics=None):
 
     msgAlternative = MIMEMultipart('alternative')
 
-    bodycontent= CRLF+body
+    bodycontent= CRLF+body_text
     textpart = MIMEText(bodycontent, 'plain')
-    htmlpart = MIMEText(BODY_HTML, 'html')
+    htmlpart = MIMEText(body_html, 'html')
     calpart = MIMEText(ics,'calendar;method=REQUEST')
 
     msgAlternative.attach(textpart)

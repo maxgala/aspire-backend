@@ -8,17 +8,33 @@ from datetime import datetime
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
+from role_validation import UserGroups, check_auth
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
 
+    # check authorization
+    authorized_groups = [
+        UserGroups.ADMIN,
+        UserGroups.MENTOR,
+        UserGroups.PAID
+    ]
+    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
+    if not success:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": "unauthorized"
+            })
+        }
+
     # FOR REFERENCE
     # # create a new session
     session = Session()
     info = json.loads(event["body"])
-    jobAppId = event["pathParameters"]["jobAppId"]
+    jobAppId = event["pathParameters"]["id"]
     jobApp = session.query(JobApplication).get(jobAppId)
 
     if jobApp != None:
