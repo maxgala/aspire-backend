@@ -12,9 +12,11 @@ class JobType(enum.Enum):
 
 
 class JobStatus(enum.Enum):
-    OPEN = 1
-    CLOSED = 2
-    EXPIRED = 3
+    UNDER_REVIEW = 1
+    ACTIVE = 2
+    REJECTED = 3
+    CLOSED = 4
+    EXPIRED = 5
 
 
 class JobTags(enum.Enum):
