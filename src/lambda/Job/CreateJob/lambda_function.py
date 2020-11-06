@@ -24,7 +24,7 @@ def handler(event, context):
     if not success:
         return {
             "statusCode": 401,
-            "body": json.dumps
+            "body": json.dumps({
                 "errorMessage": "unauthorized"
             })
         }
