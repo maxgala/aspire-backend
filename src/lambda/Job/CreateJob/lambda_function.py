@@ -45,6 +45,7 @@ def handler(event, context):
 
     session.add(Job_row)        
     session.commit()
+    res = row2dict(Job_row)
     session.close()
 
     ##email hiring manager
@@ -58,6 +59,6 @@ def handler(event, context):
     return {
         "statusCode": 201,
         "body": json.dumps(
-            row2dict(Job_row)
+            res
         )
     }
