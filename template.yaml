@@ -6,23 +6,23 @@ Description: >
   SAM Template for aspire-sam
 
 Parameters:
-  # dbUserPassword:
-  #   NoEcho: true
-  #   Type: String
-  #   Default: 'password'
-  # dbUserName:
-  #   NoEcho: true
-  #   Type: String
-  #   Default: 'master'
-  # dbInstanceClass:
-  #   Type: String
-  #   Default: 'db.t2.micro'
-  # dbInstanceIdentifier:
-  #   Type: String
-  #   Default: 'aspire-db-master'
-  # dbName:
-  #   Type: String
-  #   Default: 'main_db'
+  dbUserPassword:
+    NoEcho: true
+    Type: String
+    Default: 'password'
+  dbUserName:
+    NoEcho: true
+    Type: String
+    Default: 'master'
+  dbInstanceClass:
+    Type: String
+    Default: 'db.t2.micro'
+  dbInstanceIdentifier:
+    Type: String
+    Default: 'aspire-db-master'
+  dbName:
+    Type: String
+    Default: 'main_db'
   cognitoUserPoolArn:
     Type: String
     Default: 'arn:aws:cognito-idp:us-east-1:143848191537:userpool/us-east-1_T02rYkaXy'
@@ -39,23 +39,23 @@ Globals:
 
 Resources:
   # --- Infrastructure ---
-  # AspireDBInstance:
-  #   Type: AWS::RDS::DBInstance
-  #   Properties:
-  #     AllocatedStorage: '20'
-  #     DBInstanceClass: !Ref dbInstanceClass
-  #     DBInstanceIdentifier: !Ref dbInstanceIdentifier
-  #     DBName: !Ref dbName
-  #     EnableCloudwatchLogsExports:
-  #       - postgresql
-  #     EnablePerformanceInsights: true
-  #     Engine: postgres
-  #     EngineVersion: "11.6"
-  #     MasterUsername: !Ref dbUserName
-  #     MasterUserPassword: !Ref dbUserPassword
-  #     MaxAllocatedStorage: 1000
-  #     PubliclyAccessible: true
-  #     StorageType: gp2
+  AspireDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: '20'
+      DBInstanceClass: !Ref dbInstanceClass
+      DBInstanceIdentifier: !Ref dbInstanceIdentifier
+      DBName: !Ref dbName
+      EnableCloudwatchLogsExports:
+        - postgresql
+      EnablePerformanceInsights: true
+      Engine: postgres
+      EngineVersion: "11.6"
+      MasterUsername: !Ref dbUserName
+      MasterUserPassword: !Ref dbUserPassword
+      MaxAllocatedStorage: 1000
+      PubliclyAccessible: true
+      StorageType: gp2
 
   DatabaseLayer:
     Type: AWS::Serverless::LayerVersion
@@ -237,397 +237,397 @@ Resources:
         - Ref: AuthLayer
   # --- Chats Service ---
 
-  # # --- SE Connect Service ---
-  # ConnectCreate:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Connect/Create
-  #     Handler: lambda_function.handler
-  #     Policies:
-  #       - Statement:
-  #         - Sid: CognitoPostConfSESSendPolicy
-  #           Effect: Allow
-  #           Action:
-  #             - ses:SendEmail
-  #             - ses:SendRawEmail
-  #           Resource: '*'
-  #     Events:
-  #       ConnectCreateEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /connect
-  #           Method: post
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: SesLayer
+  # --- SE Connect Service ---
+  ConnectCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/Create
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+        ConnectCreateEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect
+            Method: post
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: SesLayer
 
-  # ConnectGetAll:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Connect/GetAll
-  #     Handler: lambda_function.handler
-  #     Events:
-  #       ConnectGetAllEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /connect
-  #           Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  ConnectGetAll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/GetAll
+      Handler: lambda_function.handler
+      Events:
+        ConnectGetAllEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
-  # ConnectGetById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Connect/GetById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #       ConnectGetByIdEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /connect/{connectId}
-  #           Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  ConnectGetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/GetById
+      Handler: lambda_function.handler
+      Events:
+        ConnectGetByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect/{connectId}
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
-  # ConnectEditById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Connect/EditById
-  #     Handler: lambda_function.handler
-  #     Policies:
-  #       - Statement:
-  #         - Sid: CognitoPostConfSESSendPolicy
-  #           Effect: Allow
-  #           Action:
-  #             - ses:SendEmail
-  #             - ses:SendRawEmail
-  #           Resource: '*'
-  #     Events:
-  #       ConnectEditByIdEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /connect/{connectId}
-  #           Method: put
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: SesLayer
+  ConnectEditById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/EditById
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+        ConnectEditByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect/{connectId}
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: SesLayer
 
-  # ConnectDeleteById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Connect/DeleteById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #       ConnectDeleteByIdEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /connect/{connectId}
-  #           Method: delete
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  # # --- SE Connect Service ---
+  ConnectDeleteById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/DeleteById
+      Handler: lambda_function.handler
+      Events:
+        ConnectDeleteByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect/{connectId}
+            Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+  # --- SE Connect Service ---
 
-  # # --- Jobs Service ---
-  # CreateJob:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Job/CreateJob
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /jobs
-  #             Method: post
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  # --- Jobs Service ---
+  CreateJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/CreateJob
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs
+              Method: post
+      Layers:
+        - Ref: DatabaseLayer
 
-  # GetAllJobs:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Job/GetAllJobs
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /jobs
-  #             Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  GetAllJobs:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/GetAllJobs
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
-  # GetJobById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Job/GetJobById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /jobs/{jobId}
-  #             Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  GetJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/GetJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
-  # DeleteJobById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Job/DeleteJobById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /jobs/{jobId}
-  #             Method: delete
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  DeleteJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/DeleteJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}
+              Method: delete
+      Layers:
+        - Ref: DatabaseLayer
 
-  # EditJobById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Job/EditJobById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /jobs/{jobId}
-  #             Method: put
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  EditJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/EditJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
 
-  # CloseJobById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Job/CloseJobById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /jobs/{jobId}/close
-  #             Method: put
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  CloseJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/CloseJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}/close
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
 
-  # JobContactById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Job/JobContactById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /job_contact/{jobId}
-  #             Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  # # --- Jobs Service ---
+  JobContactById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/JobContactById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job_contact/{jobId}
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+  # --- Jobs Service ---
 
-  # # --- Job Applications Service ---
-  # CreateJobApplication:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/JobApplications/CreateJobApplication
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobApplicationEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /job-applications
-  #             Method: post
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  # --- Job Applications Service ---
+  CreateJobApplication:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/CreateJobApplication
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications
+              Method: post
+      Layers:
+        - Ref: DatabaseLayer
 
-  # GetAllJobApplications:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/JobApplications/GetAllJobApplications
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobApplicationEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /job-applications
-  #             Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  GetAllJobApplications:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/GetAllJobApplications
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
-  # DeleteJobApplicationById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/JobApplications/DeleteJobApplicationById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /job-applications/{jobAppId}
-  #             Method: delete
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  DeleteJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/DeleteJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications/{jobAppId}
+              Method: delete
+      Layers:
+        - Ref: DatabaseLayer
 
-  # GetJobApplicationById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/JobApplications/GetJobApplicationById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /job-applications/{jobAppId}
-  #             Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
+  GetJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/GetJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications/{jobAppId}
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
-  # EditJobApplicationById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/JobApplications/EditJobApplicationById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         CreateJobEvent:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /job-applications/{jobAppId}
-  #             Method: put
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  # # --- Job Applications Service ---
+  EditJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/EditJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications/{jobAppId}
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
+  # --- Job Applications Service ---
 
-  # # --- Industry Tags Service ---
-  # IndustryTagsCreate:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/IndustryTags/Create
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         IndustryTagsCreate:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /industry-tags
-  #             Method: post
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
+  # --- Industry Tags Service ---
+  IndustryTagsCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/Create
+      Handler: lambda_function.handler
+      Events:
+          IndustryTagsCreate:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /industry-tags
+              Method: post
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-  # IndustryTagsGetAll:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/IndustryTags/GetAll
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         IndustryTagsGetAll:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /industry-tags
-  #             Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
+  IndustryTagsGetAll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/GetAll
+      Handler: lambda_function.handler
+      Events:
+          IndustryTagsGetAll:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /industry-tags
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-  # IndustryTagsGetById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/IndustryTags/GetById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         IndustryTagsGetById:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /industry-tags/{industryTagId}
-  #             Method: get
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
+  IndustryTagsGetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/GetById
+      Handler: lambda_function.handler
+      Events:
+          IndustryTagsGetById:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /industry-tags/{industryTagId}
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-  # IndustryTagsDeleteById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/IndustryTags/DeleteById
-  #     Handler: lambda_function.handler
-  #     Events:
-  #         IndustryTagsDeleteById:
-  #           Type: Api
-  #           Properties:
-  #             RestApiId: !Ref AspireApi
-  #             Path: /industry-tags/{industryTagId}
-  #             Method: delete
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
-  # # --- Industry Tags Service ---
+  IndustryTagsDeleteById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/DeleteById
+      Handler: lambda_function.handler
+      Events:
+          IndustryTagsDeleteById:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /industry-tags/{industryTagId}
+              Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+  # --- Industry Tags Service ---
 
-  # # --- Payments Service ---
-  # StripePaymentProcessor:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #       CodeUri: src/lambda/Payment
-  #       Handler: lambda_function.handler
-  #       Events:
-  #           Payment:
-  #             Type: Api
-  #             Properties:
-  #               RestApiId: !Ref AspireApi
-  #               Path: /payment
-  #               Method: post
-  #       Layers:
-  #         - Ref: DatabaseLayer
-  # # --- Payments Service ---
+  # --- Payments Service ---
+  StripePaymentProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+        CodeUri: src/lambda/Payment
+        Handler: lambda_function.handler
+        Events:
+            Payment:
+              Type: Api
+              Properties:
+                RestApiId: !Ref AspireApi
+                Path: /payment
+                Method: post
+        Layers:
+          - Ref: DatabaseLayer
+  # --- Payments Service ---
 
-  # # --- Users Service ---
-  # GetAllUsers:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #       CodeUri: src/lambda/Users/GetAll
-  #       Handler: lambda_function.handler
-  #       Events:
-  #           Payment:
-  #             Type: Api
-  #             Properties:
-  #               RestApiId: !Ref AspireApi
-  #               Path: /users
-  #               Method: get
-  #       Layers:
-  #         - Ref: DatabaseLayer
-  # GetMentorsPendingApproval:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #       CodeUri: src/lambda/Users/GetMentors
-  #       Handler: lambda_function.handler
-  #       Events:
-  #           Payment:
-  #             Type: Api
-  #             Properties:
-  #               RestApiId: !Ref AspireApi
-  #               Path: /users/mentors/pending
-  #               Method: get
-  #       Layers:
-  #         - Ref: DatabaseLayer
+  # --- Users Service ---
+  GetAllUsers:
+    Type: AWS::Serverless::Function
+    Properties:
+        CodeUri: src/lambda/Users/GetAll
+        Handler: lambda_function.handler
+        Events:
+            Payment:
+              Type: Api
+              Properties:
+                RestApiId: !Ref AspireApi
+                Path: /users
+                Method: get
+        Layers:
+          - Ref: DatabaseLayer
+  GetMentorsPendingApproval:
+    Type: AWS::Serverless::Function
+    Properties:
+        CodeUri: src/lambda/Users/GetMentors
+        Handler: lambda_function.handler
+        Events:
+            Payment:
+              Type: Api
+              Properties:
+                RestApiId: !Ref AspireApi
+                Path: /users/mentors/pending
+                Method: get
+        Layers:
+          - Ref: DatabaseLayer
 
 Outputs:
   Region:
