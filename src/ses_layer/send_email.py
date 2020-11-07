@@ -7,7 +7,7 @@ logger.setLevel(logging.INFO)
 
 ses_client = boto3.client('ses')
 
-ADMIN_EMAIL = "saiima.ali@mail.utoronto.ca"
+ADMIN_EMAIL = "aspire@maxgala.com"
 
 def send_email(to_addresses, subject, body_text, source_email=ADMIN_EMAIL, charset="UTF-8"):
     if not isinstance(to_addresses, list):

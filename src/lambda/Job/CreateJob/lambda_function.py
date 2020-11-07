@@ -4,7 +4,6 @@ import logging
 import uuid
 from datetime import datetime
 
-# FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
@@ -19,7 +18,7 @@ def handler(event, context):
     authorized_groups = [
         UserGroups.ADMIN,
         UserGroups.MENTOR,
-        UserGroups.PAID,
+        UserGroups.PAID
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
     if not success:
@@ -29,11 +28,11 @@ def handler(event, context):
                 "errorMessage": "unauthorized"
             })
         }
-    
+
     session = Session()
 
     info = json.loads(event["body"])
-    
+
     tags = []
     for tag in info["job_tags"]:
         tags.append(JobTags[tag])
@@ -46,7 +45,7 @@ def handler(event, context):
 
     session.add(Job_row)        
     session.commit()
-    job_dict = row2dict(Job_row)
+    res = row2dict(Job_row)
     session.close()
 
     ##email hiring manager
@@ -56,9 +55,10 @@ def handler(event, context):
     subject = "[MAX Aspire] The job you posted is under review"
     body = f"Salaam!\r\n\nThank you for choosing MAX Aspire as your entrusted partner. I am delighted to confirm that we have received your job posting {job_title} on {today}. A member of our team is currently reviewing the job posting to make sure it meets all the necessary requirements.\r\n\nOnce approved, you will be notified via email/member portal. Subsequently you will be notified if any additional information is required. Kindly bear with us 2-3 days before the job is approved and posted on MAX Aspire Job Board. Thank you.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
     send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
-    
+
     return {
         "statusCode": 201,
-        "body": job_dict
+        "body": json.dumps(
+            res
+        )
     }
-    

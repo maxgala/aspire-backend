@@ -37,7 +37,7 @@ def handler(event, context):
 
     
     if job != None:
-        job.job_status = JobStatus.CLOSED
+        job.job_status = JobStatus.REJECTED
         
         session.commit()
         session.close()

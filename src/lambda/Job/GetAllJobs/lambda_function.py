@@ -31,7 +31,8 @@ def handler(event, context):
     if user_id != None:
         jobs = jobs.filter(Job.posted_by == user_id)
     if status != None:
-        jobs = jobs.filter(Job.job_status == status.upper())
+        status_list = [x.upper() for x in status.split(',')]
+        jobs = jobs.filter(Job.job_status.in_(status_list))
     if page != None:
         jobs = jobs.offset((int(page) * page_size) - page_size).limit(page_size)
    
