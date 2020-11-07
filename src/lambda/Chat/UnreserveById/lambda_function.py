@@ -12,7 +12,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def edit_user_credits(user, access_token, value):
+def edit_credits(user, access_token, value):
     user_credits = user.get('custom:user_credits')
     response = client.update_user_attributes(
         UserAttributes=[
@@ -67,11 +67,12 @@ def handler(event, context):
             })
         }
 
-    # to unreserve, chat must be either active(multi aspiring professional chats) or reserved(single aspiring professional chats)
+    # to unreserve, chat must be either ACTIVE(multi aspiring professional chats) or RESERVED(single aspiring professional chats)
     # in addition, user must have reserved this chat
     #
     # if chat_status is RESERVED => set to ACTIVE
     if chat.chat_status != ChatStatus.ACTIVE or chat.chat_status != ChatStatus.RESERVED:
+        session.close()
         return {
             "statusCode": 403,
             "body": json.dumps({
@@ -79,6 +80,7 @@ def handler(event, context):
             })
         }
     if user['email'] not in chat.aspiring_professionals:
+        session.close()
         return {
             "statusCode": 403,
             "body": json.dumps({
@@ -87,7 +89,7 @@ def handler(event, context):
         }
 
     chat.aspiring_professionals.remove(user['email'])
-    edit_user_credits(user, access_token, credit_mapping[chat.chat_type])
+    edit_credits(user, access_token, credit_mapping[chat.chat_type])
     if chat.chat_status == ChatStatus.RESERVED:
         chat.chat_status = ChatStatus.ACTIVE
 

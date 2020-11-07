@@ -4,7 +4,7 @@ import boto3
 
 from chat import Chat, ChatType, ChatStatus
 from base import Session, row2dict
-from role_validation import UserGroups, check_auth
+from role_validation import UserGroups
 
 client = boto3.client('cognito-idp')
 
@@ -13,22 +13,6 @@ logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # check authorization
-    authorized_groups = [
-        UserGroups.ADMIN,
-        UserGroups.MENTOR,
-        UserGroups.PAID,
-        UserGroups.FREE
-    ]
-    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
-    if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
-
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
     type_filter = event["queryStringParameters"].get("type", "") if event["queryStringParameters"] else ""
     senior_executive_filter = event["queryStringParameters"].get("senior_executive", "") if event["queryStringParameters"] else ""

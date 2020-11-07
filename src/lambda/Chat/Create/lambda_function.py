@@ -3,7 +3,7 @@ import logging
 import boto3
 from datetime import datetime
 
-from chat import Chat, ChatType, ChatStatus, credit_mapping, mandatory_date
+from chat import Chat, ChatType, ChatStatus, mandatory_date
 from base import Session
 from role_validation import UserGroups, check_auth
 
@@ -29,7 +29,6 @@ def edit_remaining_chats_frequency(user, access_token, value):
 def handler(event, context):
     # check authorization
     authorized_groups = [
-        UserGroups.ADMIN,
         UserGroups.MENTOR
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)
@@ -51,18 +50,18 @@ def handler(event, context):
 
     # validate body
     body = json.loads(event["body"])
-    chat_type = body.get('chat_type')
-    description = body.get('description')
-    tags = body.get('tags')
-    fixed_date = body.get('fixed_date')
-    if not chat_type or chat_type not in ChatType.__members__:
+    if not body.get('chat_type') or body['chat_type'] not in ChatType.__members__:
         return {
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "invalid parameter(s): 'chat_status'"
             })
         }
+
     chat_type = ChatType[body['chat_type']]
+    description = body.get('description')
+    tags = body.get('tags')
+    fixed_date = body.get('fixed_date')
     if chat_type in mandatory_date and not fixed_date:
         return {
             "statusCode": 400,

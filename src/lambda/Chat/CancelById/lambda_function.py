@@ -2,7 +2,7 @@ import json
 import logging
 import boto3
 
-from chat import Chat, ChatStatus, credit_mapping
+from chat import Chat, ChatStatus
 from base import Session
 from role_validation import UserGroups, read_auth, edit_auth
 
@@ -28,7 +28,6 @@ def edit_remaining_chats_frequency(user, access_token, value):
 def handler(event, context):
     # check authorization
     authorized_groups = [
-        UserGroups.ADMIN,
         UserGroups.MENTOR
     ]
     success, user = read_auth(event['headers']['Authorization'], authorized_groups)
@@ -70,6 +69,7 @@ def handler(event, context):
     success = edit_auth(user, chat.senior_executive)
     if not success:
         # caller does not own the resource
+        session.close()
         return {
             "statusCode": 401,
             "body": json.dumps({
@@ -81,7 +81,7 @@ def handler(event, context):
     #
     # if chat to be canceled is dated (i.e. cannot be rescheduled):
     #   - if ACTIVE or RESERVED  => set to CANCELED
-    #   - if PENDING             => set to CANCELED and decrement remaining chat frequency in Cognito
+    #   - if PENDING             => N/A
     #
     # if chat to be canceled is undated (i.e. can be rescheduled):
     #   - if ACTIVE or RESERVED
@@ -92,35 +92,27 @@ def handler(event, context):
     #       - set to CANCELED
     #       - create a new PENDING chat to be rescheduled
     if chat.chat_status == ChatStatus.DONE or chat.chat_status == ChatStatus.CANCLED:
+        session.close()
         return {
             "statusCode": 304
         }
 
     chat.chat_status == ChatStatus.CANCELED
-    if chat.chat_status == ChatStatus.ACTIVE or chat.chat_status == ChatStatus.RESERVED:
-        if not chat.fixed_date:
+    if not chat.fixed_date:
+        # create new pending chat
+        chat_new = Chat(
+            chat_type=chat.chat_type, description=chat.description,
+            chat_status=ChatStatus.PENDING, tags=chat.tags,
+            senior_executive=chat.senior_executive
+        )
+        session.add(chat_new)
+
+        # TODO: if has reservation(s), refund aspring professional credits and send email notification
+        if chat.chat_status == ChatStatus.ACTIVE or chat.chat_status == ChatStatus.RESERVED:
             # increment remaining_chats_frequency
             edit_remaining_chats_frequency(user, access_token, 1)
 
-            # create new pending chat
-            chat_new = Chat(
-                chat_type=chat.chat_type, description=chat.description,
-                chat_status=ChatStatus.PENDING, tags=chat.tags,
-                senior_executive=chat.senior_executive
-            )
-            session.add(chat_new)
-    if chat.chat_status == ChatStatus.PENDING:
-        if chat.fixed_date:
-            # decrement remaining_chats_frequency
-            edit_remaining_chats_frequency(user, access_token, -1)
-        else:
-            # create new pending chat
-            chat_new = Chat(
-                chat_type=chat.chat_type, description=chat.description,
-                chat_status=ChatStatus.PENDING, tags=chat.tags,
-                senior_executive=chat.senior_executive
-            )
-            session.add(chat_new)
+    # TODO: send email notificatin to senior executive
 
     session.commit()
     session.close()

@@ -12,7 +12,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def edit_user_credits(user, access_token, value):
+def edit_credits(user, access_token, value):
     user_credits = user.get('custom:user_credits')
     response = client.update_user_attributes(
         UserAttributes=[
@@ -73,6 +73,7 @@ def handler(event, context):
     # if chat_type is FOUR_ON_ONE:
     ## append aspiring_professional, set to RESERVED (if all four booked)
     if chat.chat_status != ChatStatus.ACTIVE:
+        session.close()
         return {
             "statusCode": 403,
             "body": json.dumps({
@@ -80,6 +81,7 @@ def handler(event, context):
             })
         }
     if user['email'] in chat.aspiring_professionals:
+        session.close()
         return {
             "statusCode": 403,
             "body": json.dumps({
@@ -95,7 +97,7 @@ def handler(event, context):
                 "errorMessage": "user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId)
             })
         }
-    edit_user_credits(user, access_token, (-credit_mapping[chat.chat_type]))
+    edit_credits(user, access_token, (-credit_mapping[chat.chat_type]))
 
     if chat.chat_type == ChatType.FOUR_ON_ONE:
         if chat.aspiring_professionals:

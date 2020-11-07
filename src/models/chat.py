@@ -12,13 +12,6 @@ class ChatType(enum.Enum):
     FOUR_ON_ONE = 2
     MOCK_INTERVIEW = 3
 
-class ChatStatus(enum.Enum):
-    PENDING = 1 # needs approval? not available for reservation yet
-    ACTIVE = 2 # can only reserve a chat which is active
-    RESERVED = 3 # once booked
-    DONE = 4 # ????
-    CANCELED = 5 # only through the editchat
-
 
 credit_mapping = {
     ChatType.ONE_ON_ONE: 5,
@@ -30,6 +23,14 @@ mandatory_date = [
     ChatType.FOUR_ON_ONE,
     ChatType.MOCK_INTERVIEW
 ]
+
+
+class ChatStatus(enum.Enum):
+    PENDING = 1
+    ACTIVE = 2
+    RESERVED = 3
+    DONE = 4
+    CANCELED = 5
 
 
 class Chat(Base):
