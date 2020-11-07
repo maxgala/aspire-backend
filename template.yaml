@@ -109,13 +109,19 @@ Resources:
   # --- Infrastructure ---
 
 # --- Chats Service ---
-# git is not tracking this change?
   ChatCreate:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/lambda/Chat/Create
       Handler: lambda_function.handler
       Description: Lambda function to create new chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserAttributes
+            Resource: '*'
       Events:
         ChatCreateEvent:
           Type: Api
@@ -142,7 +148,6 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
-        - Ref: AuthLayer
 
   ChatEditById:
     Type: AWS::Serverless::Function
@@ -151,7 +156,7 @@ Resources:
       Handler: lambda_function.handler
       Description: Lambda function to edit chat by Id
       Events:
-        ChatEditById:
+        ChatEditByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -168,7 +173,7 @@ Resources:
       Handler: lambda_function.handler
       Description: Lambda function to delete chat by Id
       Events:
-        ChatDeleteById:
+        ChatDeleteByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -192,7 +197,7 @@ Resources:
               - cognito-idp:ListUsers
             Resource: '*'
       Events:
-        ChatGetAll:
+        ChatGetAllEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -200,7 +205,6 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
-        - Ref: AuthLayer
 
   ChatReserveById:
     Type: AWS::Serverless::Function
@@ -208,8 +212,15 @@ Resources:
       CodeUri: src/lambda/Chat/ReserveById
       Handler: lambda_function.handler
       Description: Lambda function to reserve a chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserAttributes
+            Resource: '*'
       Events:
-        ChatReserveById:
+        ChatReserveByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -219,18 +230,49 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
 
-  ChatUnReserveById:
+  ChatUnreserveById:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/lambda/Chat/UnreserveById
       Handler: lambda_function.handler
       Description: Lambda function to unreserve a chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserAttributes
+            Resource: '*'
       Events:
-        ChatUnReserveById:
+        ChatUnreserveByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
             Path: /chats/{chatId}/unreserve
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+
+  ChatCancelById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/CancelById
+      Handler: lambda_function.handler
+      Description: Lambda function to cancel a chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserAttributes
+            Resource: '*'
+      Events:
+        ChatCancelByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats/{chatId}/cancel
             Method: put
       Layers:
         - Ref: DatabaseLayer
@@ -422,10 +464,8 @@ Resources:
               Method: put
       Layers:
         - Ref: DatabaseLayer
-<<<<<<< HEAD
-=======
         - Ref: AuthLayer
-  
+
   RejectJobById:
     Type: AWS::Serverless::Function
     Properties:
@@ -441,7 +481,6 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
->>>>>>> 6f81a3a38c869d9f4a1acc5576523baa9454be52
 
   JobContactById:
     Type: AWS::Serverless::Function

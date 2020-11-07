@@ -52,7 +52,7 @@ def handler(event, context):
                 "errorMessage": "unauthorized"
             })
         }
-    
+
     # TODO: allow updating description, tags and fixed_date?
     # if fixed_date => what if it's active or pending with expiry_date specified?
     body = json.loads(event["body"])

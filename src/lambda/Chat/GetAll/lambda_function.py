@@ -7,10 +7,24 @@ from base import Session, row2dict
 from role_validation import UserGroups
 
 client = boto3.client('cognito-idp')
+userPoolId = 'us-east-1_T02rYkaXy'
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+def get_user_attributes(email, attributes=['given_name', 'family_name', 'custom:company']):
+    response = client.list_users(
+        UserPoolId=userPoolId,
+        AttributesToGet=attributes,
+        Filter = 'email="{}"'.format(email)
+    )
+    logger.info(response)
+
+    raw_attributes = response['Users'][0]['Attributes']
+    attributes = {}
+    for attr in raw_attributes:
+        attributes[attr['Name']] = attr['Value']
+    return attributes
 
 def handler(event, context):
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
@@ -32,21 +46,10 @@ def handler(event, context):
 
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
-        response = client.list_users(
-            UserPoolId='us-east-1_T02rYkaXy',
-            AttributesToGet=[
-                'given_name','family_name','custom:company'
-            ],
-            Filter = 'email="{}"'.format(chat["senior_executive"])
-        )
-        attributes = response['Users'][0]['Attributes']
-        for attr in attributes:
-            if attr['Name'] == 'given_name':
-                chat['given_name'] = attr['Value']
-            elif attr['Name'] == 'family_name':
-                chat['family_name'] = attr['Value']
-            elif attr['Name'] == 'custom:company':
-                chat['custom:company'] = attr['Value']
+        attributes = get_user_attributes(chat['senior_executive'])
+        chat['given_name'] = attributes['given_name']
+        chat['family_name'] = attributes['family_name']
+        chat['custom:company'] = attributes['custom:company']
 
     return {
         "statusCode": 200,
