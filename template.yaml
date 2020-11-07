@@ -439,6 +439,22 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+  
+  RejectJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/RejectJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}/reject
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   JobContactById:
     Type: AWS::Serverless::Function
