@@ -380,6 +380,14 @@ Resources:
     Properties:
       CodeUri: src/lambda/Job/CreateJob
       Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
       Events:
           CreateJobEvent:
             Type: Api
@@ -389,6 +397,8 @@ Resources:
               Method: post
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: SesLayer
 
   GetAllJobs:
     Type: AWS::Serverless::Function
@@ -404,6 +414,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   GetJobById:
     Type: AWS::Serverless::Function
@@ -419,6 +430,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   DeleteJobById:
     Type: AWS::Serverless::Function
@@ -434,12 +446,21 @@ Resources:
               Method: delete
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   EditJobById:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/lambda/Job/EditJobById
       Handler: lambda_function.handler
+	    Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
       Events:
           CreateJobEvent:
             Type: Api
@@ -449,6 +470,8 @@ Resources:
               Method: put
       Layers:
         - Ref: DatabaseLayer
+	      - Ref: AuthLayer
+        - Ref: SesLayer
 
   CloseJobById:
     Type: AWS::Serverless::Function
@@ -496,6 +519,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
   # --- Jobs Service ---
 
   # --- Job Applications Service ---
@@ -504,6 +528,14 @@ Resources:
     Properties:
       CodeUri: src/lambda/JobApplications/CreateJobApplication
       Handler: lambda_function.handler
+	    Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
       Events:
           CreateJobApplicationEvent:
             Type: Api
@@ -513,6 +545,8 @@ Resources:
               Method: post
       Layers:
         - Ref: DatabaseLayer
+	      - Ref: AuthLayer
+        - Ref: SesLayer
 
   GetAllJobApplications:
     Type: AWS::Serverless::Function
@@ -528,6 +562,7 @@ Resources:
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   DeleteJobApplicationById:
     Type: AWS::Serverless::Function
@@ -539,10 +574,11 @@ Resources:
             Type: Api
             Properties:
               RestApiId: !Ref AspireApi
-              Path: /job-applications/{jobAppId}
+              Path: /job-applications/{id}
               Method: delete
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   GetJobApplicationById:
     Type: AWS::Serverless::Function
@@ -554,10 +590,11 @@ Resources:
             Type: Api
             Properties:
               RestApiId: !Ref AspireApi
-              Path: /job-applications/{jobAppId}
+              Path: /job-applications/{id}
               Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
   EditJobApplicationById:
     Type: AWS::Serverless::Function
@@ -569,10 +606,11 @@ Resources:
             Type: Api
             Properties:
               RestApiId: !Ref AspireApi
-              Path: /job-applications/{jobAppId}
+              Path: /job-applications/{id}
               Method: put
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
   # --- Job Applications Service ---
 
   # --- Industry Tags Service ---
