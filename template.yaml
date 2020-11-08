@@ -453,7 +453,7 @@ Resources:
     Properties:
       CodeUri: src/lambda/Job/EditJobById
       Handler: lambda_function.handler
-	    Policies:
+      Policies:
         - Statement:
           - Sid: CognitoPostConfSESSendPolicy
             Effect: Allow
@@ -470,7 +470,7 @@ Resources:
               Method: put
       Layers:
         - Ref: DatabaseLayer
-	      - Ref: AuthLayer
+	- Ref: AuthLayer
         - Ref: SesLayer
 
   CloseJobById:
@@ -528,7 +528,7 @@ Resources:
     Properties:
       CodeUri: src/lambda/JobApplications/CreateJobApplication
       Handler: lambda_function.handler
-	    Policies:
+      Policies:
         - Statement:
           - Sid: CognitoPostConfSESSendPolicy
             Effect: Allow
@@ -545,7 +545,7 @@ Resources:
               Method: post
       Layers:
         - Ref: DatabaseLayer
-	      - Ref: AuthLayer
+	- Ref: AuthLayer
         - Ref: SesLayer
 
   GetAllJobApplications:
