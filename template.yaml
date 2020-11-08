@@ -470,7 +470,7 @@ Resources:
               Method: put
       Layers:
         - Ref: DatabaseLayer
-	- Ref: AuthLayer
+        - Ref: AuthLayer
         - Ref: SesLayer
 
   CloseJobById:
@@ -545,7 +545,7 @@ Resources:
               Method: post
       Layers:
         - Ref: DatabaseLayer
-	- Ref: AuthLayer
+        - Ref: AuthLayer
         - Ref: SesLayer
 
   GetAllJobApplications:
