@@ -4,7 +4,7 @@ from sqlalchemy.schema import Column
 from sqlalchemy.types import String, Integer, Enum, DateTime
 from sqlalchemy.dialects.postgresql import ARRAY
 
-from base import Base, MutableList
+from base import Base
 
 
 class ChatType(enum.Enum):
@@ -39,9 +39,9 @@ class Chat(Base):
     chat_id = Column(Integer(), primary_key=True)
     chat_type = Column(Enum(ChatType), nullable=False)
     description = Column(String(255))
-    tags = Column(MutableList.as_mutable(ARRAY(String(100))))
+    tags = Column(ARRAY(String(100)))
     chat_status = Column(Enum(ChatStatus), nullable=False)
-    aspiring_professionals = Column(MutableList.as_mutable(ARRAY(String(100))))
+    aspiring_professionals = Column(ARRAY(String(100)))
     senior_executive = Column(String(100), nullable=False)
     fixed_date = Column(DateTime())
     expiry_date = Column(DateTime())

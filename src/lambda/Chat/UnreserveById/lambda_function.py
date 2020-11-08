@@ -13,12 +13,12 @@ logger.setLevel(logging.INFO)
 
 
 def edit_credits(user, access_token, value):
-    user_credits = user.get('custom:user_credits')
+    user_credits = user.get('custom:credits')
     response = client.update_user_attributes(
         UserAttributes=[
             {
-                'Name': 'custom:user_credits',
-                'Value': user_credits + value
+                'Name': 'custom:credits',
+                'Value': str(int(user_credits) + value)
             },
         ],
         AccessToken=access_token
@@ -71,7 +71,7 @@ def handler(event, context):
     # in addition, user must have reserved this chat
     #
     # if chat_status is RESERVED => set to ACTIVE
-    if chat.chat_status != ChatStatus.ACTIVE or chat.chat_status != ChatStatus.RESERVED:
+    if chat.chat_status != ChatStatus.ACTIVE and chat.chat_status != ChatStatus.RESERVED:
         session.close()
         return {
             "statusCode": 403,
@@ -79,7 +79,7 @@ def handler(event, context):
                 "errorMessage": "cannot unreserve inactive or unreserved chat with id '{}'".format(chatId)
             })
         }
-    if user['email'] not in chat.aspiring_professionals:
+    if not chat.aspiring_professionals or user['email'] not in chat.aspiring_professionals:
         session.close()
         return {
             "statusCode": 403,
@@ -88,8 +88,17 @@ def handler(event, context):
             })
         }
 
-    chat.aspiring_professionals.remove(user['email'])
-    edit_credits(user, access_token, credit_mapping[chat.chat_type])
+    # TODO: find a better way to pop from list
+    aspiring_professionals = chat.aspiring_professionals
+    chat.aspiring_professionals = None
+    for ap in aspiring_professionals:
+        if ap != user['email']:
+            if chat.aspiring_professionals:
+                chat.aspiring_professionals.append(ap)
+            else:
+                chat.aspiring_professionals = [ap]
+
+    # edit_credits(user, access_token, credit_mapping[chat.chat_type])
     if chat.chat_status == ChatStatus.RESERVED:
         chat.chat_status = ChatStatus.ACTIVE
 

@@ -13,12 +13,12 @@ logger.setLevel(logging.INFO)
 
 
 def edit_credits(user, access_token, value):
-    user_credits = user.get('custom:user_credits')
+    user_credits = user.get('custom:credits')
     response = client.update_user_attributes(
         UserAttributes=[
             {
-                'Name': 'custom:user_credits',
-                'Value': user_credits + value
+                'Name': 'custom:credits',
+                'Value': str(int(user_credits) + value)
             },
         ],
         AccessToken=access_token
@@ -80,7 +80,7 @@ def handler(event, context):
                 "errorMessage": "cannot reserve inactive chat with id '{}'".format(chatId)
             })
         }
-    if user['email'] in chat.aspiring_professionals:
+    if chat.aspiring_professionals and user['email'] in chat.aspiring_professionals:
         session.close()
         return {
             "statusCode": 403,
@@ -89,15 +89,15 @@ def handler(event, context):
             })
         }
 
-    if user['credits'] < credit_mapping[chat.chat_type]:
-        session.close()
-        return {
-            "statusCode": 403,
-            "body": json.dumps({
-                "errorMessage": "user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId)
-            })
-        }
-    edit_credits(user, access_token, (-credit_mapping[chat.chat_type]))
+    # if int(user['custom:credits']) < credit_mapping[chat.chat_type]:
+    #     session.close()
+    #     return {
+    #         "statusCode": 403,
+    #         "body": json.dumps({
+    #             "errorMessage": "user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId)
+    #         })
+    #     }
+    # edit_credits(user, access_token, (-credit_mapping[chat.chat_type]))
 
     if chat.chat_type == ChatType.FOUR_ON_ONE:
         if chat.aspiring_professionals:

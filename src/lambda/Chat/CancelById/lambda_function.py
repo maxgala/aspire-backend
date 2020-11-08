@@ -4,7 +4,7 @@ import boto3
 
 from chat import Chat, ChatStatus
 from base import Session
-from role_validation import UserGroups, read_auth, edit_auth
+from role_validation import UserGroups, check_auth, edit_auth
 
 client = boto3.client('cognito-idp')
 
@@ -18,7 +18,7 @@ def edit_remaining_chats_frequency(user, access_token, value):
         UserAttributes=[
             {
                 'Name': 'custom:remaining_chats_frequency',
-                'Value': str(int(remaining_chats_frequency) + value)
+                'Value': remaining_chats_frequency + value
             },
         ],
         AccessToken=access_token
@@ -30,7 +30,7 @@ def handler(event, context):
     authorized_groups = [
         UserGroups.MENTOR
     ]
-    success, user = read_auth(event['headers']['Authorization'], authorized_groups)
+    success, user = check_auth(event['headers']['Authorization'], authorized_groups)
     if not success:
         return {
             "statusCode": 401,
@@ -91,13 +91,13 @@ def handler(event, context):
     #   - if PENDING
     #       - set to CANCELED
     #       - create a new PENDING chat to be rescheduled
-    if chat.chat_status == ChatStatus.DONE or chat.chat_status == ChatStatus.CANCLED:
+    if chat.chat_status == ChatStatus.DONE or chat.chat_status == ChatStatus.CANCELED:
         session.close()
         return {
             "statusCode": 304
         }
 
-    chat.chat_status == ChatStatus.CANCELED
+    chat.chat_status = ChatStatus.CANCELED
     if not chat.fixed_date:
         # create new pending chat
         chat_new = Chat(
@@ -110,7 +110,8 @@ def handler(event, context):
         # TODO: if has reservation(s), refund aspring professional credits and send email notification
         if chat.chat_status == ChatStatus.ACTIVE or chat.chat_status == ChatStatus.RESERVED:
             # increment remaining_chats_frequency
-            edit_remaining_chats_frequency(user, access_token, 1)
+            # edit_remaining_chats_frequency(user, access_token, 1)
+            pass
 
     # TODO: send email notificatin to senior executive
 

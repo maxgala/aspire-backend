@@ -4,7 +4,6 @@ import boto3
 
 from chat import Chat, ChatType, ChatStatus
 from base import Session, row2dict
-from role_validation import UserGroups
 
 client = boto3.client('cognito-idp')
 userPoolId = 'us-east-1_T02rYkaXy'

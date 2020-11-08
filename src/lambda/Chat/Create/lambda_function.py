@@ -19,7 +19,7 @@ def edit_remaining_chats_frequency(user, access_token, value):
         UserAttributes=[
             {
                 'Name': 'custom:remaining_chats_frequency',
-                'Value': str(int(remaining_chats_frequency) + value)
+                'Value': remaining_chats_frequency + value
             },
         ],
         AccessToken=access_token
@@ -54,7 +54,7 @@ def handler(event, context):
         return {
             "statusCode": 400,
             "body": json.dumps({
-                "errorMessage": "invalid parameter(s): 'chat_status'"
+                "errorMessage": "invalid parameter(s): 'chat_type'"
             })
         }
 
@@ -79,7 +79,7 @@ def handler(event, context):
     if fixed_date:
         chat_new.fixed_date = datetime.fromtimestamp(fixed_date).replace(hour=0, minute=0,second=0, microsecond=0)
         chat_new.chat_status = ChatStatus.ACTIVE
-        edit_remaining_chats_frequency(user, access_token, -1)
+        # edit_remaining_chats_frequency(user, access_token, -1)
 
     session.add(chat_new)
     session.commit()

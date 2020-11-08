@@ -3,7 +3,6 @@ import logging
 
 from chat import Chat
 from base import Session, row2dict
-from role_validation import UserGroups
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
