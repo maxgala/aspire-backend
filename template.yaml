@@ -109,15 +109,21 @@ Resources:
   # --- Infrastructure ---
 
 # --- Chats Service ---
-# git is not tracking this change?
-  CreateChat:
+  ChatCreate:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/CreateChat
+      CodeUri: src/lambda/Chat/Create
       Handler: lambda_function.handler
       Description: Lambda function to create new chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserAttributes
+            Resource: '*'
       Events:
-        CreateChatEvent:
+        ChatCreateEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -125,15 +131,16 @@ Resources:
             Method: post
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-  GetChatById:
+  ChatGetById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/GetChatById
+      CodeUri: src/lambda/Chat/GetById
       Handler: lambda_function.handler
       Description: Lambda function to get chat by Id
       Events:
-        GetChatByIdEvent:
+        ChatGetByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -142,14 +149,14 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  EditChatById:
+  ChatEditById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/EditChatById
+      CodeUri: src/lambda/Chat/EditById
       Handler: lambda_function.handler
       Description: Lambda function to edit chat by Id
       Events:
-        CreateChatEvent:
+        ChatEditByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -157,15 +164,16 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-  DeleteChatById:
+  ChatDeleteById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/DeleteChatById
+      CodeUri: src/lambda/Chat/DeleteById
       Handler: lambda_function.handler
       Description: Lambda function to delete chat by Id
       Events:
-        CreateChatEvent:
+        ChatDeleteByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -173,11 +181,12 @@ Resources:
             Method: delete
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-  GetAllChats:
+  ChatGetAll:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/GetAllChats
+      CodeUri: src/lambda/Chat/GetAll
       Handler: lambda_function.handler
       Description: Lambda function to get all chats
       Policies:
@@ -188,7 +197,7 @@ Resources:
               - cognito-idp:ListUsers
             Resource: '*'
       Events:
-        GetAllChatsEvent:
+        ChatGetAllEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -197,14 +206,21 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  ReserveChatById:
+  ChatReserveById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/ReserveChatById
+      CodeUri: src/lambda/Chat/ReserveById
       Handler: lambda_function.handler
       Description: Lambda function to reserve a chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserAttributes
+            Resource: '*'
       Events:
-        ReserveChatEvent:
+        ChatReserveByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -212,15 +228,23 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-  UnReserveChatById:
+  ChatUnreserveById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Chat/UnreserveChatById
+      CodeUri: src/lambda/Chat/UnreserveById
       Handler: lambda_function.handler
-      Description: Lambda function to reserve a chat
+      Description: Lambda function to unreserve a chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserAttributes
+            Resource: '*'
       Events:
-        UnreserveChatEvent:
+        ChatUnreserveByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -228,6 +252,31 @@ Resources:
             Method: put
       Layers:
         - Ref: DatabaseLayer
+        - Ref: AuthLayer
+
+  ChatCancelById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/CancelById
+      Handler: lambda_function.handler
+      Description: Lambda function to cancel a chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserAttributes
+            Resource: '*'
+      Events:
+        ChatCancelByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats/{chatId}/cancel
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
   # --- Chats Service ---
 
   # --- SE Connect Service ---
@@ -439,7 +488,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
-  
+
   RejectJobById:
     Type: AWS::Serverless::Function
     Properties:

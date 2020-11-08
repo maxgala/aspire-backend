@@ -1,2 +1,1 @@
-boto3==1.0.0
 icalendar==4.0.6

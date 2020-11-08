@@ -1,10 +1,10 @@
 import enum
 from datetime import datetime
 from sqlalchemy.schema import Column
-from sqlalchemy.types import String, Integer, BigInteger, Enum, DateTime
+from sqlalchemy.types import String, Integer, Enum, DateTime
 from sqlalchemy.dialects.postgresql import ARRAY
 
-from base import Base, MutableList
+from base import Base
 
 
 class ChatType(enum.Enum):
@@ -12,17 +12,26 @@ class ChatType(enum.Enum):
     FOUR_ON_ONE = 2
     MOCK_INTERVIEW = 3
 
+
+credit_mapping = {
+    ChatType.ONE_ON_ONE: 5,
+    ChatType.FOUR_ON_ONE: 3,
+    ChatType.MOCK_INTERVIEW: 5
+}
+
+mandatory_date = [
+    ChatType.FOUR_ON_ONE,
+    ChatType.MOCK_INTERVIEW
+]
+
+
 class ChatStatus(enum.Enum):
-    PENDING = 1 # needs approval? not available for reservation yet
-    ACTIVE = 2 # can only reserve a chat which is active
-    RESERVED = 3 # once booked
-    DONE = 4 # ????
-    CANCELED = 5 # only through the editchat
+    PENDING = 1
+    ACTIVE = 2
+    RESERVED = 3
+    DONE = 4
+    CANCELED = 5
 
-credit_mapping = {ChatType.ONE_ON_ONE: 5, ChatType.FOUR_ON_ONE: 3, \
-                  ChatType.MOCK_INTERVIEW: 5}
-
-mandatory_date = [ChatType.FOUR_ON_ONE, ChatType.MOCK_INTERVIEW]
 
 class Chat(Base):
     __tablename__ = 'chats'
@@ -30,17 +39,12 @@ class Chat(Base):
     chat_id = Column(Integer(), primary_key=True)
     chat_type = Column(Enum(ChatType), nullable=False)
     description = Column(String(255))
-
-    credits = Column(Integer(), nullable=False)
-
-    date = Column(DateTime())
-    end_date = Column(BigInteger())
-
+    tags = Column(ARRAY(String(100)))
     chat_status = Column(Enum(ChatStatus), nullable=False)
-    aspiring_professionals = Column(MutableList.as_mutable(ARRAY(String(100))))
+    aspiring_professionals = Column(ARRAY(String(100)))
     senior_executive = Column(String(100), nullable=False)
+    fixed_date = Column(DateTime())
+    expiry_date = Column(DateTime())
 
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
-
-    tags = Column(MutableList.as_mutable(ARRAY(String(100)))) #need to filter by these

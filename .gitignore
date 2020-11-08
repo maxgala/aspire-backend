@@ -253,3 +253,6 @@ src/layers/*/dependencies/
 
 # .backup files
 *.backup
+
+# scheduler simulation directory
+src/lambda/scheduler/simulation/
