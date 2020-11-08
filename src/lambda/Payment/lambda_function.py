@@ -3,11 +3,14 @@ import stripe
 import requests
 import os
 from dotenv import load_dotenv
+# from base import *
+from base import Session, engine, Base
 import logging
 
 load_dotenv()
 
-stripe.api_key= os.environ.get('STRIPE_API_KEY')
+stripe.api_key= os.getenv('STRIPE_KEY')
+# stripe.api_key= "sk_test_51H0cpsGPqNNATumTocDFOQBCm29E08vroVYDfbduGfSf2bOUzjX0fbOUtPtuJ7xJRi7xGLZIU9SnZXK6cKE1ld0T00MOwM7rEP"
 
 def handler(event, context):
 
