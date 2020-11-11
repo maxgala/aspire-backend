@@ -504,6 +504,28 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+  
+  AutomaticallyApproveJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/AutomaticallyApproveJob
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+        ApproveJobScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 minute)
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: SesLayer
 
   JobContactById:
     Type: AWS::Serverless::Function
