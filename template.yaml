@@ -522,7 +522,7 @@ Resources:
         ApproveJobScheduledEvent:
           Type: Schedule
           Properties:
-            Schedule: rate(1 minute)
+            Schedule: rate(5 minutes)
       Layers:
         - Ref: DatabaseLayer
         - Ref: SesLayer
