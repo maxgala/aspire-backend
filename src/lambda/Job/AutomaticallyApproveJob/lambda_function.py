@@ -1,7 +1,8 @@
 import logging
 from datetime import datetime
 
-from job import Job
+from job import Job, JobType, JobStatus, JobTags
+from job_application import JobApplication, JobApplicationStatus
 from base import Session
 from send_email import send_email
 
