@@ -30,6 +30,7 @@ def handler(event, context):
     body = json.loads(event["body"])
     requestor = body.get('requestor')
     requestee = body.get('requestee')
+    target = body.get('target') 
 
     if not requestor:
         return {
@@ -43,6 +44,14 @@ def handler(event, context):
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "missing body attribute(s): 'requestee'"
+            })
+        }
+
+    if not target:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({
+                "errorMessage": "missing body attribute(s): 'target'"
             })
         }
 
@@ -86,15 +95,24 @@ def handler(event, context):
                 }
 
     if create_conn:
-        ConnectSE_new = ConnectSE(requestor=requestor, requestee=requestee, connect_status=ConnectStatus.PENDING)
-        session.add(ConnectSE_new)
+        if target == "se":
+            ConnectSE_new = ConnectSE(requestor=requestor, requestee=requestee, connect_status=ConnectStatus.PENDING)
+            session.add(ConnectSE_new)
+            email_subject = "You have received a new Senior Executive connection request"
+            email_body = "<name> has requested to connect with you"
+            user_email = "saleh.bakhit@hotmail.com"
+            send_email(to_addresses=[user_email], subject=email_subject, body_text=email_body)
+
+        elif target == "ap":
+            ConnectSE_new = ConnectSE(requestor=requestor, requestee=requestee, connect_status=ConnectStatus.ACCEPTED)
+            session.add(ConnectSE_new)
+            email_subject = "A senior executive has connected with you!"
+            email_body = "<name> viewed your profile from the resume bank and has connected with you!"
+            send_email(to_addresses=[requestor, requestee], subject=email_subject, body_text=email_body)
+
 
         # TODO: dynamic user_email
         # TODO: update email subject/body
-        user_email = "saleh.bakhit@hotmail.com"
-        email_subject = "You have received a new Senior Executive connection request"
-        email_body = "<name> has requested to connect with you"
-        send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
 
     session.commit()
     session.close()
