@@ -1,0 +1,587 @@
+{
+	"info": {
+		"_postman_id": "48527b47-3f6f-49ed-af75-84668b1d844a",
+		"name": "MAX Aspire APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "IndustryTags",
+			"item": [
+				{
+					"name": "Create Indsutry Tag",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tag\": \"tag1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/industry-tags/",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"industry-tags",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ConnectCreate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/industry-tags?search=&fuzzy=",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"industry-tags"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"description": "filter response (string)"
+								},
+								{
+									"key": "fuzzy",
+									"value": "",
+									"description": "enable fuzzy search (boolean)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Indsutry Tag By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/industry-tags/:indsutryTagId",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"industry-tags",
+								":indsutryTagId"
+							],
+							"variable": [
+								{
+									"key": "indsutryTagId",
+									"value": "finance"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Indsutry Tag By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/industry-tags/:indsutryTagId",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"industry-tags",
+								":indsutryTagId"
+							],
+							"variable": [
+								{
+									"key": "indsutryTagId",
+									"value": "finance"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Chat",
+			"item": [
+				{
+					"name": "ChatCreate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chat_type\": \"ONE_ON_ONE\",\n    \"fixed_date\": 1609477200\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/chats",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"chats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChatCreateMultiple",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"senior_executive\": \"saleh.bakhit@hotmail.com\",\n    \"chats\": [\n        {\n            \"chat_type\": \"ONE_ON_ONE\"\n        },\n        {\n            \"chat_type\": \"ONE_ON_ONE\",\n            \"fixed_date\": 1609477200\n        },\n        {\n            \"chat_type\": \"FOUR_ON_ONE\",\n            \"fixed_date\": 1609477200\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/chats/create-multiple",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"chats",
+								"create-multiple"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChatGetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/chats",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"chats"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACTIVE",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "FOUR_ON_ONE",
+									"disabled": true
+								},
+								{
+									"key": "senior_executive",
+									"value": "saleh.bakhit@hotmail.com",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChatGetById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/chats/:chatId",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"chats",
+								":chatId"
+							],
+							"variable": [
+								{
+									"key": "chatId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChatDeleteById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/chats/:chatId",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"chats",
+								":chatId"
+							],
+							"variable": [
+								{
+									"key": "chatId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChatReserveById",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/chats/:chatId/reserve",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"chats",
+								":chatId",
+								"reserve"
+							],
+							"variable": [
+								{
+									"key": "chatId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChatUnreserveById",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/chats/:chatId/unreserve",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"chats",
+								":chatId",
+								"unreserve"
+							],
+							"variable": [
+								{
+									"key": "chatId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChatCancelById",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/chats/:chatId/cancel",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"chats",
+								":chatId",
+								"cancel"
+							],
+							"variable": [
+								{
+									"key": "chatId",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CreateDatabaseModels",
+			"item": [
+				{
+					"name": "CreateDatabaseModels",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/create-db-models",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"create-db-models"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Connect",
+			"item": [
+				{
+					"name": "ConnectCreate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestor\": \"se1@test\",\n    \"requestee\": \"se4@test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/connect/",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"connect",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ConnectGetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/connect",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"connect"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "requestor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "requestee",
+									"value": "se2@test",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ConnectGetById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/connect/:connectId",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"connect",
+								":connectId"
+							],
+							"variable": [
+								{
+									"key": "connectId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ConnectEditById",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"connect_status\": \"PENDING\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/connect/:connectId",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"connect",
+								":connectId"
+							],
+							"variable": [
+								{
+									"key": "connectId",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ConnectDeleteById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/connect/:connectId",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"connect",
+								":connectId"
+							],
+							"variable": [
+								{
+									"key": "connectId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJraWQiOiJQTkFDa2xzR29Fc08rdHF4NUdmZGpsNVdya0ZDN2FhaUd0c0txSFNTMXhFPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiTGtTTGdNUW5mak9lQXd4S3VTcUl1dyIsInN1YiI6ImRmZjQxOWM3LTU0NjYtNGExZC05NmExLTNlNDg1ZWJlODI5MCIsImNvZ25pdG86Z3JvdXBzIjpbIkFETUlOIl0sImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhZGRyZXNzIjp7ImZvcm1hdHRlZCI6IjEyMyBUZXN0IFJvYWQifSwiYmlydGhkYXRlIjoiMTk5NS0xMS0yMiIsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbVwvdXMtZWFzdC0xX1QwMnJZa2FYeSIsInBob25lX251bWJlcl92ZXJpZmllZCI6ZmFsc2UsImNvZ25pdG86dXNlcm5hbWUiOiJkZmY0MTljNy01NDY2LTRhMWQtOTZhMS0zZTQ4NWViZTgyOTAiLCJnaXZlbl9uYW1lIjoiU2FsZWgiLCJjdXN0b206Y29tcGFueSI6IkNpc2NvIiwiYXVkIjoiMW1wM2Q5a3Q4Ymw2NmtuaDUwNDBnNjk2djQiLCJldmVudF9pZCI6IjEzOGNlNDc2LWE3ZmUtNDk1Mi1iZjYxLTExNmM1ODU5NDBiYSIsImN1c3RvbTpjcmVkaXRzIjoiMTAwMCIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNjA1MTYwMjc4LCJwaG9uZV9udW1iZXIiOiIrMTUxNDk5ODU4NjEiLCJleHAiOjE2MDUxNjM4NzgsImlhdCI6MTYwNTE2MDI3OCwiZmFtaWx5X25hbWUiOiJCYWtoaXQiLCJlbWFpbCI6InNhbGVoLmJha2hpdEBob3RtYWlsLmNvbSJ9.LefQCOSZwjmrwyjEBllgnB-9ucgXBS7jLh_IOWvOwRvnO4vLJPLmAdIBcIo_jgji-HRM2o7SSHlf6s2FPm8O7Ra-l3XcHlK6Z0VM9moiFRYtyNKFPy9UyJIj30sA1pk0U94CLdkU-YJ7rgdzH9-pYTOxtVMxHnQOYyHq6gSG7fG_padoARuDFP2vbd305wcwPb1R_Bu9GkjDz3gFeE1qQ3Hya2ZJbX-obwuQEBdlYV1_iODVGKo8AZw0s0DKVglRN8MaiDD3ZNlSvQd_bjw5ye65r3r9Y_UNu77GRc9ohQTvdz0WrbjufgKhffj3LxRLuMvRtJ8xEkuJxMGd_71wtw",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "06938469-8aea-4947-9346-cda762bdafd0",
+				"type": "text/javascript",
+				"exec": [
+					"pm.request.headers.add({ key: \"X-Aspire-Access-Token\", value: \"eyJraWQiOiJybGtHaXg4QlVKXC9odEttSm1mT0laK3JVQkpQUllXTE4wWmNWWTBXc1duND0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJkZmY0MTljNy01NDY2LTRhMWQtOTZhMS0zZTQ4NWViZTgyOTAiLCJjb2duaXRvOmdyb3VwcyI6WyJBRE1JTiJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9UMDJyWWthWHkiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiIxbXAzZDlrdDhibDY2a25oNTA0MGc2OTZ2NCIsImV2ZW50X2lkIjoiMTM4Y2U0NzYtYTdmZS00OTUyLWJmNjEtMTE2YzU4NTk0MGJhIiwidG9rZW5fdXNlIjoiYWNjZXNzIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsImF1dGhfdGltZSI6MTYwNTE2MDI3OCwiZXhwIjoxNjA1MTYzODc4LCJpYXQiOjE2MDUxNjAyNzgsImp0aSI6IjE4YzUxNWFkLTZlMjctNDk5Ni04ZWQxLTlhZjhmNWM5MDE0NCIsInVzZXJuYW1lIjoiZGZmNDE5YzctNTQ2Ni00YTFkLTk2YTEtM2U0ODVlYmU4MjkwIn0.AyG0lhPcxFQrsUdZok6NtbFw4qx4gcQ8tQJIos0n2bnkYUiErwlzzbLXeWN6RJPyCGtuwBuS2RPiaQ4Wo5EPjtbsNdshQCPDjTDW3pTSAHPGlhXpEjvQTLqtx8EbKhvvPUncaLkZ8KQvp8mpZ4xbGGhXDPvmXYm32aq8PBZM9daDTj9jiIT5NKxvy0QxuJiml_s-OCdCl5O-ukLybJTQ34I_6Ym-1pIUu2WQvZBbsnyBUsMht7P9C9T_s0CvsR7t0VN4Rni3aJoNTZxviOCHsDS0sCc6URv4GesHQ1eEs2F6Jj9RR8uDK2BHnQQ-TA9OY9yU5XungNg2iwKoQeHb0Q\" })"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "6d5ffdaf-bc1d-4a2a-ac0f-f1a88924440f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "832d5dbd-241e-449e-b72d-3a48033f8abb",
+			"key": "port",
+			"value": "3000"
+		},
+		{
+			"id": "8d5874f6-c313-4f89-8fdc-5425663018c2",
+			"key": "host",
+			"value": "localhost"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

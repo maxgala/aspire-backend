@@ -5,29 +5,16 @@ import boto3
 from chat import Chat, ChatStatus
 from base import Session
 from role_validation import UserGroups, check_auth, edit_auth
-
-client = boto3.client('cognito-idp')
+from cognito_helpers import admin_update_remaining_chats_frequency
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def edit_remaining_chats_frequency(user, access_token, value):
-    remaining_chats_frequency = user.get('custom:remaining_chats_frequency')
-    response = client.update_user_attributes(
-        UserAttributes=[
-            {
-                'Name': 'custom:remaining_chats_frequency',
-                'Value': remaining_chats_frequency + value
-            },
-        ],
-        AccessToken=access_token
-    )
-    logger.info(response)
-
 def handler(event, context):
     # check authorization
     authorized_groups = [
+        UserGroups.ADMIN,
         UserGroups.MENTOR
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)
@@ -36,14 +23,6 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
-        }
-    access_token = event['headers']['X-Aspire-Access-Token']
-    if not access_token:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "access token header required"
             })
         }
 
@@ -110,7 +89,7 @@ def handler(event, context):
         # TODO: if has reservation(s), refund aspring professional credits and send email notification
         if chat.chat_status == ChatStatus.ACTIVE or chat.chat_status == ChatStatus.RESERVED:
             # increment remaining_chats_frequency
-            # edit_remaining_chats_frequency(user, access_token, 1)
+            # admin_update_remaining_chats_frequency(chat.senior_executive, 1)
             pass
 
     # TODO: send email notificatin to senior executive
