@@ -12,11 +12,29 @@ The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI
 
 ## Build Project Dependencies
 1. Set up the local environment by adding RDS connection information to `src/models/.env`. You can get this information from a team member
-2. Install the dependencies and move the model files to `src/layers/database/dependencies`
+2. Install the dependencies
+
+auth
+```bash
+cd src/layers/auth
+./auth_layer_packages.sh
+```
+cognito
+```bash
+cd src/layers/cognito
+./cognito_layer_packages.sh
+```
+database
 ```bash
 cd src/layers/database
 ./database_layer_packages.sh
 ```
+ses_layer
+```bash
+cd src/layers/ses_layer
+./ses_layer_packages.sh
+```
+
 
 ## Deploy the sample application
 
