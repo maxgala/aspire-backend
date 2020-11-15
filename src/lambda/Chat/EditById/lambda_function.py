@@ -12,6 +12,7 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
     # check authorization
     authorized_groups = [
+        UserGroups.ADMIN,
         UserGroups.MENTOR
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)

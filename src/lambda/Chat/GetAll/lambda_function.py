@@ -4,26 +4,11 @@ import boto3
 
 from chat import Chat, ChatType, ChatStatus
 from base import Session, row2dict
-
-client = boto3.client('cognito-idp')
-userPoolId = 'us-east-1_T02rYkaXy'
+from cognito_helpers import get_user_attributes
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def get_user_attributes(email, attributes=['given_name', 'family_name', 'custom:company']):
-    response = client.list_users(
-        UserPoolId=userPoolId,
-        AttributesToGet=attributes,
-        Filter = 'email="{}"'.format(email)
-    )
-    logger.info(response)
-
-    raw_attributes = response['Users'][0]['Attributes']
-    attributes = {}
-    for attr in raw_attributes:
-        attributes[attr['Name']] = attr['Value']
-    return attributes
 
 def handler(event, context):
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
@@ -45,7 +30,7 @@ def handler(event, context):
 
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
-        attributes = get_user_attributes(chat['senior_executive'])
+        attributes = get_user_attributes(chat['senior_executive'], attributes=['given_name', 'family_name', 'custom:company'])
         chat['given_name'] = attributes['given_name']
         chat['family_name'] = attributes['family_name']
         chat['custom:company'] = attributes['custom:company']

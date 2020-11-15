@@ -5,25 +5,11 @@ import boto3
 from chat import Chat, ChatType, ChatStatus, credit_mapping
 from base import Session
 from role_validation import UserGroups, check_auth
-
-client = boto3.client('cognito-idp')
+from cognito_helpers import admin_update_credits
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
-def edit_credits(user, access_token, value):
-    user_credits = user.get('custom:credits')
-    response = client.update_user_attributes(
-        UserAttributes=[
-            {
-                'Name': 'custom:credits',
-                'Value': str(int(user_credits) + value)
-            },
-        ],
-        AccessToken=access_token
-    )
-    logger.info(response)
 
 def handler(event, context):
     # check authorization
@@ -36,14 +22,6 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
-        }
-    access_token = event['headers']['X-Aspire-Access-Token']
-    if not access_token:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "access token header required"
             })
         }
 
@@ -98,7 +76,7 @@ def handler(event, context):
             else:
                 chat.aspiring_professionals = [ap]
 
-    # edit_credits(user, access_token, credit_mapping[chat.chat_type])
+    # admin_update_credits(user['email'], credit_mapping[chat.chat_type])
     if chat.chat_status == ChatStatus.RESERVED:
         chat.chat_status = ChatStatus.ACTIVE
 
