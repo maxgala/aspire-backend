@@ -28,23 +28,29 @@ def handler(event, context):
     #     }
 
     body = json.loads(event["body"])
-    requestor = body.get('requestor')
-    requestee = body.get('requestee')
+    try:
+        requestor = body['requestor']
+        requestee = body['requestee'] 
+    except:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({
+                "errorMessage": "missing body attribute(s): 'requestor' or 'requestee'"
+            })
+        }
 
-    if not requestor:
+    try:
+        requestor_email = requestor['email']
+        requestor_type = requestor['user_type']
+        requestee_email = requestee['email']
+        requestee_type = requestee['user_type']
+    except:
         return {
             "statusCode": 400,
             "body": json.dumps({
-                "errorMessage": "missing body attribute(s): 'requestor'"
+                "errorMessage": "missing body attribute(s): 'user_type' or 'email'"
             })
-        }
-    if not requestee:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing body attribute(s): 'requestee'"
-            })
-        }
+        }        
 
     # if ACCEPTED exists (in either direction) => Conflict (409)
     # if PENDING exists (in the direction of the request) => Conflict (409)
@@ -54,10 +60,10 @@ def handler(event, context):
     connect_ses = session.query(ConnectSE).all()
     create_conn = True
     for connection in connect_ses:
-        if (connection.requestor == requestor and connection.requestee == requestee) \
-            or (connection.requestor == requestee and connection.requestee == requestor):
+        if (connection.requestor == requestor_email and connection.requestee == requestee_email) \
+            or (connection.requestor == requestee_email and connection.requestee == requestor_email):
             if connection.connect_status == ConnectStatus.PENDING:
-                if connection.requestor == requestee and connection.requestee == requestor:
+                if connection.requestor == requestee_email and connection.requestee == requestor_email:
                     connection.connect_status = ConnectStatus.ACCEPTED
                     # TODO: dynamic user_email
                     # TODO: update email subject/body
@@ -86,15 +92,33 @@ def handler(event, context):
                 }
 
     if create_conn:
-        ConnectSE_new = ConnectSE(requestor=requestor, requestee=requestee, connect_status=ConnectStatus.PENDING)
-        session.add(ConnectSE_new)
+        if requestee_type == "MENTOR" and requestor_type == "MENTOR":
+            ConnectSE_new = ConnectSE(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectStatus.PENDING)
+            session.add(ConnectSE_new)
+            email_subject = "You have received a new Senior Executive connection request"
+            email_body = "<name> has requested to connect with you"
+            user_email = "saleh.bakhit@hotmail.com"
+            send_email(to_addresses=[user_email], subject=email_subject, body_text=email_body)
+
+        elif requestee_type == "MENTEE" and requestor_type == "MENTOR":
+            ConnectSE_new = ConnectSE(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectStatus.ACCEPTED)
+            session.add(ConnectSE_new)
+            email_subject = "A senior executive has connected with you!"
+            email_body = "<name> viewed your profile from the resume bank and has connected with you!"
+            send_email(to_addresses=[requestor_email, requestee_email], subject=email_subject, body_text=email_body)
+
+        else:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({
+                    "errorMessage": "A connection can only be initiated by a mentor"
+                })
+            }
+
 
         # TODO: dynamic user_email
         # TODO: update email subject/body
-        user_email = "saleh.bakhit@hotmail.com"
-        email_subject = "You have received a new Senior Executive connection request"
-        email_body = "<name> has requested to connect with you"
-        send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
+        # TODO: retrieve requestor email from authorization
 
     session.commit()
     session.close()
