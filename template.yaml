@@ -92,7 +92,7 @@ Resources:
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: Prod
+      StageName: api
       Auth:
         DefaultAuthorizer: AspireUserPoolAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False
@@ -797,5 +797,5 @@ Outputs:
     Value: !Ref AspireApi
 
   AspireApiUrl:
-    Description: "Aspire API endpoint URL for Prod environment"
-    Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    Description: "Aspire API endpoint URL"
+    Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/api/'
