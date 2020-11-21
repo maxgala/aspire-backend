@@ -43,7 +43,7 @@ class Job(Base):
     people_contacted = Column(Integer(), default = 0)
     job_status = Column(Enum(JobStatus), nullable=False)
     job_tags = Column(ARRAY(Enum(JobTags)), nullable=False)
-    salary = Column(Numeric(precision=2))
+    salary = Column(Integer())
     deadline = Column(DateTime(), nullable=False)
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
