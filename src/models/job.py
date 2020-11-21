@@ -44,8 +44,8 @@ class Job(Base):
     job_status = Column(Enum(JobStatus), nullable=False)
     job_tags = Column(ARRAY(Enum(JobTags)), nullable=False)
     salary = Column(Numeric(precision=2))
-    deadline = Column(BigInteger(), nullable=False)
-    created_on = Column(BigInteger(), default=time.time())
-    updated_on = Column(BigInteger(), default=time.time(), onupdate=time.time())
+    deadline = Column(DateTime(), nullable=False)
+    created_on = Column(DateTime(), default=datetime.now)
+    updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
 
     job_applications = relationship("JobApplication")
