@@ -53,52 +53,59 @@ def handler(event, context):
     credit = int(user['custom:credits'])
     email = user['email']
 
-    
-    applied = False
-    for job_app in job.job_applications:
-        if job_app.applicant_id == email:
-            applied = True
-    if not applied:
-        return {
-            "statusCode": 428,
-            "body": json.dumps({
-                "message": "You need to apply to the job before requesting contact-information"
-            })
-        }
+    if job.can_contact:
+        applied = False
+        for job_app in job.job_applications:
+            if job_app.applicant_id == email:
+                applied = True
+        if not applied:
+            return {
+                "statusCode": 428,
+                "body": json.dumps({
+                    "message": "You need to apply to the job before requesting contact-information"
+                })
+            }
 
-    if job.people_contacted >= 4:
+        if job.people_contacted >= 4:
+            return {
+                "statusCode": 417,
+                "body": json.dumps({
+                    "message": "Limit of contact information requests has been exceeded"
+                })
+            }
+        print(credit)
+        if int(credit) < 5:
+            return {
+                "statusCode": 402,
+                "body": json.dumps({
+                    "message": "You do not have enough credits to request contact information"
+                })
+            }
+        response = client.update_user_attributes(
+            UserAttributes=[
+                {
+                    'Name': 'custom:credits',
+                    'Value': str(int(credit) - 5) #deducting credits for requesting contact_info
+                },
+            ],
+            AccessToken=access_token
+        )
+        job.people_contacted = job.people_contacted + 1
+        session.commit()
         return {
-            "statusCode": 417,
+            "statusCode": 200,
             "body": json.dumps({
-                "message": "Limit of contact information requests has been exceeded"
+                "contact_details": {
+                        "email" : job.posted_by,
+                        "given_name" : job.poster_given_name,
+                        "family_name" : job.poster_family_name
+                    }   
             })
         }
-    print(credit)
-    if int(credit) < 5:
+    else:
         return {
-            "statusCode": 402,
+            "statusCode": 200,
             "body": json.dumps({
-                "message": "You do not have enough credits to request contact information"
-            })
+                    "message": "Hiring manager does not want to be contacted"
+                })
         }
-    response = client.update_user_attributes(
-        UserAttributes=[
-            {
-                'Name': 'custom:credits',
-                'Value': str(int(credit) - 5) #deducting credits for requesting contact_info
-            },
-        ],
-        AccessToken=access_token
-    )
-    job.people_contacted = job.people_contacted + 1
-    session.commit()
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "contact_details": {
-                    "email" : job.posted_by,
-                    "given_name" : job.poster_given_name,
-                    "family_name" : job.poster_family_name
-                }   
-        })
-    }

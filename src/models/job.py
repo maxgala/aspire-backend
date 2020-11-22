@@ -20,9 +20,22 @@ class JobStatus(enum.Enum):
 
 
 class JobTags(enum.Enum):
-    SOFTWARE = 1
-    FINANCE = 2
-    LAW = 3
+    ACCOUNTING = 1
+    BUSINESS = 2
+    APPLIED_ARTS/CREATIVES = 3
+    CONSULTING = 4
+    EDUCATION = 5
+    ENGINEERING = 6
+    ENTERTAINMENT/PERFORMING_ARTS = 7
+    FINANCE = 8
+    HEALTH_CARE = 9
+    JOURNALISM = 10
+    LAW/LEGAL/GOVERNMENT = 11
+    NON-PROFIT/COMMUNITY_BUILDING = 12
+    SCIENCES = 13
+    SOCIAL_SCIENCES/HUMANITIES = 14
+    TECHNOLOGY = 15
+    OTHER = 16
 
 
 class Job(Base):
@@ -40,6 +53,7 @@ class Job(Base):
     posted_by = Column(String(100), nullable=False)
     poster_family_name = Column(String(100), nullable=False)
     poster_given_name = Column(String(100), nullable=False)
+    can_contact = Column(Boolean(), nullable = False)
     people_contacted = Column(Integer(), default = 0)
     job_status = Column(Enum(JobStatus), nullable=False)
     job_tags = Column(ARRAY(Enum(JobTags)), nullable=False)
