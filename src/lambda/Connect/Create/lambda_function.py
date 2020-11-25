@@ -11,21 +11,21 @@ logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # # check authorization
-    # authorized_groups = [
-    #     UserGroups.ADMIN,
-    #     UserGroups.MENTOR,
-    #     UserGroups.FREE,
-    #     UserGroups.PAID
-    # ]
-    # err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
-    # if err:
-    #     return {
-    #         "statusCode": 401,
-    #         "body": json.dumps({
-    #             "errorMessage": group_response
-    #         })
-    #     }
+    # check authorization
+    authorized_groups = [
+        UserGroups.ADMIN,
+        UserGroups.MENTOR,
+        UserGroups.FREE,
+        UserGroups.PAID
+    ]
+    err, group_response = validate_group(event['requestContext']['authorizer']['claims'], authorized_groups)
+    if err:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": group_response
+            })
+        }
 
     body = json.loads(event["body"])
     try:
@@ -42,13 +42,15 @@ def handler(event, context):
     try:
         requestor_email = requestor['email']
         requestor_type = requestor['user_type']
+        requestor_name = requestor['name']
         requestee_email = requestee['email']
         requestee_type = requestee['user_type']
+        requestee_name = requestee['name']
     except:
         return {
             "statusCode": 400,
             "body": json.dumps({
-                "errorMessage": "missing body attribute(s): 'user_type' or 'email'"
+                "errorMessage": "missing body attribute(s): 'user_type', 'email' or 'name'"
             })
         }        
 
@@ -65,12 +67,9 @@ def handler(event, context):
             if connection.connect_status == ConnectStatus.PENDING:
                 if connection.requestor == requestee_email and connection.requestee == requestor_email:
                     connection.connect_status = ConnectStatus.ACCEPTED
-                    # TODO: dynamic user_email
-                    # TODO: update email subject/body
-                    user_email = "saleh.bakhit@hotmail.com"
-                    email_subject = "Your Senior Executive connection request was accepted"
-                    email_body = "<name> has accepted your connection request!"
-                    send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
+                    email_subject = "[MAX Aspire] Your connection request was accepted!"
+                    email_body = f"Salaam!\r\n\nWe are delighted to confirm that you are now connected to {requestee_name}!\r\n\nYou will be able to chat and send direct messages to your connection. Engaging in direct communication we request our valued members to maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
+                    send_email(to_addresses=requestor_email, subject=email_subject, body_text=email_body)
 
                     create_conn = False
                     break
@@ -95,16 +94,15 @@ def handler(event, context):
         if requestee_type == "MENTOR" and requestor_type == "MENTOR":
             ConnectSE_new = ConnectSE(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectStatus.PENDING)
             session.add(ConnectSE_new)
-            email_subject = "You have received a new Senior Executive connection request"
-            email_body = "<name> has requested to connect with you"
-            user_email = "saleh.bakhit@hotmail.com"
-            send_email(to_addresses=[user_email], subject=email_subject, body_text=email_body)
+            email_subject = "[MAX Aspire] Someone wants to connect with you!"
+            email_body = f"Salaam!\r\n\nYou are quite popular in the MAX Aspire community! {requestor_name} wants to connect with you. To accept or reject this request, please visit aspire.maxgala.com\r\n\nEngaging in direct communication members are requested to respect and maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
+            send_email(to_addresses=[requestor_email], subject=email_subject, body_text=email_body)
 
         elif requestee_type == "MENTEE" and requestor_type == "MENTOR":
             ConnectSE_new = ConnectSE(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectStatus.ACCEPTED)
             session.add(ConnectSE_new)
-            email_subject = "A senior executive has connected with you!"
-            email_body = "<name> viewed your profile from the resume bank and has connected with you!"
+            email_subject = "[MAX Aspire] Someone likes your resume!"
+            email_body = f"Salaam {requestee_name}!\r\n\n{requestor_name} liked your resume and wants to connect with you!\r\n\nEngaging in direct communication members are requested to respect and maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
             send_email(to_addresses=[requestor_email, requestee_email], subject=email_subject, body_text=email_body)
 
         else:
