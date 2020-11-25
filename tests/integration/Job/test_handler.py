@@ -250,7 +250,7 @@ def test_contact_no_auth_401(apigw_contact_event):
     assert ret["statusCode"] == 401
 
 response = client.admin_initiate_auth(
-        UserPoolId='us-east-1_osaXQ2xh5',
+        UserPoolId='us-east-1_OiH5DGpGX',
         ClientId='1ev0u0hf43ank26v9t9oo693bb',
         AuthFlow='ADMIN_NO_SRP_AUTH',
         AuthParameters={
@@ -293,7 +293,7 @@ def test_contact_200(apigw_contact_header_event,apigw_deleteAppId_event):
     ret = contact.handler(apigw_contact_header_event(ids_created[0],response["AuthenticationResult"]["AccessToken"]), "")
     data = json.loads(ret["body"])
     resp = client.admin_update_user_attributes(
-        UserPoolId='us-east-1_osaXQ2xh5',
+        UserPoolId='us-east-1_OiH5DGpGX',
         Username='test@email.com',
         UserAttributes=[
             {
