@@ -9,7 +9,7 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
     response = client.list_users(
-        UserPoolId='us-east-1_T02rYkaXy'
+        UserPoolId='us-east-1_OiH5DGpGX'
     )
 
     raw_users = response['Users']

@@ -25,7 +25,7 @@ Parameters:
     Default: 'main_db'
   cognitoUserPoolArn:
     Type: String
-    Default: 'arn:aws:cognito-idp:us-east-1:143848191537:userpool/us-east-1_T02rYkaXy'
+    Default: 'arn:aws:cognito-idp:us-east-1:143848191537:userpool/us-east-1_OiH5DGpGX'
 
 Globals:
   Function:
