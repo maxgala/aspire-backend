@@ -4,7 +4,7 @@ import logging
 from connect_se import ConnectSE, ConnectStatus
 from base import Session
 from send_email import send_email
-# from role_validation import UserGroups, validate_group
+from role_validation import UserGroups, validate_group
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
