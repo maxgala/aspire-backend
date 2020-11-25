@@ -2,20 +2,33 @@ import json
 import logging
 
 from chat import Chat, ChatType, ChatStatus
-from base import Session, row2dict
-from cognito_helpers import get_users
+from base import Session
+from role_validation import UserGroups, check_auth
+from cognito_helpers import admin_update_remaining_chats_frequency, admin_update_declared_chats_frequency
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
+    # check authorization
+    authorized_groups = [
+        UserGroups.ADMIN
+    ]
+    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
+    if not success:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": "unauthorized"
+            })
+        }
+
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
     type_filter = event["queryStringParameters"].get("type", "") if event["queryStringParameters"] else ""
     senior_executive_filter = event["queryStringParameters"].get("senior_executive", "") if event["queryStringParameters"] else ""
 
     session = Session()
-    # TODO: more filters? (tags)
     filtered_query = session.query(Chat)
     if status_filter and status_filter in ChatStatus.__members__:
         filtered_query = filtered_query.filter(Chat.chat_status == ChatStatus[status_filter])
@@ -25,19 +38,14 @@ def handler(event, context):
         filtered_query = filtered_query.filter(Chat.senior_executive == senior_executive_filter)
 
     chats = filtered_query.all()
+    for chat in chats:
+        admin_update_declared_chats_frequency(chat.senior_executive, -1)
+        if chat.chat_status == ChatStatus.PENDING:
+            admin_update_remaining_chats_frequency(chat.senior_executive, -1)
+        session.delete(chat)
+
+    session.commit()
     session.close()
-
-    chats_modified = [row2dict(r) for r in chats]
-    for chat in chats_modified:
-        user = get_users(filter_=('email', chat['senior_executive']), attributes_filter=['given_name', 'family_name', 'custom:company'])
-        chat['given_name'] = user['attributes']['given_name']
-        chat['family_name'] = user['attributes']['family_name']
-        chat['custom:company'] = user['attributes']['custom:company']
-
     return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "chats": chats_modified,
-            "count": len(chats_modified)
-        })
+        "statusCode": 200
     }

@@ -1,9 +1,10 @@
 import json
 import logging
 
-from chat import Chat
+from chat import Chat, ChatStatus
 from base import Session
 from role_validation import UserGroups, check_auth
+from cognito_helpers import admin_update_remaining_chats_frequency, admin_update_declared_chats_frequency
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -42,6 +43,10 @@ def handler(event, context):
                 "errorMessage": "chat with id '{}' not found".format(chatId)
             })
         }
+
+    admin_update_declared_chats_frequency(chat.senior_executive, -1)
+    if chat.chat_status == ChatStatus.PENDING:
+        admin_update_remaining_chats_frequency(chat.senior_executive, -1)
 
     session.delete(chat)
     session.commit()

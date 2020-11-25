@@ -1,12 +1,11 @@
 import json
 import logging
-import boto3
 from datetime import datetime
 
 from chat import Chat, ChatType, ChatStatus, mandatory_date
 from base import Session
-from role_validation import UserGroups, check_auth
-from cognito_helpers import admin_update_remaining_chats_frequency
+from role_validation import UserGroups, check_auth, edit_auth
+from cognito_helpers import admin_update_remaining_chats_frequency, admin_update_declared_chats_frequency
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -38,6 +37,15 @@ def handler(event, context):
         }
 
     senior_executive = body['senior_executive']
+    success = edit_auth(user, senior_executive)
+    if not success:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": "unauthorized"
+            })
+        }
+
     chat_type = ChatType[body['chat_type']]
     description = body.get('description')
     tags = body.get('tags')
@@ -56,10 +64,13 @@ def handler(event, context):
         chat_status=ChatStatus.PENDING, tags=tags,
         senior_executive=senior_executive
     )
+
+    admin_update_declared_chats_frequency(senior_executive, 1)
     if fixed_date:
         chat_new.fixed_date = datetime.fromtimestamp(fixed_date).replace(hour=0, minute=0,second=0, microsecond=0)
         chat_new.chat_status = ChatStatus.ACTIVE
-        # admin_update_remaining_chats_frequency(senior_executive, -1)
+    else:
+        admin_update_remaining_chats_frequency(senior_executive, 1)
 
     session.add(chat_new)
     session.commit()

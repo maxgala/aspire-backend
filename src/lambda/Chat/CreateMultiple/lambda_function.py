@@ -1,12 +1,11 @@
 import json
 import logging
-import boto3
 from datetime import datetime
 
 from chat import Chat, ChatType, ChatStatus, mandatory_date
 from base import Session
 from role_validation import UserGroups, check_auth
-from cognito_helpers import admin_update_remaining_chats_frequency
+from cognito_helpers import admin_update_remaining_chats_frequency, admin_update_declared_chats_frequency
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -54,6 +53,7 @@ def handler(event, context):
         tags = chat_new.get('tags')
         fixed_date = chat_new.get('fixed_date')
         if chat_type in mandatory_date and not fixed_date:
+            session.rollback()
             session.close()
             return {
                 "statusCode": 400,
@@ -67,10 +67,13 @@ def handler(event, context):
             chat_status=ChatStatus.PENDING, tags=tags,
             senior_executive=senior_executive
         )
+
+        admin_update_declared_chats_frequency(senior_executive, 1)
         if fixed_date:
             chat.fixed_date = datetime.fromtimestamp(fixed_date).replace(hour=0, minute=0,second=0, microsecond=0)
             chat.chat_status = ChatStatus.ACTIVE
-            # admin_update_remaining_chats_frequency(senior_executive, -1)
+        else:
+            admin_update_remaining_chats_frequency(senior_executive, 1)
         session.add(chat)
 
     session.commit()

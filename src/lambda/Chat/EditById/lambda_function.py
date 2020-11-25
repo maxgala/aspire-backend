@@ -45,7 +45,6 @@ def handler(event, context):
         }
     success = edit_auth(user, chat.senior_executive)
     if not success:
-        # caller does not own the resource
         session.close()
         return {
             "statusCode": 401,

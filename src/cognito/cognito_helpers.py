@@ -2,29 +2,50 @@ import logging
 import boto3
 
 client = boto3.client('cognito-idp')
-userPoolId = 'us-east-1_T02rYkaXy'
+userPoolId = 'us-east-1_n47QT7CqO'
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None, user_type: str=None):
+    params = {
+        "UserPoolId": userPoolId,
+        "Filter": "{} = '{}'".format(filter_[0], filter_[1])
+    }
+    if attributes_filter:
+        params["AttributesToGet"] = attributes_filter
 
-def get_user_attributes(email, attributes):
-    response = client.list_users(
-        UserPoolId=userPoolId,
-        AttributesToGet=attributes,
-        Filter = 'email="{}"'.format(email)
-    )
-    logger.info(response)
+    response = client.list_users(**params)
+    raw_users =  response['Users']
+    pagination_token = response.get('PaginationToken')
+    while pagination_token != None:
+        params['PaginationToken'] = pagination_token
+        response = client.list_users(**params)
+        raw_users += response['Users']
+        pagination_token = response.get('PaginationToken')
 
-    raw_attributes = response['Users'][0]['Attributes']
-    attributes = {}
-    for attr in raw_attributes:
-        attributes[attr['Name']] = attr['Value']
-    return attributes
+    users = []
+    for raw_user in raw_users:
+        raw_attributes = raw_user['Attributes']
+        attributes = {}
+        for attr in raw_attributes:
+            attributes[attr['Name']] = attr['Value']
+
+        # filter by user_type
+        if user_type and attributes['custom:user_type'] != user_type:
+            continue
+
+        user = {}
+        user['username'] = raw_user['Username']
+        user['attributes'] = attributes
+        user['status'] = raw_user['UserStatus']
+        user['enabled'] = raw_user['Enabled']
+        users.append(user)
+    return users[0] if len(users) == 1 else users
 
 def admin_update_credits(email, value):
-    attributes = get_user_attributes(email, attributes=['custom:credits'])
-    user_credits = attributes['custom:credits']
+    user = get_users(filter_=('email', email), attributes_filter=['custom:credits'])
+    user_credits = int(user['attributes']['custom:credits'])
 
     response = client.admin_update_user_attributes(
         UserPoolId=userPoolId,
@@ -32,24 +53,40 @@ def admin_update_credits(email, value):
         UserAttributes=[
             {
                 'Name': 'custom:credits',
-                'Value': user_credits + value
+                'Value': str(user_credits + value)
             }
         ]
     )
-    logger.info(response)
+    # logger.info(response)
 
-def admin_update_remaining_chats_frequency(email, value):
-    attributes = get_user_attributes(email, attributes=['custom:remaining_chats_frequency'])
-    remaining_chats_frequency = attributes['custom:remaining_chats_frequency']
+def admin_update_declared_chats_frequency(email, value):
+    user = get_users(filter_=('email', email), attributes_filter=['custom:declared_chats_freq'])
+    declared_chats_frequency = int(user['attributes']['custom:declared_chats_freq'])
 
     response = client.admin_update_user_attributes(
         UserPoolId=userPoolId,
         Username=email,
         UserAttributes=[
             {
-                'Name': 'custom:remaining_chats_frequency',
-                'Value': remaining_chats_frequency + value
+                'Name': 'custom:declared_chats_freq',
+                'Value': str(declared_chats_frequency + value)
             }
         ]
     )
-    logger.info(response)
+    # logger.info(response)
+
+def admin_update_remaining_chats_frequency(email, value):
+    user = get_users(filter_=('email', email), attributes_filter=['custom:remaining_chats_freq'])
+    remaining_chats_frequency = int(user['attributes']['custom:remaining_chats_freq'])
+
+    response = client.admin_update_user_attributes(
+        UserPoolId=userPoolId,
+        Username=email,
+        UserAttributes=[
+            {
+                'Name': 'custom:remaining_chats_freq',
+                'Value': str(remaining_chats_frequency + value)
+            }
+        ]
+    )
+    # logger.info(response)

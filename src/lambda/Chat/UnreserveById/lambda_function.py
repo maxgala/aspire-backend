@@ -1,6 +1,5 @@
 import json
 import logging
-import boto3
 
 from chat import Chat, ChatType, ChatStatus, credit_mapping
 from base import Session
@@ -14,6 +13,7 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
     # check authorization
     authorized_groups = [
+        UserGroups.FREE,
         UserGroups.PAID
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)
@@ -49,7 +49,8 @@ def handler(event, context):
     # in addition, user must have reserved this chat
     #
     # if chat_status is RESERVED => set to ACTIVE
-    if chat.chat_status != ChatStatus.ACTIVE and chat.chat_status != ChatStatus.RESERVED:
+    if not ((chat.chat_type == ChatType.FOUR_ON_ONE and chat.chat_status == ChatStatus.ACTIVE) \
+        or (chat.chat_type != ChatType.FOUR_ON_ONE and chat.chat_status == ChatStatus.RESERVED)):
         session.close()
         return {
             "statusCode": 403,
@@ -66,7 +67,6 @@ def handler(event, context):
             })
         }
 
-    # TODO: find a better way to pop from list
     aspiring_professionals = chat.aspiring_professionals
     chat.aspiring_professionals = None
     for ap in aspiring_professionals:
@@ -76,7 +76,7 @@ def handler(event, context):
             else:
                 chat.aspiring_professionals = [ap]
 
-    # admin_update_credits(user['email'], credit_mapping[chat.chat_type])
+    admin_update_credits(user['email'], credit_mapping[chat.chat_type])
     if chat.chat_status == ChatStatus.RESERVED:
         chat.chat_status = ChatStatus.ACTIVE
 
@@ -84,5 +84,5 @@ def handler(event, context):
     session.close()
 
     return {
-        "statusCode": 201
+        "statusCode": 200
     }
