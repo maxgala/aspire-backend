@@ -1,13 +1,10 @@
 import json
 import logging
-import boto3
 
 from chat import Chat, ChatType, ChatStatus, credit_mapping
 from base import Session
 from role_validation import UserGroups, check_auth
 from cognito_helpers import admin_update_credits
-
-client = boto3.client('cognito-idp')
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -16,6 +13,7 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
     # check authorization
     authorized_groups = [
+        UserGroups.FREE,
         UserGroups.PAID
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)
@@ -69,15 +67,15 @@ def handler(event, context):
             })
         }
 
-    # if int(user['custom:credits']) < credit_mapping[chat.chat_type]:
-    #     session.close()
-    #     return {
-    #         "statusCode": 403,
-    #         "body": json.dumps({
-    #             "errorMessage": "user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId)
-    #         })
-    #     }
-    # admin_update_credits(user['email'], (-credit_mapping[chat.chat_type]))
+    if int(user['custom:credits']) < credit_mapping[chat.chat_type]:
+        session.close()
+        return {
+            "statusCode": 403,
+            "body": json.dumps({
+                "errorMessage": "user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId)
+            })
+        }
+    admin_update_credits(user['email'], (-credit_mapping[chat.chat_type]))
 
     if chat.chat_type == ChatType.FOUR_ON_ONE:
         if chat.aspiring_professionals:
@@ -95,5 +93,5 @@ def handler(event, context):
     session.close()
 
     return {
-        "statusCode": 201
+        "statusCode": 200
     }

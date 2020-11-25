@@ -153,7 +153,6 @@ Resources:
           - Sid: CognitoPolicy
             Effect: Allow
             Action:
-              - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
             Resource: '*'
       Events:
@@ -207,6 +206,13 @@ Resources:
       CodeUri: src/lambda/Chat/DeleteById
       Handler: lambda_function.handler
       Description: Lambda function to delete chat by Id
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
       Events:
         ChatDeleteByIdEvent:
           Type: Api
@@ -217,6 +223,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CognitoLayer
 
   ChatGetAll:
     Type: AWS::Serverless::Function
@@ -240,6 +247,31 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: CognitoLayer
+
+  ChatDeleteAll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/DeleteAll
+      Handler: lambda_function.handler
+      Description: Lambda function to delete all chats
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        ChatDeleteAllEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats
+            Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
         - Ref: CognitoLayer
 
   ChatReserveById:
@@ -786,6 +818,7 @@ Resources:
                 Method: get
         Layers:
           - Ref: DatabaseLayer
+  # --- Users Service ---
 
 Outputs:
   Region:
