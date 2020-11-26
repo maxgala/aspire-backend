@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
-from sqlalchemy.types import String, Integer, DateTime, Enum, Numeric, ARRAY, BigInteger
+from sqlalchemy.types import String, Integer, DateTime, Enum, ARRAY, Boolean
 from base import Base
 import time
 
@@ -22,18 +22,18 @@ class JobStatus(enum.Enum):
 class JobTags(enum.Enum):
     ACCOUNTING = 1
     BUSINESS = 2
-    APPLIED_ARTS/CREATIVES = 3
+    APPLIED_ARTS__CREATIVES = 3
     CONSULTING = 4
     EDUCATION = 5
     ENGINEERING = 6
-    ENTERTAINMENT/PERFORMING_ARTS = 7
+    ENTERTAINMENT__PERFORMING_ARTS = 7
     FINANCE = 8
     HEALTH_CARE = 9
     JOURNALISM = 10
-    LAW/LEGAL/GOVERNMENT = 11
-    NON-PROFIT/COMMUNITY_BUILDING = 12
+    LAW__LEGAL__GOVERNMENT = 11
+    NON_PROFIT__COMMUNITY_BUILDING = 12
     SCIENCES = 13
-    SOCIAL_SCIENCES/HUMANITIES = 14
+    SOCIAL_SCIENCES__HUMANITIES = 14
     TECHNOLOGY = 15
     OTHER = 16
 
