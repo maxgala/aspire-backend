@@ -16,9 +16,7 @@ def check_auth(auth_header, allowedReadGroups):
     success, user_group = get_group(user)
     if not success:
         return False, None
-
-    success = validate_user(user_group, allowedReadGroups)
-    if not success:
+    if user_group not in allowedReadGroups:
         return False, None
     return True, user
 
@@ -30,16 +28,12 @@ def edit_auth(user, allowedWriteUser):
         return False
     return True
 
-def validate_user(user_group, allowedGroups):
-    if user_group not in UserGroups.__members__ or \
-        UserGroups[user_group] not in allowedGroups:
-        return False
-    return True
-
 def get_group(user):
     user_groups = user.get('cognito:groups')
     if not user_groups:
         return False, None
     elif len(user_groups) > 1:
         return False, None
-    return True, user_groups[0]
+    if user_groups[0] not in UserGroups.__members__:
+        return False, None
+    return True, UserGroups[user_groups[0]]
