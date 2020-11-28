@@ -43,7 +43,7 @@ def handler(event, context):
                     region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
                     description=info["description"], requirements=info["requirements"], posted_by=info["posted_by"],
                     poster_family_name = info["poster_family_name"], poster_given_name = info["poster_given_name"],
-                    job_status="UNDER_REVIEW",job_tags=tags, salary=info["salary"], deadline = deadline)
+                    job_status="UNDER_REVIEW",job_tags=tags, salary=info["salary"], deadline = deadline, can_contact = info["can_contact"])
 
     session.add(Job_row)        
     session.commit()
