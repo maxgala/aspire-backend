@@ -827,6 +827,33 @@ Resources:
           - Ref: DatabaseLayer
   # --- Users Service ---
 
+  # --- Scheduler Service ---
+  SchedulerSchedule:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Scheduler/Schedule
+      Handler: lambda_function.handler
+      Description: Lambda function to schedule chats
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+          SchedulerScheduleEvent:
+            Type: Api
+            Properties:
+              Path: /scheduler
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+  # --- Scheduler Service ---
+
 Outputs:
   Region:
     Description: "Region"
