@@ -174,7 +174,7 @@ def schedule_activate(session, default_num_activate, num_carry_over):
     chats = get_chats(session, status=['PENDING'], expiry_date='DATED', order_by='expiry_date', num=num_activate)
     for chat in chats:
         chat.chat_status = ChatStatus.ACTIVE
-        user = get_users(filter_=('email', chat.senior_executive))
+        user, _ = get_users(filter_=('email', chat.senior_executive))
         admin_update_remaining_chats_frequency(user['attributes']['email'], -1)
 
 def handler(event, context):
@@ -199,7 +199,7 @@ def handler(event, context):
         logger.info("num_activate={}, current_date={}, next_date={}"\
             .format(default_num_activate, current_date.strftime("%d/%m/%Y"), next_date.strftime("%d/%m/%Y")))
 
-        users = get_users(user_type='MENTOR')
+        users, _ = get_users(user_type='MENTOR')
         num_carry_over = 0
         for user in users:
             num_carry_over += schedule_user(session, user['attributes'], current_date, next_date)

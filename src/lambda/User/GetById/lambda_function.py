@@ -17,7 +17,7 @@ def handler(event, context):
             })
         }
 
-    user = get_users(filter_=('email', userId))
+    user, _ = get_users(filter_=('email', userId))
     if not user:
         return {
             "statusCode": 404,

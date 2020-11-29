@@ -21,11 +21,11 @@ def handler(event, context):
     else:
         user_type = None
 
-    users = get_users(filter_=filter_, user_type=user_type)
+    users, count = get_users(filter_=filter_, user_type=user_type)
     return {
         "statusCode": 200,
         "body": json.dumps({
             "users": users,
-            "count": len(users)
+            "count": count
         })
     }
