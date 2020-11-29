@@ -90,3 +90,17 @@ def admin_update_remaining_chats_frequency(email, value):
         ]
     )
     # logger.info(response)
+
+def admin_disable_user(email):
+    response = client.admin_disable_user(
+        UserPoolId=userPoolId,
+        Username=email
+    )
+    # logger.info(response)
+
+def admin_enable_user(email):
+    response = client.admin_enable_user(
+        UserPoolId=userPoolId,
+        Username=email
+    )
+    # logger.info(response)
