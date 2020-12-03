@@ -26,16 +26,20 @@ def handler(event, context):
         user_type = user['attributes']['custom:user_type']
         if user_type == 'PAID' or user_type == 'FREE':
             filtered_query = filtered_query.filter(Chat.aspiring_professionals.any(user_filter))
+        elif user_type == 'MENTOR':
+            filtered_query = filtered_query.filter(Chat.senior_executive == user_filter)
 
     chats = filtered_query.all()
     session.close()
 
+    attrs = ['given_name', 'family_name', 'picture', 'custom:company']
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
-        user, _ = get_users(filter_=('email', chat['senior_executive']), attributes_filter=['given_name', 'family_name', 'custom:company'])
-        chat['given_name'] = user['attributes']['given_name']
-        chat['family_name'] = user['attributes']['family_name']
-        chat['custom:company'] = user['attributes']['custom:company']
+        user, _ = get_users(filter_=('email', chat['senior_executive']), attributes_filter=attrs)
+        chat['given_name'] = user['attributes'].get('given_name')
+        chat['family_name'] = user['attributes'].get('family_name')
+        chat['picture'] = user['attributes'].get('picture')
+        chat['custom:company'] = user['attributes'].get('custom:company')
 
     return {
         "statusCode": 200,

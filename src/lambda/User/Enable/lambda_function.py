@@ -24,12 +24,12 @@ def handler(event, context):
 
     # validate body
     body = json.loads(event["body"])
-    user_email = body.get('user_email')
+    user_email = body.get('email')
     if not user_email:
         return {
             "statusCode": 400,
             "body": json.dumps({
-                "errorMessage": "invalid parameter(s): 'user_email'"
+                "errorMessage": "invalid parameter(s): 'email'"
             })
         }
 

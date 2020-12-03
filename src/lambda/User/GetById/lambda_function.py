@@ -7,13 +7,14 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
+# TODO: Is it safe to return all the user's info since this endpoint is not protected?
 def handler(event, context):
     userId = event["pathParameters"].get("userId") if event["pathParameters"] else None
     if not userId:
         return {
             "statusCode": 400,
             "body": json.dumps({
-                "errorMessage": "missing path parameter(s): 'chatId'"
+                "errorMessage": "missing path parameter(s): 'userId'"
             })
         }
 
@@ -22,7 +23,7 @@ def handler(event, context):
         return {
             "statusCode": 404,
             "body": json.dumps({
-                "errorMessage": "chat with id '{}' not found".format(userId)
+                "errorMessage": "user with id '{}' not found".format(userId)
             })
         }
 

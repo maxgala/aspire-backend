@@ -842,6 +842,30 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
 
+  UserUpdateCredits:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/UpdateCredits
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        UserUpdateCreditsEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/credits
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+
   UserEnable:
     Type: AWS::Serverless::Function
     Properties:

@@ -8,6 +8,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
+# TODO: Is it safe to return all the user's info since this endpoint is not protected?
 def handler(event, context):
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
     type_filter = event["queryStringParameters"].get("type", "") if event["queryStringParameters"] else ""

@@ -2,7 +2,7 @@ import json
 import logging
 
 from role_validation import UserGroups, check_auth
-from cognito_helpers import admin_disable_user
+from cognito_helpers import admin_update_credits
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -25,16 +25,16 @@ def handler(event, context):
     # validate body
     body = json.loads(event["body"])
     user_email = body.get('email')
-    if not user_email:
+    user_credits = body.get('credits')
+    if not user_email or not credits or not isinstance(user_credits, int):
         return {
             "statusCode": 400,
             "body": json.dumps({
-                "errorMessage": "invalid parameter(s): 'email'"
+                "errorMessage": "invalid parameter(s): 'email, credits'"
             })
         }
 
-    admin_disable_user(user_email)
-    # TODO: should we remove the user's chats/jobs etc...?
+    admin_update_credits(user_email, user_credits)
     return {
         "statusCode": 200
     }

@@ -43,6 +43,16 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         users.append(user)
     return users[0] if len(users) == 1 else users, len(users)
 
+def admin_update_user_attributes(email, attributes):
+    response = client.admin_update_user_attributes(
+        UserPoolId=userPoolId,
+        Username=email,
+        UserAttributes=[
+            {'Name': key, 'Value': val} for key, val in attributes.items()
+        ]
+    )
+    # logger.info(response)
+
 def admin_update_credits(email, value):
     user, _ = get_users(filter_=('email', email), attributes_filter=['custom:credits'])
     user_credits = int(user['attributes']['custom:credits'])
