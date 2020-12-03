@@ -41,10 +41,20 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         user['status'] = raw_user['UserStatus']
         user['enabled'] = raw_user['Enabled']
         users.append(user)
-    return users[0] if len(users) == 1 else users
+    return users[0] if len(users) == 1 else users, len(users)
+
+def admin_update_user_attributes(email, attributes):
+    response = client.admin_update_user_attributes(
+        UserPoolId=userPoolId,
+        Username=email,
+        UserAttributes=[
+            {'Name': key, 'Value': val} for key, val in attributes.items()
+        ]
+    )
+    # logger.info(response)
 
 def admin_update_credits(email, value):
-    user = get_users(filter_=('email', email), attributes_filter=['custom:credits'])
+    user, _ = get_users(filter_=('email', email), attributes_filter=['custom:credits'])
     user_credits = int(user['attributes']['custom:credits'])
 
     response = client.admin_update_user_attributes(
@@ -60,7 +70,7 @@ def admin_update_credits(email, value):
     # logger.info(response)
 
 def admin_update_declared_chats_frequency(email, value):
-    user = get_users(filter_=('email', email), attributes_filter=['custom:declared_chats_freq'])
+    user, _ = get_users(filter_=('email', email), attributes_filter=['custom:declared_chats_freq'])
     declared_chats_frequency = int(user['attributes']['custom:declared_chats_freq'])
 
     response = client.admin_update_user_attributes(
@@ -76,7 +86,7 @@ def admin_update_declared_chats_frequency(email, value):
     # logger.info(response)
 
 def admin_update_remaining_chats_frequency(email, value):
-    user = get_users(filter_=('email', email), attributes_filter=['custom:remaining_chats_freq'])
+    user, _ = get_users(filter_=('email', email), attributes_filter=['custom:remaining_chats_freq'])
     remaining_chats_frequency = int(user['attributes']['custom:remaining_chats_freq'])
 
     response = client.admin_update_user_attributes(
@@ -88,5 +98,19 @@ def admin_update_remaining_chats_frequency(email, value):
                 'Value': str(remaining_chats_frequency + value)
             }
         ]
+    )
+    # logger.info(response)
+
+def admin_disable_user(email):
+    response = client.admin_disable_user(
+        UserPoolId=userPoolId,
+        Username=email
+    )
+    # logger.info(response)
+
+def admin_enable_user(email):
+    response = client.admin_enable_user(
+        UserPoolId=userPoolId,
+        Username=email
     )
     # logger.info(response)
