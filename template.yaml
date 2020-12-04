@@ -36,6 +36,8 @@ Globals:
       AllowMethods: "'OPTIONS,GET,POST,PUT'"
       AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"
       AllowOrigin: "'*'"
+    EndpointConfiguration:
+      Type: REGIONAL
 
 Resources:
   # --- Infrastructure ---
