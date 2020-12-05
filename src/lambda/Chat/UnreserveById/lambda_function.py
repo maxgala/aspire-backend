@@ -23,9 +23,6 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)
 
-    print("checking user in unreservebyid")
-    print(user)
-
     if not success:
         return {
             "statusCode": 401,
