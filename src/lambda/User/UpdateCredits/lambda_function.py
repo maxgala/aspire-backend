@@ -1,7 +1,7 @@
 import json
 import logging
 
-from role_validation import UserGroups, check_auth
+from role_validation import UserGroups, check_auth, edit_auth
 from cognito_helpers import admin_update_credits
 
 logger = logging.getLogger()
@@ -11,9 +11,11 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
     # check authorization
     authorized_groups = [
-        UserGroups.ADMIN
+        UserGroups.ADMIN,
+        UserGroups.PAID,
+        UserGroups.FREE
     ]
-    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
+    success, user = check_auth(event['headers']['Authorization'], authorized_groups)
     if not success:
         return {
             "statusCode": 401,
@@ -31,6 +33,15 @@ def handler(event, context):
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "invalid parameter(s): 'email, credits'"
+            })
+        }
+
+    success = edit_auth(user, user_email)
+    if not success:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "errorMessage": "unauthorized"
             })
         }
 

@@ -36,6 +36,8 @@ Globals:
       AllowMethods: "'OPTIONS,GET,POST,PUT'"
       AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"
       AllowOrigin: "'*'"
+    EndpointConfiguration:
+      Type: REGIONAL
 
 Resources:
   # --- Infrastructure ---
@@ -303,7 +305,8 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
-
+        - Ref: SesLayer
+        
   ChatUnreserveById:
     Type: AWS::Serverless::Function
     Properties:
@@ -329,6 +332,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: SesLayer
 
   ChatCancelById:
     Type: AWS::Serverless::Function
