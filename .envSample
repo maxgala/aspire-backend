@@ -1,6 +1,0 @@
-RDS_HOST= type-db-url
-RDS_PORT= type-db-portnumber
-RDS_USERNAME= type-db-username
-RDS_PASSWORD= type-db-password
-RDS_DB_NAME= type-db-name
-STRIPE_KEY= type-stripe-id
