@@ -2,7 +2,7 @@ import json
 import logging
 import boto3
 from botocore.exceptions import ClientError
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 
 from chat import Chat, ChatType, ChatStatus, credit_mapping
 from base import Session
@@ -23,9 +23,6 @@ def handler(event, context):
         UserGroups.PAID
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)
-
-    print("checking user in reservebyid")
-    print(user)
 
     if not success:
         return {
@@ -125,9 +122,24 @@ def prepare_and_send_emails(chat):
 
     event_name = 'MAX Aspire Coffee Chat'
     event_description = chat.description
-    event_start = datetime(2020,12,4,9,0,0) #chat.fixed_date.time(9,0,0)
-    chat_date = datetime(2020,12,4) #chat.fixed_date
+
+    print("before any date or time")
+
+    if chat.fixed_date:
+        print("chat has a fixed date")
+        chat_date = chat.fixed_date
+        event_start = chat_date.time(9,0,0)
+    else:
+        print("chat is undated")
+        today = date.today()
+        day_idx = (today.weekday() + 1) % 7 # Monday = 0
+        chat_date = today - timedelta(7+day_idx)
+        event_start = chat_date.time(9,0,0)
+
+    # event_start = datetime(2020,12,4,9,0,0) #chat.fixed_date.time(9,0,0)
+    # chat_date = datetime(2020,12,4) #chat.fixed_date
     chat_date = f'{chat_date:%b %d, %Y}' 
+    print(chat_date)
     event_end = event_start + timedelta(hours=12)
     
     mentor = client.admin_get_user(
