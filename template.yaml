@@ -294,6 +294,12 @@ Resources:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
             Resource: '*'
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
       Events:
         ChatReserveByIdEvent:
           Type: Api
@@ -306,7 +312,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: SesLayer
-        
+
   ChatUnreserveById:
     Type: AWS::Serverless::Function
     Properties:
@@ -320,6 +326,12 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
             Resource: '*'
       Events:
         ChatUnreserveByIdEvent:
@@ -586,7 +598,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
-  
+
   AutomaticallyApproveJob:
     Type: AWS::Serverless::Function
     Properties:
