@@ -32,14 +32,17 @@ def handler(event, context):
     chats = filtered_query.all()
     session.close()
 
-    attrs = ['given_name', 'family_name', 'picture', 'custom:company']
+    # attrs = ['email', 'given_name', 'family_name', 'picture', 'custom:user_type', 'custom:user_type']
+    users, _ = get_users()
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
-        user, _ = get_users(filter_=('email', chat['senior_executive']), attributes_filter=attrs)
-        chat['given_name'] = user['attributes'].get('given_name')
-        chat['family_name'] = user['attributes'].get('family_name')
-        chat['picture'] = user['attributes'].get('picture')
-        chat['custom:company'] = user['attributes'].get('custom:company')
+        for user in users:
+            if chat['senior_executive'] == user['attributes']['email']:
+                chat['given_name'] = user['attributes']['given_name']
+                chat['family_name'] = user['attributes']['family_name']
+                chat['picture'] = user['attributes']['picture']
+                chat['custom:company'] = user['attributes']['custom:company']
+                break
 
     return {
         "statusCode": 200,
