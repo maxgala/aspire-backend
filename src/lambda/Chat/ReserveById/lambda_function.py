@@ -2,7 +2,7 @@ import json
 import logging
 import boto3
 from botocore.exceptions import ClientError
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta, time
 
 from chat import Chat, ChatType, ChatStatus, credit_mapping
 from base import Session
@@ -122,9 +122,24 @@ def prepare_and_send_emails(chat):
 
     event_name = 'MAX Aspire Coffee Chat'
     event_description = chat.description
-    event_start = datetime(2020,12,4,9,0,0) #chat.fixed_date.time(9,0,0)
-    chat_date = datetime(2020,12,4) #chat.fixed_date
+
+    print("before any date or time")
+
+    if chat.fixed_date:
+        print("chat has a fixed date")
+        chat_date = chat.fixed_date
+    else:
+        print("chat is undated")
+        today = date.today()
+        day_idx = (today.weekday() + 1) % 7 # today.weekday() is 0 for Monday
+        chat_date = today + timedelta(days=7-day_idx)
+    chat_time = time(14,0,0)
+    event_start = datetime.combine(chat_date,chat_time)
+
+    # event_start = datetime(2020,12,4,9,0,0) #chat.fixed_date.time(9,0,0)
+    # chat_date = datetime(2020,12,4) #chat.fixed_date
     chat_date = f'{chat_date:%b %d, %Y}' 
+    print(chat_date)
     event_end = event_start + timedelta(hours=12)
     
     mentor = client.admin_get_user(
@@ -157,22 +172,10 @@ def prepare_and_send_emails(chat):
 
         mentor_body = f"Salaam {mentor_name}!\n\nWe are delighted to confirm your 1 on 1 coffee chat with {mentee_name}.\n\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Aspiring Professional to find a time that works for both of you.\n\nIn case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
 
-    print('Mentor ID')
-    print(mentor_ID)
-    print('Mentee ID')
-    print(mentee_IDs)
     all_attendees = mentee_IDs.copy().append(mentor_ID)
-    print('ALl attendees')
-    print(all_attendees)
-    print('Mentor ID')
-    print(mentor_ID)
-    print('Mentee ID')
-    print(mentee_IDs)
     ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
     send_email(mentee_IDs, subject, mentee_body, ics=ics)
     send_email(mentor_ID, subject, mentor_body, ics=ics)
-
-    # print(chat)
 
 def get_full_name(user):
     user_data = user['UserAttributes']
