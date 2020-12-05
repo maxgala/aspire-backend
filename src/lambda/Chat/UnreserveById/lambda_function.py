@@ -167,7 +167,7 @@ def prepare_and_send_email(chat):
     mentee_name = f"{*mentees,}"
 
     subject = '[MAX Aspire] Coffee chat unreserved'
-    mentee_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Senior Executive {mentor_name} is now cancelled.\n\nPlease note that any credits spent on the coffee chat are non refundable. You can login to your account to purchase credits and book any future coffee chats.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
+    mentee_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Senior Executive {mentor_name} is now cancelled.\n\nYou can login to your account to book any future coffee chats.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
 
     mentor_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Aspiring Professional(s) {mentee_name} is now cancelled.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
 
