@@ -100,6 +100,7 @@ def handler(event, context):
         if chat.chat_status == ChatStatus.RESERVED:
             prepare_and_send_emails(chat)
     except ClientError as e:
+        logging.info(e)
         if int(e.response['ResponseMetadata']['HTTPStatusCode']) >= 500:
             return {
                 "statusCode": 500
