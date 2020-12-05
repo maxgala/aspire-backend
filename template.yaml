@@ -305,7 +305,8 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
-
+        - Ref: SesLayer
+        
   ChatUnreserveById:
     Type: AWS::Serverless::Function
     Properties:
@@ -331,6 +332,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: SesLayer
 
   ChatCancelById:
     Type: AWS::Serverless::Function

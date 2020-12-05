@@ -1,14 +1,20 @@
 import json
 import logging
+import boto3
+from botocore.exceptions import ClientError
+from datetime import datetime, timedelta
 
 from chat import Chat, ChatType, ChatStatus, credit_mapping
 from base import Session
 from role_validation import UserGroups, check_auth
 from cognito_helpers import admin_update_credits
+from send_email import send_email, build_calendar_invite
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+client = boto3.client('cognito-idp')
+USER_POOL_ID = 'us-east-1_OiH5DGpGX'
 
 def handler(event, context):
     # check authorization
@@ -17,6 +23,7 @@ def handler(event, context):
         UserGroups.PAID
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)
+
     if not success:
         return {
             "statusCode": 401,
@@ -78,7 +85,7 @@ def handler(event, context):
     admin_update_credits(user['email'], (-credit_mapping[chat.chat_type]))
 
     if chat.chat_type == ChatType.FOUR_ON_ONE:
-        if chat.aspiring_professionals:
+        if len(chat.aspiring_professionals) > 0:
             chat.aspiring_professionals.append(user['email'])
         else:
             chat.aspiring_professionals = [user['email']]
@@ -89,9 +96,91 @@ def handler(event, context):
         chat.chat_status = ChatStatus.RESERVED
         chat.aspiring_professionals = [user['email']]
 
-    session.commit()
-    session.close()
+    try:
+        if chat.chat_status == ChatStatus.RESERVED:
+            prepare_and_send_emails(chat)
+    except ClientError as e:
+        if int(e.response['ResponseMetadata']['HTTPStatusCode']) >= 500:
+            return {
+                "statusCode": 500
+            }
+        else:
+            return {
+                "statusCode": 400
+            }
+    else:
+        session.commit()
+        session.close()
 
-    return {
-        "statusCode": 200
-    }
+        return {
+            "statusCode": 200
+        }
+
+def prepare_and_send_emails(chat):
+    mentee_IDs = chat.aspiring_professionals 
+    mentor_ID = chat.senior_executive 
+
+    event_name = 'MAX Aspire Coffee Chat'
+    event_description = chat.description
+    event_start = datetime(2020,12,4,9,0,0) #chat.fixed_date.time(9,0,0)
+    chat_date = datetime(2020,12,4) #chat.fixed_date
+    chat_date = f'{chat_date:%b %d, %Y}' 
+    event_end = event_start + timedelta(hours=12)
+    
+    mentor = client.admin_get_user(
+        UserPoolId = USER_POOL_ID,
+        Username = mentor_ID
+    )
+
+    mentees = []
+    for m in mentee_IDs:
+        try: 
+            m_User = client.admin_get_user(
+                UserPoolId = USER_POOL_ID,
+                Username = m
+            )
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+        mentees.append(get_full_name(m_User))
+
+    mentor_name = get_full_name(mentor)
+    mentee_name = f"{*mentees,}"
+
+    if chat.chat_type == ChatType.FOUR_ON_ONE:
+        subject = '[MAX Aspire] 4 on 1 coffee chat confirming the 4 attendees'
+        mentee_body = f"Salaam!\nWe are delighted to confirm your 4 on 1 coffee chat with {mentor_name}.\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Senior Executive to find a time that works for both of you.\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
+
+        mentor_body = f"Salaam {mentor_name}!\n\nWe are delighted to confirm your 4 on 1 coffee chat with {mentee_name}.\n\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Aspiring Professionals to find a time that works for both of you.\n\nIn case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
+    else:
+        subject = '[MAX Aspire] 1 on 1 coffee chat'
+        mentee_body = f"Salaam!\n\nWe are delighted to confirm your 1 on 1 coffee chat with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Senior Executive to find a time that works for both of you.\n\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
+
+        mentor_body = f"Salaam {mentor_name}!\n\nWe are delighted to confirm your 1 on 1 coffee chat with {mentee_name}.\n\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Aspiring Professional to find a time that works for both of you.\n\nIn case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
+
+    print('Mentor ID')
+    print(mentor_ID)
+    print('Mentee ID')
+    print(mentee_IDs)
+    all_attendees = mentee_IDs.copy().append(mentor_ID)
+    print('ALl attendees')
+    print(all_attendees)
+    print('Mentor ID')
+    print(mentor_ID)
+    print('Mentee ID')
+    print(mentee_IDs)
+    ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
+    send_email(mentee_IDs, subject, mentee_body, ics=ics)
+    send_email(mentor_ID, subject, mentor_body, ics=ics)
+
+    # print(chat)
+
+def get_full_name(user):
+    user_data = user['UserAttributes']
+    given = ''
+    family = ''
+    for i in user_data:
+        if i['Name'] == 'given_name':
+            given = i['Value']
+        elif i['Name'] == 'family_name':
+            family = i['Value']
+    return given + " " + family
