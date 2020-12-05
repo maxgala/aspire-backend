@@ -76,38 +76,69 @@ def handler(event, context):
             })
         }
 
-    aspiring_professionals = chat.aspiring_professionals
-    chat.aspiring_professionals = None
-    for ap in aspiring_professionals:
-        if ap != user['email']:
-            if chat.aspiring_professionals:
-                chat.aspiring_professionals.append(ap)
-            else:
-                chat.aspiring_professionals = [ap]
+    print('aspiring_professionals 1')
+    print(chat.aspiring_professionals)
+    if user['email'] in chat.aspiring_professionals:
+        chat.aspiring_professionals.remove(user['email'])
+        print('aspiring_professionals 2')
+        print(chat.aspiring_professionals)
+        prepare_and_send_email_to_ap(user['email'], chat.senior_executive)
+        prepare_and_send_email_to_se(user['email'], chat.senior_executive)
 
-    admin_update_credits(user['email'], credit_mapping[chat.chat_type])
-    if chat.chat_status == ChatStatus.RESERVED:
+    print('aspiring_professionals 3')
+    print(chat.aspiring_professionals)
+    if (chat.chat_type != ChatType.ONE_ON_ONE and chat.chat_status == ChatStatus.RESERVED) \
+        or (chat.chat_type != ChatType.FOUR_ON_ONE and (chat.aspiring_professionals is None \
+        or len(chat.aspiring_professionals) == 0)):
         chat.chat_status = ChatStatus.ACTIVE
 
-    try:
-        if chat.chat_status == ChatStatus.ACTIVE:
-            prepare_and_send_email(chat)
-    except ClientError as e:
-        if int(e.response['ResponseMetadata']['HTTPStatusCode']) >= 500:
-            return {
-                "statusCode": 500
-            }
-        else:
-            return {
-                "statusCode": 400
-            }
-    else:
-        session.commit()
-        session.close()
 
-        return {
-            "statusCode": 200
-        }
+    session.commit()
+    session.close()
+
+    return {
+        "statusCode": 200
+    }
+
+
+def prepare_and_send_email_to_ap(ap, se):
+
+    mentor = client.admin_get_user(
+        UserPoolId = USER_POOL_ID,
+        Username = se
+    )
+
+    mentee = client.admin_get_user(
+        UserPoolId = USER_POOL_ID,
+        Username = ap
+    )
+
+    mentor_name = get_full_name(mentor)
+    mentee_name = get_full_name(mentee)
+
+    subject = '[MAX Aspire] Coffee chat unreserved'
+    mentee_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Senior Executive {mentor_name} is now cancelled.\n\nPlease note that any credits spent on the coffee chat are non refundable. You can login to your account to purchase credits and book any future coffee chats.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
+
+    send_email(ap, subject, mentee_body)
+
+def prepare_and_send_email_to_se(ap, se):
+
+    mentor = client.admin_get_user(
+        UserPoolId = USER_POOL_ID,
+        Username = se
+    )
+
+    mentee = client.admin_get_user(
+        UserPoolId = USER_POOL_ID,
+        Username = ap
+    )
+
+    mentee_name = get_full_name(mentee)
+
+    subject = '[MAX Aspire] Coffee chat unreserved'
+    mentor_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Aspiring Professional(s) {mentee_name} is now cancelled.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
+
+    send_email(se, subject, mentor_body)
 
 def prepare_and_send_email(chat):
 
@@ -146,7 +177,6 @@ def prepare_and_send_email(chat):
 
 def get_full_name(user):
     user_data = user['UserAttributes']
-    print(user_data) 
     for i in user_data:
         if i['Name'] == 'given_name':
             given = i['Value']

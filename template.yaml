@@ -119,57 +119,57 @@ Resources:
   # --- Infrastructure ---
 
 # --- Chats Service ---
-  # ChatCreate:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Chat/Create
-  #     Handler: lambda_function.handler
-  #     Description: Lambda function to create new chat
-  #     Policies:
-  #       - Statement:
-  #         - Sid: CognitoPolicy
-  #           Effect: Allow
-  #           Action:
-  #             - cognito-idp:ListUsers
-  #             - cognito-idp:AdminUpdateUserAttributes
-  #           Resource: '*'
-  #     Events:
-  #       ChatCreateEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /chats
-  #           Method: post
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
-  #       - Ref: CognitoLayer
+  ChatCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/Create
+      Handler: lambda_function.handler
+      Description: Lambda function to create new chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        ChatCreateEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats
+            Method: post
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
 
-  # ChatCreateMultiple:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Chat/CreateMultiple
-  #     Handler: lambda_function.handler
-  #     Description: Lambda function to create new chats
-  #     Policies:
-  #       - Statement:
-  #         - Sid: CognitoPolicy
-  #           Effect: Allow
-  #           Action:
-  #             - cognito-idp:ListUsers
-  #             - cognito-idp:AdminUpdateUserAttributes
-  #           Resource: '*'
-  #     Events:
-  #       ChatCreateMultipleEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /chats/create-multiple
-  #           Method: post
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
-  #       - Ref: CognitoLayer
+  ChatCreateMultiple:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/CreateMultiple
+      Handler: lambda_function.handler
+      Description: Lambda function to create new chats
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        ChatCreateMultipleEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats/create-multiple
+            Method: post
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
 
   ChatGetById:
     Type: AWS::Serverless::Function
@@ -187,48 +187,48 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
 
-  # ChatEditById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Chat/EditById
-  #     Handler: lambda_function.handler
-  #     Description: Lambda function to edit chat by Id
-  #     Events:
-  #       ChatEditByIdEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /chats/{chatId}
-  #           Method: put
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
+  ChatEditById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/EditById
+      Handler: lambda_function.handler
+      Description: Lambda function to edit chat by Id
+      Events:
+        ChatEditByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats/{chatId}
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-  # ChatDeleteById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Chat/DeleteById
-  #     Handler: lambda_function.handler
-  #     Description: Lambda function to delete chat by Id
-  #     Policies:
-  #       - Statement:
-  #         - Sid: CognitoPolicy
-  #           Effect: Allow
-  #           Action:
-  #             - cognito-idp:ListUsers
-  #             - cognito-idp:AdminUpdateUserAttributes
-  #           Resource: '*'
-  #     Events:
-  #       ChatDeleteByIdEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /chats/{chatId}
-  #           Method: delete
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
-  #       - Ref: CognitoLayer
+  ChatDeleteById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/DeleteById
+      Handler: lambda_function.handler
+      Description: Lambda function to delete chat by Id
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        ChatDeleteByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats/{chatId}
+            Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
 
   ChatGetAll:
     Type: AWS::Serverless::Function
@@ -254,31 +254,31 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
 
-  # ChatDeleteAll:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Chat/DeleteAll
-  #     Handler: lambda_function.handler
-  #     Description: Lambda function to delete all chats
-  #     Policies:
-  #       - Statement:
-  #         - Sid: CognitoPolicy
-  #           Effect: Allow
-  #           Action:
-  #             - cognito-idp:ListUsers
-  #             - cognito-idp:AdminUpdateUserAttributes
-  #           Resource: '*'
-  #     Events:
-  #       ChatDeleteAllEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /chats
-  #           Method: delete
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
-  #       - Ref: CognitoLayer
+  ChatDeleteAll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/DeleteAll
+      Handler: lambda_function.handler
+      Description: Lambda function to delete all chats
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        ChatDeleteAllEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats
+            Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
 
   ChatReserveById:
     Type: AWS::Serverless::Function
@@ -306,7 +306,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: SesLayer
-
+        
   ChatUnreserveById:
     Type: AWS::Serverless::Function
     Properties:
@@ -334,539 +334,625 @@ Resources:
         - Ref: CognitoLayer
         - Ref: SesLayer
 
-  # ChatCancelById:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: src/lambda/Chat/CancelById
-  #     Handler: lambda_function.handler
-  #     Description: Lambda function to cancel a chat
-  #     Policies:
-  #       - Statement:
-  #         - Sid: CognitoPolicy
-  #           Effect: Allow
-  #           Action:
-  #             - cognito-idp:ListUsers
-  #             - cognito-idp:AdminUpdateUserAttributes
-  #           Resource: '*'
-  #     Events:
-  #       ChatCancelByIdEvent:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref AspireApi
-  #           Path: /chats/{chatId}/cancel
-  #           Method: put
-  #     Layers:
-  #       - Ref: DatabaseLayer
-  #       - Ref: AuthLayer
-  #       - Ref: CognitoLayer
+  ChatCancelById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/CancelById
+      Handler: lambda_function.handler
+      Description: Lambda function to cancel a chat
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        ChatCancelByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats/{chatId}/cancel
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
   # --- Chats Service ---
 
-#   # --- SE Connect Service ---
-#   ConnectCreate:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Connect/Create
-#       Handler: lambda_function.handler
-#       Policies:
-#         - Statement:
-#           - Sid: CognitoPostConfSESSendPolicy
-#             Effect: Allow
-#             Action:
-#               - ses:SendEmail
-#               - ses:SendRawEmail
-#             Resource: '*'
-#       Events:
-#         ConnectCreateEvent:
-#           Type: Api
-#           Properties:
-#             RestApiId: !Ref AspireApi
-#             Path: /connect
-#             Method: post
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: SesLayer
+  # --- SE Connect Service ---
+  ConnectCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/Create
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+        ConnectCreateEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect
+            Method: post
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: SesLayer
 
-#   ConnectGetAll:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Connect/GetAll
-#       Handler: lambda_function.handler
-#       Events:
-#         ConnectGetAllEvent:
-#           Type: Api
-#           Properties:
-#             RestApiId: !Ref AspireApi
-#             Path: /connect
-#             Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
+  ConnectGetAll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/GetAll
+      Handler: lambda_function.handler
+      Events:
+        ConnectGetAllEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
-#   ConnectGetById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Connect/GetById
-#       Handler: lambda_function.handler
-#       Events:
-#         ConnectGetByIdEvent:
-#           Type: Api
-#           Properties:
-#             RestApiId: !Ref AspireApi
-#             Path: /connect/{connectId}
-#             Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
+  ConnectGetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/GetById
+      Handler: lambda_function.handler
+      Events:
+        ConnectGetByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect/{connectId}
+            Method: get
+      Layers:
+        - Ref: DatabaseLayer
 
-#   ConnectEditById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Connect/EditById
-#       Handler: lambda_function.handler
-#       Policies:
-#         - Statement:
-#           - Sid: CognitoPostConfSESSendPolicy
-#             Effect: Allow
-#             Action:
-#               - ses:SendEmail
-#               - ses:SendRawEmail
-#             Resource: '*'
-#       Events:
-#         ConnectEditByIdEvent:
-#           Type: Api
-#           Properties:
-#             RestApiId: !Ref AspireApi
-#             Path: /connect/{connectId}
-#             Method: put
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: SesLayer
+  ConnectEditById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/EditById
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+        ConnectEditByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect/{connectId}
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: SesLayer
 
-#   ConnectDeleteById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Connect/DeleteById
-#       Handler: lambda_function.handler
-#       Events:
-#         ConnectDeleteByIdEvent:
-#           Type: Api
-#           Properties:
-#             RestApiId: !Ref AspireApi
-#             Path: /connect/{connectId}
-#             Method: delete
-#       Layers:
-#         - Ref: DatabaseLayer
-#   # --- SE Connect Service ---
+  ConnectDeleteById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Connect/DeleteById
+      Handler: lambda_function.handler
+      Events:
+        ConnectDeleteByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /connect/{connectId}
+            Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+  # --- SE Connect Service ---
 
-#   # --- Jobs Service ---
-#   CreateJob:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/CreateJob
-#       Handler: lambda_function.handler
-#       Policies:
-#         - Statement:
-#           - Sid: CognitoPostConfSESSendPolicy
-#             Effect: Allow
-#             Action:
-#               - ses:SendEmail
-#               - ses:SendRawEmail
-#             Resource: '*'
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /jobs
-#               Method: post
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
-#         - Ref: SesLayer
+  # --- Jobs Service ---
+  CreateJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/CreateJob
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs
+              Method: post
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: SesLayer
 
-#   GetAllJobs:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/GetAllJobs
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /jobs
-#               Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  GetAllJobs:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/GetAllJobs
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   GetJobById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/GetJobById
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /jobs/{jobId}
-#               Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  GetJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/GetJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   DeleteJobById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/DeleteJobById
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /jobs/{jobId}
-#               Method: delete
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  DeleteJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/DeleteJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}
+              Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   EditJobById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/EditJobById
-#       Handler: lambda_function.handler
-#       Policies:
-#         - Statement:
-#           - Sid: CognitoPostConfSESSendPolicy
-#             Effect: Allow
-#             Action:
-#               - ses:SendEmail
-#               - ses:SendRawEmail
-#             Resource: '*'
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /jobs/{jobId}
-#               Method: put
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
-#         - Ref: SesLayer
+  EditJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/EditJobById
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: SesLayer
 
-#   CloseJobById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/CloseJobById
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /jobs/{jobId}/close
-#               Method: put
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  CloseJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/CloseJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}/close
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   RejectJobById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/RejectJobById
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /jobs/{jobId}/reject
-#               Method: put
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  RejectJobById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/RejectJobById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /jobs/{jobId}/reject
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
   
-#   AutomaticallyApproveJob:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/AutomaticallyApproveJob
-#       Handler: lambda_function.handler
-#       Policies:
-#         - Statement:
-#           - Sid: CognitoPostConfSESSendPolicy
-#             Effect: Allow
-#             Action:
-#               - ses:SendEmail
-#               - ses:SendRawEmail
-#             Resource: '*'
-#       Events:
-#         ApproveJobScheduledEvent:
-#           Type: Schedule
-#           Properties:
-#             Schedule: rate(1 day)
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: SesLayer
+  AutomaticallyApproveJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/AutomaticallyApproveJob
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+        ApproveJobScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 day)
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: SesLayer
 
-#   JobContactById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Job/JobContactById
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /job_contact/{jobId}
-#               Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
-#   # --- Jobs Service ---
+  JobContactById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Job/JobContactById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job_contact/{jobId}
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+  # --- Jobs Service ---
 
-#   # --- Job Applications Service ---
-#   CreateJobApplication:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/JobApplications/CreateJobApplication
-#       Handler: lambda_function.handler
-#       Policies:
-#         - Statement:
-#           - Sid: CognitoPostConfSESSendPolicy
-#             Effect: Allow
-#             Action:
-#               - ses:SendEmail
-#               - ses:SendRawEmail
-#             Resource: '*'
-#       Events:
-#           CreateJobApplicationEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /job-applications
-#               Method: post
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
-#         - Ref: SesLayer
+  # --- Job Applications Service ---
+  CreateJobApplication:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/CreateJobApplication
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications
+              Method: post
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: SesLayer
 
-#   GetAllJobApplications:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/JobApplications/GetAllJobApplications
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobApplicationEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /job-applications
-#               Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  GetAllJobApplications:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/GetAllJobApplications
+      Handler: lambda_function.handler
+      Events:
+          CreateJobApplicationEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   DeleteJobApplicationById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/JobApplications/DeleteJobApplicationById
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /job-applications/{id}
-#               Method: delete
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  DeleteJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/DeleteJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications/{id}
+              Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   GetJobApplicationById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/JobApplications/GetJobApplicationById
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /job-applications/{id}
-#               Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  GetJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/GetJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications/{id}
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   EditJobApplicationById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/JobApplications/EditJobApplicationById
-#       Handler: lambda_function.handler
-#       Events:
-#           CreateJobEvent:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /job-applications/{id}
-#               Method: put
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
-#   # --- Job Applications Service ---
+  EditJobApplicationById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/JobApplications/EditJobApplicationById
+      Handler: lambda_function.handler
+      Events:
+          CreateJobEvent:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /job-applications/{id}
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+  # --- Job Applications Service ---
 
-#   # --- Industry Tags Service ---
-#   IndustryTagsCreate:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/IndustryTags/Create
-#       Handler: lambda_function.handler
-#       Events:
-#           IndustryTagsCreate:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /industry-tags
-#               Method: post
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  # --- Industry Tags Service ---
+  IndustryTagsCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/Create
+      Handler: lambda_function.handler
+      Events:
+          IndustryTagsCreate:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /industry-tags
+              Method: post
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   IndustryTagsGetAll:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/IndustryTags/GetAll
-#       Handler: lambda_function.handler
-#       Events:
-#           IndustryTagsGetAll:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /industry-tags
-#               Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  IndustryTagsGetAll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/GetAll
+      Handler: lambda_function.handler
+      Events:
+          IndustryTagsGetAll:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /industry-tags
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   IndustryTagsGetById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/IndustryTags/GetById
-#       Handler: lambda_function.handler
-#       Events:
-#           IndustryTagsGetById:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /industry-tags/{industryTagId}
-#               Method: get
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
+  IndustryTagsGetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/GetById
+      Handler: lambda_function.handler
+      Events:
+          IndustryTagsGetById:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /industry-tags/{industryTagId}
+              Method: get
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
 
-#   IndustryTagsDeleteById:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/IndustryTags/DeleteById
-#       Handler: lambda_function.handler
-#       Events:
-#           IndustryTagsDeleteById:
-#             Type: Api
-#             Properties:
-#               RestApiId: !Ref AspireApi
-#               Path: /industry-tags/{industryTagId}
-#               Method: delete
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
-#   # --- Industry Tags Service ---
+  IndustryTagsDeleteById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/IndustryTags/DeleteById
+      Handler: lambda_function.handler
+      Events:
+          IndustryTagsDeleteById:
+            Type: Api
+            Properties:
+              RestApiId: !Ref AspireApi
+              Path: /industry-tags/{industryTagId}
+              Method: delete
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+  # --- Industry Tags Service ---
 
-#   # --- Payments Service ---
-#   StripePaymentProcessor:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#         CodeUri: src/lambda/Payment
-#         Handler: lambda_function.handler
-#         Events:
-#             Payment:
-#               Type: Api
-#               Properties:
-#                 RestApiId: !Ref AspireApi
-#                 Path: /payment
-#                 Method: post
-#         Layers:
-#           - Ref: DatabaseLayer
-#   # --- Payments Service ---
+  # --- Payments Service ---
+  StripePaymentProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+        CodeUri: src/lambda/Payment
+        Handler: lambda_function.handler
+        Events:
+            Payment:
+              Type: Api
+              Properties:
+                RestApiId: !Ref AspireApi
+                Path: /payment
+                Method: post
+        Layers:
+          - Ref: DatabaseLayer
+  # --- Payments Service ---
 
-#   # --- Users Service ---
-#   GetAllUsers:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#         CodeUri: src/lambda/Users/GetAll
-#         Handler: lambda_function.handler
-#         Events:
-#             Payment:
-#               Type: Api
-#               Properties:
-#                 RestApiId: !Ref AspireApi
-#                 Path: /users
-#                 Method: get
-#         Layers:
-#           - Ref: DatabaseLayer
-#   GetMentorsPendingApproval:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#         CodeUri: src/lambda/Users/GetMentors
-#         Handler: lambda_function.handler
-#         Events:
-#             Payment:
-#               Type: Api
-#               Properties:
-#                 RestApiId: !Ref AspireApi
-#                 Path: /users/mentors/pending
-#                 Method: get
-#         Layers:
-#           - Ref: DatabaseLayer
-#   # --- Users Service ---
+  # --- Users Service ---
+  UserGetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/GetById
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+            Resource: '*'
+      Events:
+        UserGetByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/{userId}
+            Method: get
+      Layers:
+        - Ref: CognitoLayer
 
-#   # --- Scheduler Service ---
-#   SchedulerSchedule:
-#     Type: AWS::Serverless::Function
-#     Properties:
-#       CodeUri: src/lambda/Scheduler/Schedule
-#       Handler: lambda_function.handler
-#       Description: Lambda function to schedule chats
-#       Policies:
-#         - Statement:
-#           - Sid: CognitoPolicy
-#             Effect: Allow
-#             Action:
-#               - cognito-idp:ListUsers
-#               - cognito-idp:AdminUpdateUserAttributes
-#             Resource: '*'
-#       Events:
-#           SchedulerScheduleEvent:
-#             Type: Api
-#             Properties:
-#               Path: /scheduler
-#               Method: put
-#       Layers:
-#         - Ref: DatabaseLayer
-#         - Ref: AuthLayer
-#         - Ref: CognitoLayer
-#   # --- Scheduler Service ---
+  UserGetAll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/GetAll
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+            Resource: '*'
+      Events:
+        UserGetAllEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users
+            Method: get
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
 
-# Outputs:
-#   Region:
-#     Description: "Region"
-#     Value: !Ref AWS::Region
+  UserUpdateCredits:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/UpdateCredits
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        UserUpdateCreditsEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/credits
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
 
-#   AspireApiId:
-#     Description: "Aspire API ID"
-#     Value: !Ref AspireApi
+  UserEnable:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/Enable
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:AdminEnableUser
+            Resource: '*'
+      Events:
+        UserEnableEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/enable
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
 
-#   AspireApiUrl:
-#     Description: "Aspire API endpoint URL"
-#     Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/api/'
+  UserDisable:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/Disable
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:AdminDisableUser
+            Resource: '*'
+      Events:
+        UserDisableEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/disable
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+  # --- Users Service ---
+
+  # --- Scheduler Service ---
+  SchedulerSchedule:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Scheduler/Schedule
+      Handler: lambda_function.handler
+      Description: Lambda function to schedule chats
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+          SchedulerScheduleEvent:
+            Type: Api
+            Properties:
+              Path: /scheduler
+              Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+  # --- Scheduler Service ---
+
+Outputs:
+  Region:
+    Description: "Region"
+    Value: !Ref AWS::Region
+
+  AspireApiId:
+    Description: "Aspire API ID"
+    Value: !Ref AspireApi
+
+  AspireApiUrl:
+    Description: "Aspire API endpoint URL"
+    Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/api/'

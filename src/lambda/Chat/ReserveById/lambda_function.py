@@ -24,9 +24,6 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_groups)
 
-    print("checking user in reservebyid")
-    print(user)
-
     if not success:
         return {
             "statusCode": 401,
@@ -88,7 +85,7 @@ def handler(event, context):
     admin_update_credits(user['email'], (-credit_mapping[chat.chat_type]))
 
     if chat.chat_type == ChatType.FOUR_ON_ONE:
-        if chat.aspiring_professionals:
+        if len(chat.aspiring_professionals) > 0:
             chat.aspiring_professionals.append(user['email'])
         else:
             chat.aspiring_professionals = [user['email']]
@@ -160,7 +157,17 @@ def prepare_and_send_emails(chat):
 
         mentor_body = f"Salaam {mentor_name}!\n\nWe are delighted to confirm your 1 on 1 coffee chat with {mentee_name}.\n\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Aspiring Professional to find a time that works for both of you.\n\nIn case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
 
-    all_attendees = mentee_IDs.append(mentor_ID)
+    print('Mentor ID')
+    print(mentor_ID)
+    print('Mentee ID')
+    print(mentee_IDs)
+    all_attendees = mentee_IDs.copy().append(mentor_ID)
+    print('ALl attendees')
+    print(all_attendees)
+    print('Mentor ID')
+    print(mentor_ID)
+    print('Mentee ID')
+    print(mentee_IDs)
     ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
     send_email(mentee_IDs, subject, mentee_body, ics=ics)
     send_email(mentor_ID, subject, mentor_body, ics=ics)
@@ -169,7 +176,8 @@ def prepare_and_send_emails(chat):
 
 def get_full_name(user):
     user_data = user['UserAttributes']
-    print(user_data) 
+    given = ''
+    family = ''
     for i in user_data:
         if i['Name'] == 'given_name':
             given = i['Value']
