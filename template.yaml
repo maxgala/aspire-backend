@@ -801,34 +801,120 @@ Resources:
   # --- Payments Service ---
 
   # --- Users Service ---
-  GetAllUsers:
+  UserGetById:
     Type: AWS::Serverless::Function
     Properties:
-        CodeUri: src/lambda/Users/GetAll
-        Handler: lambda_function.handler
-        Events:
-            Payment:
-              Type: Api
-              Properties:
-                RestApiId: !Ref AspireApi
-                Path: /users
-                Method: get
-        Layers:
-          - Ref: DatabaseLayer
-  GetMentorsPendingApproval:
+      CodeUri: src/lambda/User/GetById
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+            Resource: '*'
+      Events:
+        UserGetByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/{userId}
+            Method: get
+      Layers:
+        - Ref: CognitoLayer
+
+  UserGetAll:
     Type: AWS::Serverless::Function
     Properties:
-        CodeUri: src/lambda/Users/GetMentors
-        Handler: lambda_function.handler
-        Events:
-            Payment:
-              Type: Api
-              Properties:
-                RestApiId: !Ref AspireApi
-                Path: /users/mentors/pending
-                Method: get
-        Layers:
-          - Ref: DatabaseLayer
+      CodeUri: src/lambda/User/GetAll
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+            Resource: '*'
+      Events:
+        UserGetAllEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users
+            Method: get
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+
+  UserUpdateCredits:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/UpdateCredits
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:ListUsers
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        UserUpdateCreditsEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/credits
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+
+  UserEnable:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/Enable
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:AdminEnableUser
+            Resource: '*'
+      Events:
+        UserEnableEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/enable
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+
+  UserDisable:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/Disable
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:AdminDisableUser
+            Resource: '*'
+      Events:
+        UserDisableEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/disable
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
   # --- Users Service ---
 
   # --- Scheduler Service ---
