@@ -1,7 +1,7 @@
 import json
 import logging
 
-from role_validation import UserGroups, check_auth
+from role_validation import UserType, check_auth
 from cognito_helpers import admin_enable_user
 
 logger = logging.getLogger()
@@ -10,10 +10,10 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
     # check authorization
-    authorized_groups = [
-        UserGroups.ADMIN
+    authorized_user_types = [
+        UserType.ADMIN
     ]
-    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
+    success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
         return {
             "statusCode": 401,

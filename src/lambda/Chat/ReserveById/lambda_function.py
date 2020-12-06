@@ -5,7 +5,7 @@ from datetime import datetime, date, timedelta, time
 
 from chat import Chat, ChatType, ChatStatus, credit_mapping
 from base import Session
-from role_validation import UserGroups, check_auth
+from role_validation import UserType, check_auth
 from cognito_helpers import get_users, admin_update_credits
 from send_email import send_email, build_calendar_invite
 
@@ -15,11 +15,11 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
     # check authorization
-    authorized_groups = [
-        UserGroups.FREE,
-        UserGroups.PAID
+    authorized_user_types = [
+        UserType.FREE,
+        UserType.PAID
     ]
-    success, user = check_auth(event['headers']['Authorization'], authorized_groups)
+    success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
 
     if not success:
         return {

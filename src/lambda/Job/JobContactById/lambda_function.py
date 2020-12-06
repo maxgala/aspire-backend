@@ -10,7 +10,7 @@ from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
 import jwt
 import boto3
-from role_validation import UserGroups, check_auth
+from role_validation import UserType, check_auth
 
 client = boto3.client('cognito-idp')
 
@@ -20,12 +20,12 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
 
     # check authorization
-    authorized_groups = [
-        UserGroups.ADMIN,
-        UserGroups.MENTOR,
-        UserGroups.PAID
+    authorized_user_types = [
+        UserType.ADMIN,
+        UserType.MENTOR,
+        UserType.PAID
     ]
-    success, user = check_auth(event['headers']['Authorization'], authorized_groups)
+    success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
         return {
             "statusCode": 401,
