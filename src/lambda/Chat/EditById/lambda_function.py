@@ -3,7 +3,7 @@ import logging
 
 from chat import Chat
 from base import Session, row2dict
-from role_validation import UserGroups, check_auth, edit_auth
+from role_validation import UserType, check_auth, edit_auth
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -11,11 +11,11 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
     # check authorization
-    authorized_groups = [
-        UserGroups.ADMIN,
-        UserGroups.MENTOR
+    authorized_user_types = [
+        UserType.ADMIN,
+        UserType.MENTOR
     ]
-    success, user = check_auth(event['headers']['Authorization'], authorized_groups)
+    success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
         return {
             "statusCode": 401,

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from chat import Chat, ChatType, ChatStatus, credit_mapping, mandatory_date
 from base import Session
-from role_validation import UserGroups, check_auth
+from role_validation import UserType, check_auth
 from cognito_helpers import get_users, admin_update_remaining_chats_frequency
 
 logger = logging.getLogger()
@@ -179,10 +179,10 @@ def schedule_activate(session, default_num_activate, num_carry_over):
 
 def handler(event, context):
     # check authorization
-    authorized_groups = [
-        UserGroups.ADMIN
+    authorized_user_types = [
+        UserType.ADMIN
     ]
-    success, _ = check_auth(event['headers']['Authorization'], authorized_groups)
+    success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
         return {
             "statusCode": 401,

@@ -1,7 +1,7 @@
 import json
 import logging
 
-from role_validation import UserGroups
+from role_validation import UserType
 from cognito_helpers import get_users
 
 logger = logging.getLogger()
@@ -17,7 +17,7 @@ def handler(event, context):
         filter_ = ('status', status_filter)
     else:
         filter_ = ('status', 'Enabled')
-    if type_filter and type_filter in UserGroups.__members__:
+    if type_filter and type_filter in UserType.__members__:
         user_type = type_filter
     else:
         user_type = None
