@@ -123,7 +123,7 @@ def handler(event, context):
         chat.chat_status = ChatStatus.RESERVED
 
     try:
-        if chat.chat_status == ChatStatus.RESERVED:
+        if chat.chat_status == ChatStatus.RESERVED or chat.chat_status == ChatStatus.RESERVED_PARTIAL:
             prepare_and_send_emails(chat)
     except ClientError as e:
         session.rollback()
@@ -165,7 +165,7 @@ def prepare_and_send_emails(chat):
     mentee_IDs = chat.aspiring_professionals
     mentor_ID = chat.senior_executive
 
-    event_name = 'MAX Aspire Coffee Chat'
+    event_name = '[MAX Aspire] Coffee Chat with Senior Executive'
     event_description = chat.description
 
     if chat.fixed_date:
@@ -186,18 +186,18 @@ def prepare_and_send_emails(chat):
 
     mentor, _ = get_users(filter_=("email", mentor_ID), attributes_filter=["given_name", "family_name"])
     mentor_name = "%s %s" % (mentor['attributes']['given_name'], mentor['attributes']['family_name'])
-    mentee_name = f"{*mentees,}"
-    if chat.chat_type == ChatType.FOUR_ON_ONE:
-        subject = '[MAX Aspire] 4 on 1 coffee chat confirming the 4 attendees'
-        mentee_body = f"Salaam!\nWe are delighted to confirm your 4 on 1 coffee chat with {mentor_name}.\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Senior Executive to find a time that works for both of you.\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
-        mentor_body = f"Salaam {mentor_name}!\n\nWe are delighted to confirm your 4 on 1 coffee chat with {mentee_name}.\n\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Aspiring Professionals to find a time that works for both of you.\n\nIn case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
-    else:
-        subject = '[MAX Aspire] 1 on 1 coffee chat'
-        mentee_body = f"Salaam!\n\nWe are delighted to confirm your 1 on 1 coffee chat with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Senior Executive to find a time that works for both of you.\n\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
-        mentor_body = f"Salaam {mentor_name}!\n\nWe are delighted to confirm your 1 on 1 coffee chat with {mentee_name}.\n\nYour coffee chat will take place on: {chat_date}\n\nPlease connect with the Aspiring Professional to find a time that works for both of you.\n\nIn case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
 
-    all_attendees = mentee_IDs.copy().append(mentor_ID)
+    chat_type = ''
+    if chat.chat_type == ChatType.FOUR_ON_ONE:
+        chat_type = '4-on-1'
+    else:
+        chat_type = '1-on-1'
+
+    subject = '[MAX Aspire] Your coffee chat is confirmed!'
+    body = f"Salaam!\nWe are delighted to confirm your {chat_type} coffee chat with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}. Please connect with the Senior Executive to find a time that works for both of you.\n\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
+    # TODO change mentor recipient to mentor_ID
+    mentor_ID = 'test_mentor_1@maxgala.com'
+    all_attendees = list(mentee_IDs)
+    all_attendees.append(mentor_ID)
     ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
-    send_email(mentee_IDs, subject, mentee_body, ics=ics)
-    # send_email(mentor_ID, subject, mentor_body, ics=ics)
-    send_email('test_mentor_1@maxgala.com', subject, mentor_body, ics=ics)
+    send_email(all_attendees, subject, body, ics=ics)

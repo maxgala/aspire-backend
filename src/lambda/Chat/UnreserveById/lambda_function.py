@@ -138,6 +138,7 @@ def handler(event, context):
         }
 
 def prepare_and_send_email_to_ap(ap, se):
+    return
     mentor, _ = get_users(filter_=("email", se), attributes_filter=["given_name", "family_name"])
     mentor_name = "%s %s" % (mentor['attributes']['given_name'], mentor['attributes']['family_name'])
 
@@ -146,6 +147,7 @@ def prepare_and_send_email_to_ap(ap, se):
     send_email(ap, subject, mentee_body)
 
 def prepare_and_send_email_to_se(ap, se):
+    return
     mentee, _ = get_users(filter_=("email", ap), attributes_filter=["given_name", "family_name"])
     mentee_name = "%s %s" % (mentee['attributes']['given_name'], mentee['attributes']['family_name'])
 
