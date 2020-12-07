@@ -17,8 +17,8 @@ def handler(event, context):
         if "payment_method_id" in paymentMethod_Dict:
             intent = stripe.PaymentIntent.create(
                 payment_method = paymentMethod_Dict["payment_method_id"], #attribute depends on request body
-                amount = 1555, #change the amount
-                currency = 'usd',
+                amount = paymentMethod_Dict["amount"], #change the amount
+                currency = 'cad',
                 confirmation_method = 'automatic',
                 confirm = True,
                 payment_method_types=["card"]
