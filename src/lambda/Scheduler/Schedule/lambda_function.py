@@ -66,10 +66,10 @@ def init_periods(user, current_date):
 def populate_periods(chats, periods):
     periods_chats_freq = [0] * len(periods)
     for chat in chats:
-        for idx, (start, end) in periods.items():
-            if chat.chat_status != ChatStatus.CANCELED:
-                if (chat.fixed_date and start <=  chat.fixed_date < end) \
-                    or (chat.expiry_date and start <=  chat.expiry_date < end):
+        if chat.chat_status != ChatStatus.EXPIRED:
+            for idx, (start, end) in periods.items():
+                if (chat.fixed_date and start <= chat.fixed_date < end) \
+                   or (chat.expiry_date and start <=  chat.expiry_date < end):
                     periods_chats_freq[idx] += 1
                     break
     return periods_chats_freq
@@ -90,23 +90,35 @@ def next_best_period(periods_chats_freq):
             min_idx = current_idx
     return min_idx
 
-def process_active_chats(user, chats, current_date, next_date):
-    num_active_undated_unbooked = 0
+def process_dated_chats(user, chats, current_date, next_date):
     for chat in chats:
-        # active dated
-        if chat.chat_status == ChatStatus.ACTIVE and chat.fixed_date:
-            if chat.fixed_date < current_date:
-                chat.chat_status = ChatStatus.CANCELED
-        # active undated
-        elif chat.chat_status == ChatStatus.ACTIVE and not chat.fixed_date:
-            if chat.expiry_date < current_date or chat.expiry_date > next_date:
-                num_active_undated_unbooked += 1
-                chat.chat_status = ChatStatus.PENDING
-                admin_update_remaining_chats_frequency(user['email'], 1)
-                if chat.expiry_date < current_date:
-                    chat.expiry_date = None
-    return num_active_undated_unbooked
+        # expired
+        # TODO: delta function to expire dated chats, instead of day of
+        if chat.fixed_date and chat.fixed_date < current_date:
+            if chat.chat_status == ChatStatus.RESERVED_PARTIAL \
+               or chat.chat_status == ChatStatus.RESERVED:
+                # TODO: send email notification to SE/AP(s)
+                chat.chat_status = ChatStatus.RESERVED_CONFIRMED
+            elif chat.chat_status == ChatStatus.ACTIVE:
+                # TODO: send email notification to SE
+                chat.chat_status = ChatStatus.EXPIRED
 
+def process_undated_chats(user, chats, current_date, next_date):
+    num_unbooked = 0
+    for chat in chats:
+        if not chat.fixed_date:
+            if chat.chat_status == ChatStatus.RESERVED_PARTIAL \
+               or chat.chat_status == ChatStatus.RESERVED:
+                # TODO: send email notification to SE/AP(s)
+                chat.chat_status = ChatStatus.RESERVED_CONFIRMED
+            elif chat.chat_status == ChatStatus.ACTIVE:
+                if chat.expiry_date < current_date or chat.expiry_date > next_date:
+                    num_unbooked += 1
+                    chat.chat_status = ChatStatus.PENDING
+                    admin_update_remaining_chats_frequency(user['email'], 1)
+                    if chat.expiry_date < current_date:
+                        chat.expiry_date = None
+    return num_unbooked
 
 def update_scheduling_periods(chats, periods, periods_frequency):
     for chat in chats:
@@ -120,51 +132,62 @@ def update_scheduling_periods(chats, periods, periods_frequency):
 def activate_expiring_chats(user, chats, current_date, next_date):
     num_activated = 0
     for chat in chats:
-        # pending undated
         if chat.chat_status == ChatStatus.PENDING and not chat.fixed_date and chat.expiry_date:
-            # activate chats expiring this week
-            if current_date <= chat.expiry_date <= next_date:
+            if current_date <= chat.expiry_date < next_date:
                 num_activated += 1
 
                 chat.chat_status = ChatStatus.ACTIVE
                 admin_update_remaining_chats_frequency(user['email'], -1)
     return num_activated
 
-# active(i.e. unbooked) chats
-#   active dated chats
-#       - if current_date > fixed_date => expired; set chat_status to CANCELED (notification/refunds?)
-#   active undated chats
-#       - if current_date  > expiry_date                 => expired; set chat_status to PENDING and refund +1 remaining_chats_frequency
-#                                                           this is to be rescheduled. So, set expiry_date to None
-#       - if current_date <= expiry_date  <= next_date    => expiring this scheduling window; NOOP
-#                                                           NOOP, leave it active
-#       - if                 expiry_date > next_date    => not expiring; set chat_status to PENDING and refund +1 remaining_chats_frequency
-#                                                           no need to reschedule
-#
-# pending chats
-#   pending dated chats => N/A; a new Chat with fixed_date is automatically activated
-#   pending undated
-#       pending undated expiry_date specified      => NOOP
-#       pending undated expiry_date NOT specified  => find a period to be scheduled in
-def schedule_user(session, user, current_date, next_date):
-    chats = get_chats(session, email=user['email'], status=['PENDING', 'ACTIVE'])
-    # check active chats
-    num_active_undated_unbooked = process_active_chats(user, chats, current_date, next_date)
+'''
+* RESERVED_CONFIRMED        => NOOP; take into account in populating periods
+* DONE                      => NOOP; take into account in populating periods
 
-    # initialize and populate periods
-    # chats to be taken into account
-    #   - active chats
-    #   - pending (undated) chats with expiry_date specified
+dated chats
+    * PENDING               => N/A; a new Chat with fixed_date is automatically activated
+    * ACTIVE                => if expired, move to EXPIRED (notification/refunds?)
+    * RESERVED_PARTIAL      => if expired, move to RESERVED_CONFIRMED
+    * RESERVED              => if expired, move to RESERVED_CONFIRMED
+
+undated chats
+    * PENDING               => if it doesn't have expiry_date, find a scheduling period
+    * ACTIVE
+        - if current_date  > expiry_date                => expired; move to PENDING, refund remaining_chats_frequency, reschedule(set expiry_date=None)
+        - if current_date <= expiry_date <= next_date   => expiring this scheduling window; NOOP
+        - if                 expiry_date > next_date    => not expiring; move to PENDING, refund remaining_chats_frequency
+    * RESERVED_PARTIAL      => move to RESERVED_CONFIRMED
+    * RESERVED              => move to RESERVED_CONFIRMED
+'''
+def schedule_user(session, user, current_date, next_date):
+    status_list = ['PENDING', 'ACTIVE', 'RESERVED_PARTIAL', 'RESERVED', 'RESERVED_CONFIRMED', 'DONE']
+    chats = get_chats(session, email=user['email'], status=status_list)
+    # dated chats
+    process_dated_chats(user, chats, current_date, next_date)
+    # undated chats
+    num_unbooked = process_undated_chats(user, chats, current_date, next_date)
+
+    '''
+    initialize and populate periods, take into account:
+        * undated chats     =>          ACTIVE, RESERVED_PARTIAL, RESERVED, RESERVED_CONFIRMED and DONE chats
+        * dated chats       => PENDING, ACTIVE,                             RESERVED_CONFIRMED and DONE chats with expiry_date specified
+    So, take all but EXPIRED chats into account since at this stage:
+        * undated chats: all are in desired states in addition to potential EXPIRED ones
+        * dated chats: all are in desired states
+    '''
     periods = init_periods(user, current_date)
     periods_frequency = populate_periods(chats, periods)
 
-    # chats to be (re)scheduled
-    #   - pending (undated) chats with expiry_date NOT specified
+    '''
+    chats to be (re)scheduled
+        * undated chats: all with expiry_date NOT specified
+    '''
     update_scheduling_periods(chats, periods, periods_frequency)
 
-    num_pending_undated_activated = activate_expiring_chats(user, chats, current_date, next_date)
-    logger.info("User {}: Unbooked={}, Activated={}".format(user['email'], num_active_undated_unbooked, num_pending_undated_activated))
-    return (num_active_undated_unbooked - num_pending_undated_activated)
+    # activate pending undated chats expiring this week
+    num_expiring_activated = activate_expiring_chats(user, chats, current_date, next_date)
+    logger.info("User {}: Unbooked={}, Activated={}".format(user['email'], num_unbooked, num_expiring_activated))
+    return (num_unbooked - num_expiring_activated)
 
 def schedule_activate(session, default_num_activate, num_carry_over):
     num_activate = default_num_activate + num_carry_over

@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.schema import Column
 from sqlalchemy.types import String, Integer, Enum, DateTime
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.ext.mutable import MutableList
 
 from base import Base
 
@@ -28,9 +29,12 @@ mandatory_date = [
 class ChatStatus(enum.Enum):
     PENDING = 1
     ACTIVE = 2
-    RESERVED = 3
-    DONE = 4
-    CANCELED = 5
+    RESERVED_PARTIAL = 3
+    RESERVED = 4
+    RESERVED_CONFIRMED = 5
+    DONE = 6
+    CANCELED = 7
+    EXPIRED = 8
 
 
 class Chat(Base):
@@ -39,9 +43,9 @@ class Chat(Base):
     chat_id = Column(Integer(), primary_key=True)
     chat_type = Column(Enum(ChatType), nullable=False)
     description = Column(String(255))
-    tags = Column(ARRAY(String(100)))
+    tags = Column(MutableList.as_mutable(ARRAY(String(100))))
     chat_status = Column(Enum(ChatStatus), nullable=False)
-    aspiring_professionals = Column(ARRAY(String(100)))
+    aspiring_professionals = Column(MutableList.as_mutable(ARRAY(String(100))))
     senior_executive = Column(String(100), nullable=False)
     fixed_date = Column(DateTime())
     expiry_date = Column(DateTime())
