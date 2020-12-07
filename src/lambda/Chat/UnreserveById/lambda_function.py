@@ -111,6 +111,5 @@ def prepare_and_send_email_to_se(ap, se):
 
     subject = '[MAX Aspire] Coffee chat unreserved'
     mentor_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Aspiring Professional(s) {mentee_name} is now cancelled.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
-    # TODO: send to test_mentor_1@maxgala.com
     # send_email(se, subject, mentor_body)
-    send_email('saleh.bakhit@hotmail.com', subject, mentor_body)
+    send_email('test_mentor_1@maxgala.com', subject, mentor_body)

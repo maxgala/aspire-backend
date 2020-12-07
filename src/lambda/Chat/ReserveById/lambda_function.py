@@ -154,6 +154,5 @@ def prepare_and_send_emails(chat):
     all_attendees = mentee_IDs.copy().append(mentor_ID)
     ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
     send_email(mentee_IDs, subject, mentee_body, ics=ics)
-    # TODO: send to test_mentor_1@maxgala.com
     # send_email(mentor_ID, subject, mentor_body, ics=ics)
-    send_email('saleh.bakhit@hotmail.com', subject, mentor_body, ics=ics)
+    send_email('test_mentor_1@maxgala.com', subject, mentor_body, ics=ics)
