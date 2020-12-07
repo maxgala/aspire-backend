@@ -17,7 +17,7 @@ def handler(event, context):
                 "errorMessage": "missing path parameter(s): 'userId'"
             }),
             "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
@@ -31,7 +31,7 @@ def handler(event, context):
                 "errorMessage": "user with id '{}' not found".format(userId)
             }),
             "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
@@ -41,7 +41,7 @@ def handler(event, context):
         "statusCode": 200,
         "body": json.dumps(user),
         "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }

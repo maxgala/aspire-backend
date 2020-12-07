@@ -34,7 +34,7 @@ def handler(event, context):
                 "errorMessage": "missing path parameter(s): 'connectId'"
             }),
             "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
@@ -51,7 +51,7 @@ def handler(event, context):
                 "errorMessage": "connect senior executive with id '{}' not found".format(connectId)
             }),
             "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
@@ -63,7 +63,7 @@ def handler(event, context):
             row2dict(connect_se)
         ),
         "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }

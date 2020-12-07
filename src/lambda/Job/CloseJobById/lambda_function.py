@@ -29,7 +29,7 @@ def handler(event, context):
                 "errorMessage": "unauthorized"
             }),
             "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
@@ -50,7 +50,7 @@ def handler(event, context):
         return {
             "statusCode": 200,
             "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
@@ -63,7 +63,7 @@ def handler(event, context):
                 "message": "Not Found"
             }),
             "headers": {
-                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
