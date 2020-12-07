@@ -93,7 +93,7 @@ Resources:
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: Prod
+      StageName: api
       Auth:
         DefaultAuthorizer: AspireUserPoolAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False
@@ -117,7 +117,7 @@ Resources:
       BasePath: 'api'
       DomainName: !Ref CustomDomainName
       RestApiId: !Ref AspireApi
-      Stage: Prod
+      Stage: api
 
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
@@ -984,4 +984,4 @@ Outputs:
 
   AspireApiUrl:
     Description: "Aspire API endpoint URL"
-    Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/api/'
