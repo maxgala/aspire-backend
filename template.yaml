@@ -26,6 +26,12 @@ Parameters:
   cognitoUserPoolArn:
     Type: String
     Default: 'arn:aws:cognito-idp:us-east-1:143848191537:userpool/us-east-1_OiH5DGpGX'
+  CustomDomainName:
+    Type: String
+    Default: 'services-d.aspire.maxgala.com'
+  CertificateArn:
+    Type: String
+    Default: 'arn:aws:acm:us-east-1:143848191537:certificate/19abc70f-4949-4ed8-9c71-37834cfac7db'
 
 Globals:
   Function:
@@ -100,6 +106,10 @@ Resources:
         AllowOrigin: "'*'"
       EndpointConfiguration:
         Type: REGIONAL
+      Domain:
+        DomainName: !Ref CustomDomainName
+        CertificateArn: !Ref CertificateArn
+        EndpointConfiguration: REGIONAL
 
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
