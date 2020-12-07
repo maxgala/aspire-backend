@@ -31,13 +31,6 @@ Globals:
   Function:
     Runtime: python3.6
     Timeout: 120
-  Api:
-    Cors:
-      AllowMethods: "'OPTIONS,GET,POST,PUT'"
-      AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-      AllowOrigin: "'*'"
-    EndpointConfiguration:
-      Type: REGIONAL
 
 Resources:
   # --- Infrastructure ---
@@ -101,6 +94,12 @@ Resources:
         Authorizers:
           AspireUserPoolAuthorizer:
             UserPoolArn: !Ref cognitoUserPoolArn
+      Cors:
+        AllowMethods: "'OPTIONS,GET,POST,PUT'"
+        AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+        AllowOrigin: "'*'"
+      EndpointConfiguration:
+        Type: REGIONAL
 
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
