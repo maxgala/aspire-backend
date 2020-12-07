@@ -49,5 +49,10 @@ def handler(event, context):
         "body": json.dumps({
             "chats": chats_modified,
             "count": len(chats_modified)
-        })
+        }),
+        "headers": {
+            'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+            'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+        }
     }

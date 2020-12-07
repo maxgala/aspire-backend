@@ -26,7 +26,12 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     chatId = event["pathParameters"].get("chatId") if event["pathParameters"] else None
@@ -35,7 +40,12 @@ def handler(event, context):
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "missing path parameter(s): 'chatId'"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     session = Session()
@@ -46,7 +56,12 @@ def handler(event, context):
             "statusCode": 404,
             "body": json.dumps({
                 "errorMessage": "chat with id '{}' not found".format(chatId)
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     # RESERVED state can be achieved from ACTIVE state only (must have sufficient funds)
@@ -60,7 +75,12 @@ def handler(event, context):
             "statusCode": 403,
             "body": json.dumps({
                 "errorMessage": "cannot reserve inactive chat with id '{}'".format(chatId)
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
     if chat.aspiring_professionals and user['email'] in chat.aspiring_professionals:
         session.close()
@@ -68,7 +88,12 @@ def handler(event, context):
             "statusCode": 403,
             "body": json.dumps({
                 "errorMessage": "user '{}' already reserved chat with id '{}'".format(user['email'], chatId)
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     if int(user['custom:credits']) < credit_mapping[chat.chat_type]:
@@ -77,7 +102,12 @@ def handler(event, context):
             "statusCode": 403,
             "body": json.dumps({
                 "errorMessage": "user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId)
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     if chat.chat_type == ChatType.FOUR_ON_ONE:
@@ -101,11 +131,21 @@ def handler(event, context):
         logging.info(e)
         if int(e.response['ResponseMetadata']['HTTPStatusCode']) >= 500:
             return {
-                "statusCode": 500
+                "statusCode": 500,
+                "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
             }
         else:
             return {
-                "statusCode": 400
+                "statusCode": 400,
+                "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
             }
     else:
         admin_update_credits(user['email'], (-credit_mapping[chat.chat_type]))
@@ -113,7 +153,12 @@ def handler(event, context):
         session.commit()
         session.close()
         return {
-            "statusCode": 200
+            "statusCode": 200,
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
 def prepare_and_send_emails(chat):

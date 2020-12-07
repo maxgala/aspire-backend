@@ -19,7 +19,12 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     # validate body
@@ -30,10 +35,20 @@ def handler(event, context):
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "invalid parameter(s): 'email'"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     admin_enable_user(user_email)
     return {
-        "statusCode": 200
+        "statusCode": 200,
+        "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
     }

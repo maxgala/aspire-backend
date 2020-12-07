@@ -27,7 +27,12 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
     
     # # create a new session
@@ -43,7 +48,12 @@ def handler(event, context):
         session.close()
 
         return {
-            "statusCode": 200
+            "statusCode": 200,
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
     else:
         session.close()
@@ -51,5 +61,10 @@ def handler(event, context):
             "statusCode" : 404,
             "body" : json.dumps({
                 "message": "Not Found"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }

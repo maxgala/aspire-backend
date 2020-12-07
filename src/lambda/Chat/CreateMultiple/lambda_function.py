@@ -22,7 +22,12 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     # validate body
@@ -34,7 +39,12 @@ def handler(event, context):
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "invalid parameter(s): 'senior_executive, chats'"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     session = Session()
@@ -45,7 +55,12 @@ def handler(event, context):
                 "statusCode": 400,
                 "body": json.dumps({
                     "errorMessage": "invalid parameter(s): 'chat_type'"
-                })
+                }),
+                "headers": {
+                    'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                }
             }
 
         chat_type = ChatType[chat_new['chat_type']]
@@ -59,7 +74,12 @@ def handler(event, context):
                 "statusCode": 400,
                 "body": json.dumps({
                     "errorMessage": "missing body attribute { fixed_date } with chat_type { %s }" % (chat_type.name)
-                })
+                }),
+                "headers": {
+                    'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                }
             }
 
         chat = Chat(
@@ -80,5 +100,10 @@ def handler(event, context):
     session.close()
 
     return {
-        "statusCode": 201
+        "statusCode": 201,
+        "headers": {
+            'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+            'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+        }
     }

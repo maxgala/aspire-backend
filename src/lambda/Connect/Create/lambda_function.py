@@ -24,7 +24,12 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     body = json.loads(event["body"])
@@ -36,7 +41,12 @@ def handler(event, context):
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "missing body attribute(s): 'requestor' or 'requestee'"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     try:
@@ -51,7 +61,12 @@ def handler(event, context):
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "missing body attribute(s): 'user_type', 'email' or 'name'"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }        
 
     # if ACCEPTED exists (in either direction) => Conflict (409)
@@ -79,7 +94,12 @@ def handler(event, context):
                     "statusCode": 409,
                     "body": json.dumps({
                         "errorMessage": "connections request already sent"
-                    })
+                    }),
+                    "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
                 }
             elif connection.connect_status == ConnectStatus.ACCEPTED:
                 session.close()
@@ -87,7 +107,12 @@ def handler(event, context):
                     "statusCode": 409,
                     "body": json.dumps({
                         "errorMessage": "connections request already established"
-                    })
+                    }),
+                    "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
                 }
 
     if create_conn:
@@ -110,7 +135,12 @@ def handler(event, context):
                 "statusCode": 400,
                 "body": json.dumps({
                     "errorMessage": "A connection can only be initiated by a mentor"
-                })
+                }),
+                "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
             }
 
 
@@ -122,5 +152,10 @@ def handler(event, context):
     session.close()
 
     return {
-        "statusCode": 201
+        "statusCode": 201,
+        "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
     }

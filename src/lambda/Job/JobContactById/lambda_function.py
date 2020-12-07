@@ -31,7 +31,12 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     access_token = event['headers']['X-Aspire-Access-Token']
@@ -47,7 +52,12 @@ def handler(event, context):
             "statusCode": 404,
             "body": json.dumps({
                 "message": "ID not found"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
     
     credit = int(user['custom:credits'])
@@ -63,7 +73,12 @@ def handler(event, context):
                 "statusCode": 428,
                 "body": json.dumps({
                     "message": "You need to apply to the job before requesting contact-information"
-                })
+                }),
+                "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
             }
 
         if job.people_contacted >= 4:
@@ -71,7 +86,12 @@ def handler(event, context):
                 "statusCode": 417,
                 "body": json.dumps({
                     "message": "Limit of contact information requests has been exceeded"
-                })
+                }),
+                "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
             }
         print(credit)
         if int(credit) < 5:
@@ -79,7 +99,12 @@ def handler(event, context):
                 "statusCode": 402,
                 "body": json.dumps({
                     "message": "You do not have enough credits to request contact information"
-                })
+                }),
+                "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
             }
         response = client.update_user_attributes(
             UserAttributes=[
@@ -100,12 +125,22 @@ def handler(event, context):
                         "given_name" : job.poster_given_name,
                         "family_name" : job.poster_family_name
                     }   
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
     else:
         return {
             "statusCode": 200,
             "body": json.dumps({
                     "message": "Hiring manager does not want to be contacted"
-                })
+                }),
+            "headers": {
+                'Access-Control-Allow-Origin': 'https://aspire.maxgala.com,https://max-aspire-frontend.herokuapp.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
