@@ -54,29 +54,28 @@ def handler(event, context):
             })
         }
 
-    # CANCELED state can be achieved from PENDING, ACTIVE or RESERVED
+    # CANCELED state can be achieved from PENDING, ACTIVE, RESERVED_PARTIAL, RESERVED or RESERVED_CONFIRMED
     #
     # if chat to be canceled is dated (i.e. cannot be rescheduled):
-    #   - if ACTIVE or RESERVED  => set to CANCELED, refund APs
-    #   - if PENDING             => N/A
+    #   - if PENDING    => N/A
+    #   - else          => set to CANCELED, refund APs
     #
     # if chat to be canceled is undated (i.e. can be rescheduled):
     #   - set to CANCELED
     #   - refund APs
     #   - create a new PENDING chat to be rescheduled
-    #   - if ACTIVE or RESERVED
+    #   - if not PENDING
     #       - increment remaining chat frequency in Cognito
     # TODO: send email notification to SEs and APs
-    if chat.chat_status == ChatStatus.DONE or chat.chat_status == ChatStatus.CANCELED:
+    if chat.chat_status == ChatStatus.DONE or chat.chat_status == ChatStatus.CANCELED or chat.chat_status == ChatStatus.EXPIRED:
         session.close()
         return {
             "statusCode": 403,
             "body": json.dumps({
-                "errorMessage": "cannot cancel DONE or CANCELED chat with id '{}'".format(chatId)
+                "errorMessage": "cannot cancel DONE, CANCELED or EXPIRED chat with id '{}'".format(chatId)
             })
         }
 
-    chat.chat_status = ChatStatus.CANCELED
     for ap in chat.aspiring_professionals:
         admin_update_credits(ap, credit_mapping[chat.chat_type])
 
@@ -88,12 +87,12 @@ def handler(event, context):
         )
         session.add(chat_new)
 
-        if chat.chat_status == ChatStatus.ACTIVE or chat.chat_status == ChatStatus.RESERVED:
+        if chat.chat_status != ChatStatus.PENDING:
             admin_update_remaining_chats_frequency(chat.senior_executive, 1)
+    chat.chat_status = ChatStatus.CANCELED
 
     session.commit()
     session.close()
-
     return {
         "statusCode": 200
     }

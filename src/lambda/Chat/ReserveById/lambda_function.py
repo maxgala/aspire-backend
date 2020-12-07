@@ -49,12 +49,9 @@ def handler(event, context):
             })
         }
 
-    # RESERVED state can be achieved from ACTIVE state only (must have sufficient funds)
-    # if chat_type is ONE_ON_ONE or MOCK_INTERVIEW, mark as reserved:
-    ## append aspiring_professional, set to RESERVED
-    # if chat_type is FOUR_ON_ONE:
-    ## append aspiring_professional, set to RESERVED (if all four booked)
-    if chat.chat_status != ChatStatus.ACTIVE:
+    # ACTIVE and RESERVED_PARTIAL Chats are available for booking
+    # User must not have booked this Chat and must have sufficient funds
+    if chat.chat_status != ChatStatus.ACTIVE and chat.chat_status != ChatStatus.RESERVED_PARTIAL:
         session.close()
         return {
             "statusCode": 403,
@@ -81,16 +78,19 @@ def handler(event, context):
         }
 
     if chat.chat_type == ChatType.FOUR_ON_ONE:
-        if len(chat.aspiring_professionals) > 0:
-            chat.aspiring_professionals.append(user['email'])
-        else:
+        if chat.chat_status == ChatStatus.ACTIVE:
+            # no prior reservations
             chat.aspiring_professionals = [user['email']]
+        else:
+            chat.aspiring_professionals.append(user['email'])
 
         if len(chat.aspiring_professionals) == 4:
             chat.chat_status = ChatStatus.RESERVED
+        else:
+            chat.chat_status = ChatStatus.RESERVED_PARTIAL
     else:
-        chat.chat_status = ChatStatus.RESERVED
         chat.aspiring_professionals = [user['email']]
+        chat.chat_status = ChatStatus.RESERVED
 
     try:
         if chat.chat_status == ChatStatus.RESERVED:
@@ -156,4 +156,4 @@ def prepare_and_send_emails(chat):
     send_email(mentee_IDs, subject, mentee_body, ics=ics)
     # TODO: send to test_mentor_1@maxgala.com
     # send_email(mentor_ID, subject, mentor_body, ics=ics)
-    send_email('test_mentor_1@maxgala.com', subject, mentor_body, ics=ics)
+    send_email('saleh.bakhit@hotmail.com', subject, mentor_body, ics=ics)

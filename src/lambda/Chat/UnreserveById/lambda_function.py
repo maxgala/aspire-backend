@@ -48,12 +48,9 @@ def handler(event, context):
             })
         }
 
-    # to unreserve, chat must be either ACTIVE(multi aspiring professional chats) or RESERVED(single aspiring professional chats)
+    # to unreserve, chat must be either RESERVED_PARTIAL or RESERVED
     # in addition, user must have reserved this chat
-    #
-    # if chat_status is RESERVED => set to ACTIVE
-    if not ((chat.chat_type == ChatType.FOUR_ON_ONE and chat.chat_status == ChatStatus.ACTIVE) \
-        or (chat.chat_type != ChatType.FOUR_ON_ONE and chat.chat_status == ChatStatus.RESERVED)):
+    if chat.chat_status != ChatStatus.RESERVED_PARTIAL and chat.chat_status != ChatStatus.RESERVED:
         session.close()
         return {
             "statusCode": 403,
@@ -70,19 +67,11 @@ def handler(event, context):
             })
         }
 
-    aspiring_professionals = chat.aspiring_professionals
-    chat.aspiring_professionals = None
-    for ap in aspiring_professionals:
-        if ap != user['email']:
-            if chat.aspiring_professionals:
-                chat.aspiring_professionals.append(ap)
-            else:
-                chat.aspiring_professionals = [ap]
-
-    if (chat.chat_type != ChatType.ONE_ON_ONE and chat.chat_status == ChatStatus.RESERVED) \
-        or (chat.chat_type != ChatType.FOUR_ON_ONE and (chat.aspiring_professionals is None \
-        or len(chat.aspiring_professionals) == 0)):
+    chat.aspiring_professionals.remove(user['email'])
+    if not chat.aspiring_professionals:
         chat.chat_status = ChatStatus.ACTIVE
+    else:
+        chat.chat_status = ChatStatus.RESERVED_PARTIAL
 
     try:
         prepare_and_send_email_to_ap(user['email'], chat.senior_executive)
@@ -124,4 +113,4 @@ def prepare_and_send_email_to_se(ap, se):
     mentor_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Aspiring Professional(s) {mentee_name} is now cancelled.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
     # TODO: send to test_mentor_1@maxgala.com
     # send_email(se, subject, mentor_body)
-    send_email('test_mentor_1@maxgala.com', subject, mentor_body)
+    send_email('saleh.bakhit@hotmail.com', subject, mentor_body)
