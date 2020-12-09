@@ -388,6 +388,23 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+
+  ChatDoneById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/Chat/DoneById
+      Handler: lambda_function.handler
+      Description: Lambda function to mark done a chat
+      Events:
+        ChatDoneByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /chats/{chatId}/done
+            Method: put
+      Layers:
+        - Ref: DatabaseLayer
+        - Ref: AuthLayer
   # --- Chats Service ---
 
   # --- SE Connect Service ---
