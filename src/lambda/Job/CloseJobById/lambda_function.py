@@ -14,6 +14,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
+    
+    logging.info('Test')
 
     # check authorization
     authorized_user_types = [
