@@ -52,4 +52,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           AWS_DEPLOY_BUCKET: aspire-api
-          AWS_PARAMETER_OVERRIDES: 'CustomDomainName=services-p.aspire.maxgala.com DbInstanceIdentifier=${{secrets.PRD_DB_NAME}} DbUserName=${{secrets.PROD_DB_USERNAME}} DbUserPassword=${{secrets.PROD_DB_PWD}}'
+          AWS_PARAMETER_OVERRIDES: 'CustomDomainName=services-p.aspire.maxgala.com DbName=${{secrets.PRD_DB_NAME}} DbUserName=${{secrets.PROD_DB_USERNAME}} DbUserPassword=${{secrets.PROD_DB_PWD}} DbInstanceIdentifier=aspire-db-prod'
