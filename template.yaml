@@ -6,24 +6,24 @@ Description: >
   SAM Template for aspire-sam
 
 Parameters:
-  dbUserPassword:
+  DbUserPassword:
     NoEcho: true
     Type: String
     Default: 'password'
-  dbUserName:
+  DbUserName:
     NoEcho: true
     Type: String
     Default: 'master'
-  dbInstanceClass:
+  DbInstanceClass:
     Type: String
     Default: 'db.t2.micro'
-  dbInstanceIdentifier:
+  DbInstanceIdentifier:
     Type: String
     Default: 'aspire-db-master'
-  dbName:
+  DbName:
     Type: String
     Default: 'main_db'
-  cognitoUserPoolArn:
+  CognitoUserPoolArn:
     Type: String
     Default: 'arn:aws:cognito-idp:us-east-1:143848191537:userpool/us-east-1_dq5r8O2SO'
   CustomDomainName:
@@ -44,16 +44,16 @@ Resources:
     Type: AWS::RDS::DBInstance
     Properties:
       AllocatedStorage: '20'
-      DBInstanceClass: !Ref dbInstanceClass
-      DBInstanceIdentifier: !Ref dbInstanceIdentifier
-      DBName: !Ref dbName
+      DBInstanceClass: !Ref DbInstanceClass
+      DBInstanceIdentifier: !Ref DbInstanceIdentifier
+      DBName: !Ref DbName
       EnableCloudwatchLogsExports:
         - postgresql
       EnablePerformanceInsights: true
       Engine: postgres
       EngineVersion: "11.6"
-      MasterUsername: !Ref dbUserName
-      MasterUserPassword: !Ref dbUserPassword
+      MasterUsername: !Ref DbUserName
+      MasterUserPassword: !Ref DbUserPassword
       MaxAllocatedStorage: 1000
       PubliclyAccessible: true
       StorageType: gp2
@@ -99,7 +99,7 @@ Resources:
         AddDefaultAuthorizerToCorsPreflight: False
         Authorizers:
           AspireUserPoolAuthorizer:
-            UserPoolArn: !Ref cognitoUserPoolArn
+            UserPoolArn: !Ref CognitoUserPoolArn
       Cors:
         AllowMethods: "'OPTIONS,GET,POST,PUT'"
         AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"

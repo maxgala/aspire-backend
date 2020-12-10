@@ -1,23 +1,13 @@
-# This is a basic workflow to help you get started with Actions
+name: Dev CD
 
-name: CD
-
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [ dev ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Setup
         run: |
@@ -46,17 +36,19 @@ jobs:
           sudo chown -R runner dependencies
           sudo chgrp -R docker dependencies
         env:
-          PROD_DB_HOST: ${{secrets.PROD_DB_HOST}}
-          PROD_DB_PORT: ${{secrets.PROD_DB_PORT}}
-          PROD_DB_USERNAME: ${{secrets.PROD_DB_USERNAME}}
-          PROD_DB_PWD: ${{secrets.PROD_DB_PWD}}
-          PROD_DB_NAME: ${{secrets.PROD_DB_NAME}}
+          PROD_DB_HOST: ${{secrets.DEV_DB_HOST}}
+          PROD_DB_PORT: ${{secrets.DEV_DB_PORT}}
+          PROD_DB_USERNAME: ${{secrets.DEV_DB_USERNAME}}
+          PROD_DB_PWD: ${{secrets.DEV_DB_PWD}}
+          PROD_DB_NAME: ${{secrets.DEV_DB_NAME}}
           STRIPE_API_KEY: ${{secrets.STRIPE_API_KEY}}
-      - uses: poketapp/gh-action-aws-sam@v1
+      - name: 'Deploy'
+        uses: poketapp/gh-action-aws-sam@v2
         env:
           TEMPLATE: 'template.yaml'
-          AWS_STACK_NAME: Aspire-Api
+          AWS_STACK_NAME: Aspire-Api-Dev
           AWS_REGION: 'us-east-1'
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           AWS_DEPLOY_BUCKET: aspire-api
+          AWS_PARAMETER_OVERRIDES: 'CustomDomainName=services-d.aspire.maxgala.com DbInstanceIdentifier=${{secrets.DEV_DB_NAME}} DbUserName=${{secrets.DEV_DB_USERNAME}} DbUserPassword=${{secrets.DEV_DB_PWD}}'
