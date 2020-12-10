@@ -7,6 +7,11 @@ from cognito_helpers import get_users, admin_update_user_attributes
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+standard_attributes = [
+    'address', 'birthdate', 'email', 'family_name', 'gender', 'given_name', 'locale',
+    'middle_name', 'name', 'nickname', 'phone_number', 'picture', 'preferred_username',
+    'profile', 'updated_at', 'website', 'zoneinfo'
+]
 
 def handler(event, context):
     # check authorization
@@ -52,29 +57,14 @@ def handler(event, context):
         }
 
     body = json.loads(event["body"])
-    # phone_number = body.get('phone_number')
-    # birthdate = body.get('birthdate')
-    # industry = body.get('industry')
-    # industry_tags = body.get('industry_tags')
-    # position = body.get('position')
-    # company = body.get('company')
-    # education_level = body.get('education_level')
-    # resume = body.get('resume')
-    # linkedin = body.get('linkedin')
 
-    user_attributes['given_name'] = body.get('given_name') if body.get('given_name') else user_attributes['given_name']
-    user_attributes['family_name'] = body.get('family_name') if body.get('family_name') else user_attributes['family_name']
-    user_attributes['custom:prefix'] = body.get('prefix') if body.get('prefix') else user_attributes['custom:prefix']
-    user_attributes['gender'] = body.get('gender') if body.get('gender') else user_attributes['gender']
-    user_attributes['picture'] = body.get('picture') if body.get('picture') else user_attributes['picture']
+    new_attrs = {}
+    for key in body:
+        if key not in standard_attributes:
+            key = 'custom:' + key
+        new_attrs[key] = body[key]
 
-    address = json.loads(user_attributes['address'])
-    address['country'] = body.get('country') if body.get('country') else address.get('country')
-    address['region'] = body.get('region') if body.get('region') else address.get('region')
-    address['city'] = body.get('city') if body.get('city') else address.get('city')
-    user_attributes['address'] = json.dumps(address)
-
-    admin_update_user_attributes(user['email'], user_attributes)
+    admin_update_user_attributes(user['email'], new_attrs)
     return {
         "statusCode": 200,
         "body": json.dumps(user)

@@ -891,6 +891,23 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+  
+  UserEditById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/EditById
+      Handler: lambda_function.handler
+      Description: Lambda function to edit user by Id
+      Events:
+        UserEditByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/{userId}
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
 
   UserUpdateCredits:
     Type: AWS::Serverless::Function
