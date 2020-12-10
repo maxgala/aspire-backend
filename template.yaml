@@ -110,8 +110,8 @@ Resources:
         DomainName: !Ref CustomDomainName
         CertificateArn: !Ref CertificateArn
         EndpointConfiguration: REGIONAL
-      BasePath:
-        - api
+        BasePath:
+          - api
   
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
