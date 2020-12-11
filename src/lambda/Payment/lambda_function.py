@@ -15,9 +15,10 @@ def handler(event, context):
     try:
         req_body = json.loads(event["body"])
         if "payment_method_id" in req_body:
+            _amount = float(req_body["amount"]) * 100
             intent = stripe.PaymentIntent.create(
-                payment_method = req_body["payment_method_id"], #attribute depends on request body
-                amount = req_body["amount"], #change the amount
+                payment_method = req_body["payment_method_id"],
+                amount = _amount,
                 currency = 'cad',
                 confirmation_method = 'automatic',
                 confirm = True,
