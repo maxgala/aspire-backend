@@ -13,11 +13,11 @@ stripe.api_key= os.getenv('STRIPE_KEY')
 def handler(event, context):
 
     try:
-        paymentMethod_Dict= json.loads(event["body"])
-        if "payment_method_id" in paymentMethod_Dict:
+        req_body = json.loads(event["body"])
+        if "payment_method_id" in req_body:
             intent = stripe.PaymentIntent.create(
-                payment_method = paymentMethod_Dict["payment_method_id"], #attribute depends on request body
-                amount = paymentMethod_Dict["amount"], #change the amount
+                payment_method = req_body["payment_method_id"], #attribute depends on request body
+                amount = req_body["amount"], #change the amount
                 currency = 'cad',
                 confirmation_method = 'automatic',
                 confirm = True,
