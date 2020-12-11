@@ -836,6 +836,8 @@ Resources:
                 RestApiId: !Ref AspireApi
                 Path: /payment
                 Method: post
+                Auth:
+                  Authorizer: NONE
         Layers:
           - Ref: DatabaseLayer
   # --- Payments Service ---
