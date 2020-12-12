@@ -426,6 +426,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: SesLayer
         - Ref: CognitoLayer
+        - Ref: AuthLayer
 
   ConnectGetAll:
     Type: AWS::Serverless::Function
@@ -442,6 +443,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
+        - Ref: AuthLayer
 
   ConnectGetById:
     Type: AWS::Serverless::Function
@@ -458,6 +460,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
+        - Ref: AuthLayer
 
   ConnectEditById:
     Type: AWS::Serverless::Function
@@ -483,6 +486,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: SesLayer
         - Ref: CognitoLayer
+        - Ref: AuthLayer
 
   ConnectDeleteById:
     Type: AWS::Serverless::Function
@@ -499,6 +503,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
+        - Ref: AuthLayer
   # --- SE Connect Service ---
 
   # --- Jobs Service ---
