@@ -195,8 +195,6 @@ def prepare_and_send_emails(chat):
 
     subject = '[MAX Aspire] Your coffee chat is confirmed!'
     body = f"Salaam!\nWe are delighted to confirm your {chat_type} coffee chat with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}. Please connect with the Senior Executive to find a time that works for both of you.\n\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
-    # TODO change mentor recipient to mentor_ID
-    mentor_ID = 'test_mentor_1@maxgala.com'
     all_attendees = list(mentee_IDs)
     all_attendees.append(mentor_ID)
     ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)

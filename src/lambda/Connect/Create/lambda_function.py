@@ -117,8 +117,6 @@ def handler(event, context):
 
     if create_conn:
         if requestee_type == "MENTOR" and requestor_type == "MENTOR":
-            requestor='test_mentor_1@maxgala.com'
-            requestee='test_mentee_paid_1@maxgala.com'
             ConnectSE_new = ConnectSE(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectStatus.PENDING)
             session.add(ConnectSE_new)
             email_subject = "[MAX Aspire] Someone wants to connect with you!"
@@ -143,12 +141,7 @@ def handler(event, context):
                 'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
-            }
-
-
-        # TODO: dynamic user_email
-        # TODO: update email subject/body
-        # TODO: retrieve requestor email from authorization
+        }
 
     session.commit()
     session.close()
