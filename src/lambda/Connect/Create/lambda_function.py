@@ -83,8 +83,8 @@ def handler(event, context):
                 if connection.requestor == requestee_email and connection.requestee == requestor_email:
                     connection.connect_status = ConnectStatus.ACCEPTED
                     email_subject = "[MAX Aspire] Your connection request was accepted!"
-                    email_body = f"Salaam!\r\n\nWe are delighted to confirm that you are now connected to {requestee_name}!\r\n\nYou will be able to chat and send direct messages to your connection. Engaging in direct communication we request our valued members to maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
-                    send_email(to_addresses=requestor_email, subject=email_subject, body_text=email_body)
+                    email_body = f"Salaam {requestor_name}!\r\n\nWe are delighted to confirm that you are now connected to {requestee_name}!\r\n\nYou will be able to chat and send direct messages to your connection. Engaging in direct communication we request our valued members to maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
+                    send_email(to_addresses=[requestor_email, requestee_email], subject=email_subject, body_text=email_body)
 
                     create_conn = False
                     break
@@ -120,8 +120,8 @@ def handler(event, context):
             ConnectSE_new = ConnectSE(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectStatus.PENDING)
             session.add(ConnectSE_new)
             email_subject = "[MAX Aspire] Someone wants to connect with you!"
-            email_body = f"Salaam!\r\n\nYou are quite popular in the MAX Aspire community! {requestor_name} wants to connect with you. To accept or reject this request, please visit aspire.maxgala.com\r\n\nEngaging in direct communication members are requested to respect and maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
-            send_email(to_addresses=[requestor_email], subject=email_subject, body_text=email_body)
+            email_body = f"Salaam {requestee_name}!\r\n\nYou are quite popular in the MAX Aspire community! {requestor_name} wants to connect with you. To accept or reject this request, please visit aspire.maxgala.com\r\n\nEngaging in direct communication members are requested to respect and maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
+            send_email(to_addresses=[requestee_email], subject=email_subject, body_text=email_body)
 
         elif requestee_type == "MENTEE" and requestor_type == "MENTOR":
             ConnectSE_new = ConnectSE(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectStatus.ACCEPTED)
