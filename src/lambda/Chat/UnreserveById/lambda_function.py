@@ -100,8 +100,9 @@ def handler(event, context):
 
     try:
         # FIXME send email to both
-        prepare_and_send_email_to_ap(user['email'], user['email'])
-        prepare_and_send_email_to_se(user['email'], user['email'])
+        se = chat.senior_executive
+        se = 'test_mentor_1@maxgala.com'
+        prepare_and_send_email(user['email'], se)
     except ClientError as e:
         session.rollback()
         session.close()
@@ -138,21 +139,7 @@ def handler(event, context):
             }
         }
 
-def prepare_and_send_email_to_ap(ap, se):
-    return
-    mentor, _ = get_users(filter_=("email", se), attributes_filter=["given_name", "family_name"])
-    mentor_name = "%s %s" % (mentor['attributes']['given_name'], mentor['attributes']['family_name'])
-
-    subject = '[MAX Aspire] Coffee chat unreserved'
-    mentee_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Senior Executive {mentor_name} is now cancelled.\n\nYou can login to your account to purchase credits and book any future coffee chats.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
-    send_email(ap, subject, mentee_body)
-
-def prepare_and_send_email_to_se(ap, se):
-    return
-    mentee, _ = get_users(filter_=("email", ap), attributes_filter=["given_name", "family_name"])
-    mentee_name = "%s %s" % (mentee['attributes']['given_name'], mentee['attributes']['family_name'])
-
-    subject = '[MAX Aspire] Coffee chat unreserved'
-    mentor_body = f"Salaam,\n\nWe have received your cancellation request, and thus can confirm that your reserved coffee chat with the Aspiring Professional(s) {mentee_name} is now cancelled.\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
-    send_email(se, subject, mentor_body)
-    #send_email('test_mentor_1@maxgala.com', subject, mentor_body)
+def prepare_and_send_email(ap, se):
+    subject = '[MAX Aspire] Unreserved coffee chat'
+    body = f"Salaam,\n\nAs requested, we have cancelled your coffee chat. Please use the platform to connect with other members!\n\nThank you.\n\nBest regards,\n\nThe MAX Aspire Team"
+    send_email([ap, se], subject, body)
