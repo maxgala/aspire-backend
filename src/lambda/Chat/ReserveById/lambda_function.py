@@ -49,6 +49,8 @@ def handler(event, context):
         }
     
     timezone_offset_min = event['headers']['Aspire-Client-Timezone-Offset']
+    if timezone_offset_min is None:
+        timezone_offset_min = 300 # default to EST
 
     session = Session()
     chat = session.query(Chat).get(chatId)
@@ -135,19 +137,19 @@ def handler(event, context):
             return {
                 "statusCode": 500,
                 "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                }
             }
         else:
             return {
                 "statusCode": 400,
                 "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                }
             }
     else:
         admin_update_credits(user['email'], (-credit_mapping[chat.chat_type]))
