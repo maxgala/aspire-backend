@@ -52,7 +52,7 @@ def handler(event, context):
     #timezone_offset_min = event['headers']['Aspire-Client-Timezone-Offset']
     #if timezone_offset_min is None:
     #FIXME
-    timezone_offset_min = 300 # default to EST
+    timezone_offset_min = -300 # default to EST
 
     session = Session()
     chat = session.query(Chat).get(chatId)
