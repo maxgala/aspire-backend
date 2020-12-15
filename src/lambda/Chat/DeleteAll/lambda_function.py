@@ -5,6 +5,7 @@ from chat import Chat, ChatType, ChatStatus
 from base import Session
 from role_validation import UserType, check_auth
 from cognito_helpers import admin_update_remaining_chats_frequency, admin_update_declared_chats_frequency
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -17,12 +18,7 @@ def handler(event, context):
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
     type_filter = event["queryStringParameters"].get("type", "") if event["queryStringParameters"] else ""
@@ -46,6 +42,4 @@ def handler(event, context):
 
     session.commit()
     session.close()
-    return {
-        "statusCode": 200
-    }
+    return http_status.success()

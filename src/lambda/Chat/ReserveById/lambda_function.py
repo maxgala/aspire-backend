@@ -8,6 +8,7 @@ from base import Session
 from role_validation import UserType, check_auth
 from cognito_helpers import get_users, admin_update_credits
 from send_email import send_email, build_calendar_invite
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -22,31 +23,11 @@ def handler(event, context):
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
 
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     chatId = event["pathParameters"].get("chatId") if event["pathParameters"] else None
     if not chatId:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing path parameter(s): 'chatId'"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.bad_request("missing path parameter(s): 'chatId'")
     
     logging.info(event['headers'])
     #timezone_offset_min = event['headers']['Aspire-Client-Timezone-Offset']
@@ -58,60 +39,22 @@ def handler(event, context):
     chat = session.query(Chat).get(chatId)
     if not chat:
         session.close()
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "errorMessage": "chat with id '{}' not found".format(chatId)
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.not_found("chat with id '{}' not found".format(chatId))
 
     # ACTIVE and RESERVED_PARTIAL Chats are available for booking
     # User must not have booked this Chat and must have sufficient funds
     if chat.chat_status != ChatStatus.ACTIVE and chat.chat_status != ChatStatus.RESERVED_PARTIAL:
         session.close()
-        return {
-            "statusCode": 403,
-            "body": json.dumps({
-                "errorMessage": "cannot reserve inactive chat with id '{}'".format(chatId)
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.forbidden("cannot reserve inactive chat with id '{}'".format(chatId))
+
     if chat.aspiring_professionals and user['email'] in chat.aspiring_professionals:
         session.close()
-        return {
-            "statusCode": 403,
-            "body": json.dumps({
-                "errorMessage": "user '{}' already reserved chat with id '{}'".format(user['email'], chatId)
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.forbidden("user '{}' already reserved chat with id '{}'".format(user['email'], chatId))
+
 
     if int(user['custom:credits']) < credit_mapping[chat.chat_type]:
         session.close()
-        return {
-            "statusCode": 403,
-            "body": json.dumps({
-                "errorMessage": "user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId)
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.forbidden("user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId))
 
     if chat.chat_type == ChatType.FOUR_ON_ONE:
         if chat.chat_status == ChatStatus.ACTIVE:
@@ -136,36 +79,15 @@ def handler(event, context):
         session.close()
         logging.info(e)
         if int(e.response['ResponseMetadata']['HTTPStatusCode']) >= 500:
-            return {
-                "statusCode": 500,
-                "headers": {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-                }
-            }
+            return http_status.server_error()
         else:
-            return {
-                "statusCode": 400,
-                "headers": {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-                }
-            }
+            return http_status.bad_request()
     else:
         admin_update_credits(user['email'], (-credit_mapping[chat.chat_type]))
 
         session.commit()
         session.close()
-        return {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.success()
 
 def prepare_and_send_emails(chat, timezone_offset_min):
     mentee_IDs = chat.aspiring_professionals

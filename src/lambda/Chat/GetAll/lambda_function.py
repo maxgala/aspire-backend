@@ -4,6 +4,7 @@ import logging
 from chat import Chat, ChatType, ChatStatus
 from base import Session, row2dict
 from cognito_helpers import get_users
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -44,15 +45,7 @@ def handler(event, context):
                 chat['custom:company'] = user['attributes']['custom:company']
                 break
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
+    return http_status.success(json.dumps({
             "chats": chats_modified,
             "count": len(chats_modified)
-        }),
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-        }
-    }
+        }))

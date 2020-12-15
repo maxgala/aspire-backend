@@ -5,6 +5,7 @@ from connect_se import ConnectSE, ConnectStatus
 from base import Session
 from send_email import send_email
 from role_validation import UserType, check_auth
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -20,34 +21,14 @@ def handler(event, context):
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     body = json.loads(event["body"])
     try:
         requestor = body['requestor']
         requestee = body['requestee'] 
     except:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing body attribute(s): 'requestor' or 'requestee'"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.bad_request("missing body attribute(s): 'requestor' or 'requestee'")
 
     try:
         requestor_email = requestor['email']
@@ -57,17 +38,7 @@ def handler(event, context):
         requestee_type = requestee['user_type']
         requestee_name = requestee['name']
     except:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing body attribute(s): 'user_type', 'email' or 'name'"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }        
+        return http_status.bad_request("missing body attribute(s): 'user_type', 'email' or 'name'")
 
     # if ACCEPTED exists (in either direction) => Conflict (409)
     # if PENDING exists (in the direction of the request) => Conflict (409)
@@ -92,30 +63,10 @@ def handler(event, context):
                     break
 
                 session.close()
-                return {
-                    "statusCode": 409,
-                    "body": json.dumps({
-                        "errorMessage": "connections request already sent"
-                    }),
-                    "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-                }
+                return http_status.bad_request("connections request already sent")
             elif connection.connect_status == ConnectStatus.ACCEPTED:
                 session.close()
-                return {
-                    "statusCode": 409,
-                    "body": json.dumps({
-                        "errorMessage": "connections request already established"
-                    }),
-                    "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-                }
+                return http_status.bad_request("connections request already established")
 
     if create_conn:
         if requestee_type == "MENTOR" and requestor_type == "MENTOR":
@@ -135,26 +86,9 @@ def handler(event, context):
             send_email(to_addresses=[requestor_email, requestee_email], subject=email_subject, body_text=email_body)
 
         else:
-            return {
-                "statusCode": 400,
-                "body": json.dumps({
-                    "errorMessage": "A connection can only be initiated by a mentor"
-                }),
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+            return http_status.bad_request("A connection can only be initiated by a mentor")
 
     session.commit()
     session.close()
 
-    return {
-        "statusCode": 201,
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+    return http_status.success()

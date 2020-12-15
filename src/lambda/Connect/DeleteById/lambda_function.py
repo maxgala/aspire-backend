@@ -4,6 +4,7 @@ import logging
 from connect_se import ConnectSE
 from base import Session
 # from role_validation import UserType, check_auth
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -28,28 +29,16 @@ def handler(event, context):
 
     connectId = event["pathParameters"].get("connectId") if event["pathParameters"] else None
     if not connectId:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing path parameter(s): 'connectId'"
-            })
-        }
+        return http_status.bad_request("missing path parameter(s): 'connectId'")
 
     session = Session()
     connect_se = session.query(ConnectSE).get(connectId)
     if not connect_se:
         session.close()
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "errorMessage": "connect senior executive with id '{}' not found".format(connectId)
-            })
-        }
+        return http_status.not_found()
 
     session.delete(connect_se)
     session.commit()
     session.close()
 
-    return {
-        "statusCode": 200
-    }
+    return http_status.success()

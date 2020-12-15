@@ -7,6 +7,7 @@ from base import Session
 from role_validation import UserType, check_auth
 from cognito_helpers import get_users, admin_update_credits
 from send_email import send_email
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -21,76 +22,26 @@ def handler(event, context):
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
 
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     chatId = event["pathParameters"].get("chatId") if event["pathParameters"] else None
     if not chatId:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing path parameter(s): 'chatId'"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.bad_request("missing path parameter(s): 'chatId'")
 
     session = Session()
     chat = session.query(Chat).get(chatId)
     if not chat:
         session.close()
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "errorMessage": "chat with id '{}' not found".format(chatId)
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.not_found("chat with id '{}' not found".format(chatId))
 
     # to unreserve, chat must be either RESERVED_PARTIAL or RESERVED
     # in addition, user must have reserved this chat
     if chat.chat_status != ChatStatus.RESERVED_PARTIAL and chat.chat_status != ChatStatus.RESERVED:
         session.close()
-        return {
-            "statusCode": 403,
-            "body": json.dumps({
-                "errorMessage": "cannot unreserve inactive or unreserved chat with id '{}'".format(chatId)
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.forbidden("cannot unreserve inactive or unreserved chat with id '{}'".format(chatId))
     if not chat.aspiring_professionals or user['email'] not in chat.aspiring_professionals:
         session.close()
-        return {
-            "statusCode": 403,
-            "body": json.dumps({
-                "errorMessage": "user '{}' did not reserve chat with id '{}'".format(user['email'], chatId)
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.forbidden("user '{}' did not reserve chat with id '{}'".format(user['email'], chatId))
 
     chat.aspiring_professionals.remove(user['email'])
     if not chat.aspiring_professionals:
@@ -108,36 +59,15 @@ def handler(event, context):
         session.close()
         logging.info(e)
         if int(e.response['ResponseMetadata']['HTTPStatusCode']) >= 500:
-            return {
-                "statusCode": 500,
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-            }
+            return http_status.server_error()
         else:
-            return {
-                "statusCode": 400,
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-            }
+            return http_status.bad_request()
     else:
         admin_update_credits(user['email'], credit_mapping[chat.chat_type])
 
         session.commit()
         session.close()
-        return {
-            "statusCode": 200,
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.success()
 
 def prepare_and_send_email(ap, se):
     subject = '[MAX Aspire] Unreserved coffee chat'

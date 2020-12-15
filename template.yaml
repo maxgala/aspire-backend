@@ -89,6 +89,14 @@ Resources:
       ContentUri: src/layers/cognito/dependencies/
       CompatibleRuntimes:
         - python3.6
+  
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-common
+      ContentUri: src/layers/common/dependencies/
+      CompatibleRuntimes:
+        - python3.6
 
   AspireApi:
     Type: AWS::Serverless::Api
@@ -155,6 +163,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatCreateMultiple:
     Type: AWS::Serverless::Function
@@ -181,6 +190,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatGetById:
     Type: AWS::Serverless::Function
@@ -197,6 +207,7 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: CommonLayer
 
   ChatEditById:
     Type: AWS::Serverless::Function
@@ -214,6 +225,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   ChatDeleteById:
     Type: AWS::Serverless::Function
@@ -240,6 +252,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatGetAll:
     Type: AWS::Serverless::Function
@@ -264,6 +277,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatDeleteAll:
     Type: AWS::Serverless::Function
@@ -290,6 +304,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatReserveById:
     Type: AWS::Serverless::Function
@@ -323,6 +338,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   ChatUnreserveById:
     Type: AWS::Serverless::Function
@@ -356,6 +372,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   ChatCancelById:
     Type: AWS::Serverless::Function
@@ -382,6 +399,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatDoneById:
     Type: AWS::Serverless::Function
@@ -399,6 +417,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- Chats Service ---
 
   # --- SE Connect Service ---
@@ -427,6 +446,7 @@ Resources:
         - Ref: SesLayer
         - Ref: CognitoLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   ConnectGetAll:
     Type: AWS::Serverless::Function
@@ -444,6 +464,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   ConnectGetById:
     Type: AWS::Serverless::Function
@@ -461,6 +482,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   ConnectEditById:
     Type: AWS::Serverless::Function
@@ -487,6 +509,7 @@ Resources:
         - Ref: SesLayer
         - Ref: CognitoLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   ConnectDeleteById:
     Type: AWS::Serverless::Function
@@ -504,6 +527,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- SE Connect Service ---
 
   # --- Jobs Service ---
@@ -531,6 +555,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   GetAllJobs:
     Type: AWS::Serverless::Function
@@ -547,6 +572,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   GetJobById:
     Type: AWS::Serverless::Function
@@ -563,6 +589,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   DeleteJobById:
     Type: AWS::Serverless::Function
@@ -579,6 +606,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   EditJobById:
     Type: AWS::Serverless::Function
@@ -604,6 +632,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   CloseJobById:
     Type: AWS::Serverless::Function
@@ -620,6 +649,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   RejectJobById:
     Type: AWS::Serverless::Function
@@ -636,6 +666,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   AutomaticallyApproveJob:
     Type: AWS::Serverless::Function
@@ -658,6 +689,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   JobContactById:
     Type: AWS::Serverless::Function
@@ -674,6 +706,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- Jobs Service ---
 
   # --- Job Applications Service ---
@@ -701,6 +734,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   GetAllJobApplications:
     Type: AWS::Serverless::Function
@@ -717,6 +751,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   DeleteJobApplicationById:
     Type: AWS::Serverless::Function
@@ -733,6 +768,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   GetJobApplicationById:
     Type: AWS::Serverless::Function
@@ -749,6 +785,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   EditJobApplicationById:
     Type: AWS::Serverless::Function
@@ -765,6 +802,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- Job Applications Service ---
 
   # --- Industry Tags Service ---
@@ -783,6 +821,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   IndustryTagsGetAll:
     Type: AWS::Serverless::Function
@@ -799,6 +838,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   IndustryTagsGetById:
     Type: AWS::Serverless::Function
@@ -815,6 +855,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   IndustryTagsDeleteById:
     Type: AWS::Serverless::Function
@@ -831,6 +872,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- Industry Tags Service ---
 
   # --- Payments Service ---
@@ -850,6 +892,7 @@ Resources:
                   Authorizer: NONE
         Layers:
           - Ref: DatabaseLayer
+          - Ref: CommonLayer
   # --- Payments Service ---
 
   # --- Users Service ---
@@ -874,6 +917,7 @@ Resources:
             Method: get
       Layers:
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   UserGetAll:
     Type: AWS::Serverless::Function
@@ -897,6 +941,7 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
   
   UserEditById:
     Type: AWS::Serverless::Function
@@ -914,6 +959,7 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   UserUpdateCredits:
     Type: AWS::Serverless::Function
@@ -938,6 +984,7 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   UserEnable:
     Type: AWS::Serverless::Function
@@ -961,6 +1008,7 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   UserDisable:
     Type: AWS::Serverless::Function
@@ -984,6 +1032,7 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
   # --- Users Service ---
 
   # --- Scheduler Service ---
@@ -1011,6 +1060,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
   # --- Scheduler Service ---
 
 Outputs:

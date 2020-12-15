@@ -4,6 +4,7 @@ import logging
 from connect_se import ConnectSE
 from base import Session, row2dict
 # from role_validation import UserType, check_auth
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -42,15 +43,7 @@ def handler(event, context):
     connect_ses = filtered_query.all()
     session.close()
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
+    return http_status.success(json.dumps({
             "connect_ses": [row2dict(r) for r in connect_ses],
             "count": len(connect_ses)
-        }),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+        }))

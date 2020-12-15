@@ -5,10 +5,10 @@ from chat import Chat, ChatStatus, credit_mapping
 from base import Session
 from role_validation import UserType, check_auth, edit_auth
 from cognito_helpers import admin_update_remaining_chats_frequency, admin_update_credits
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
 
 def handler(event, context):
     # check authorization
@@ -18,41 +18,22 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
     chatId = event["pathParameters"].get("chatId") if event["pathParameters"] else None
     if not chatId:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing path parameter(s): 'chatId'"
-            })
-        }
+        return http_status.bad_request("missing path parameter(s): 'chatId'")
 
     session = Session()
     chat = session.query(Chat).get(chatId)
     if not chat:
         session.close()
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "errorMessage": "chat with id '{}' not found".format(chatId)
-            })
-        }
+        return http_status.not_found("chat with id '{}' not found".format(chatId))
+
     success = edit_auth(user, chat.senior_executive)
     if not success:
         session.close()
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
     # CANCELED state can be achieved from PENDING, ACTIVE, RESERVED_PARTIAL, RESERVED or RESERVED_CONFIRMED
     #
@@ -69,12 +50,7 @@ def handler(event, context):
     # TODO: send email notification to SEs and APs
     if chat.chat_status == ChatStatus.DONE or chat.chat_status == ChatStatus.CANCELED or chat.chat_status == ChatStatus.EXPIRED:
         session.close()
-        return {
-            "statusCode": 403,
-            "body": json.dumps({
-                "errorMessage": "cannot cancel DONE, CANCELED or EXPIRED chat with id '{}'".format(chatId)
-            })
-        }
+        return http_status.forbidden("cannot cancel DONE, CANCELED or EXPIRED chat with id '{}'".format(chatId))
 
     for ap in chat.aspiring_professionals:
         admin_update_credits(ap, credit_mapping[chat.chat_type])
@@ -93,6 +69,4 @@ def handler(event, context):
 
     session.commit()
     session.close()
-    return {
-        "statusCode": 200
-    }
+    return http_status.success()

@@ -35,6 +35,10 @@ jobs:
           sudo bash cognito_layer_packages.sh
           sudo chown -R runner dependencies
           sudo chgrp -R docker dependencies
+          cd ../common
+          sudo bash common_layer_packages.sh
+          sudo chown -R runner dependencies
+          sudo chgrp -R docker dependencies
         env:
           PROD_DB_HOST: ${{secrets.DEV_DB_HOST}}
           PROD_DB_PORT: ${{secrets.DEV_DB_PORT}}
