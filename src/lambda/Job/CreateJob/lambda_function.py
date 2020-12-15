@@ -9,6 +9,7 @@ from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
 from role_validation import UserType, check_auth
 from send_email import send_email
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -22,17 +23,7 @@ def handler(event, context):
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     session = Session()
 
@@ -63,14 +54,4 @@ def handler(event, context):
     body = f"Salaam!\r\n\nThank you for choosing MAX Aspire as your entrusted partner. I am delighted to confirm that we have received your job posting {job_title} on {today}. A member of our team is currently reviewing the job posting to make sure it meets all the necessary requirements.\r\n\nOnce approved, you will be notified via email/member portal. Subsequently you will be notified if any additional information is required. Kindly bear with us 2-3 days before the job is approved and posted on MAX Aspire Job Board. Thank you.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
     send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
 
-    return {
-        "statusCode": 201,
-        "body": json.dumps(
-            res
-        ),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+    return http_status.success(json.dumps(res))

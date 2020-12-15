@@ -4,10 +4,10 @@ import logging
 from industry_tag import IndustryTag
 from base import Session
 from role_validation import UserType, check_auth
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
 
 def handler(event, context):
     # check authorization
@@ -19,23 +19,13 @@ def handler(event, context):
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
     body = json.loads(event["body"])
     tag = body.get("tag") if body else None
 
     if not tag:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing body attribute(s): 'tag'"
-            })
-        }
+        return http_status.bad_request("missing body attribute(s): 'tag'")
 
     IndustryTag_new = IndustryTag(tag=tag.lower())
 
@@ -44,6 +34,4 @@ def handler(event, context):
     session.commit()
     session.close()
 
-    return {
-        "statusCode": 201
-    }
+    return http_status.success()

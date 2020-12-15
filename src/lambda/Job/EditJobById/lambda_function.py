@@ -9,6 +9,7 @@ from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
 from role_validation import UserType, check_auth
 from send_email import send_email
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -22,12 +23,7 @@ def handler(event, context):
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "Unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
     # # create a new session
     session = Session()
@@ -51,14 +47,6 @@ def handler(event, context):
             body = f"Salaam!\r\n\nWe are delighted to confirm that the job posting {job_title} is successfully posted on MAX Aspire job board on {today}. You will frequently be notified about the job applications as and when received. Keep an eye on your member portal/email.\r\n\nWe appreciate you putting your trust in MAX Aspire. We wish you luck in hiring the best possible candidate form our talented pool of aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
             send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
 
-        return {
-            "statusCode": 200
-        }
+        return http_status.success()
     else:
-        return {
-            "statusCode" : 404,
-            "body" : json.dumps({
-                "message": "Not Found"
-            })
-        }
-
+        return http_status.not_found()

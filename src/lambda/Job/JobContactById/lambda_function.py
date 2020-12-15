@@ -11,6 +11,7 @@ from base import Session, engine, Base
 import jwt
 import boto3
 from role_validation import UserType, check_auth
+from common import http_status
 
 client = boto3.client('cognito-idp')
 
@@ -27,17 +28,7 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     access_token = event['headers']['X-Aspire-Access-Token']
 
@@ -48,17 +39,7 @@ def handler(event, context):
     job = session.query(Job).get(jobId)
     
     if job == None:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "message": "ID not found"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.not_found()
     
     credit = int(user['custom:credits'])
     email = user['email']
@@ -69,43 +50,13 @@ def handler(event, context):
             if job_app.applicant_id == email:
                 applied = True
         if not applied:
-            return {
-                "statusCode": 428,
-                "body": json.dumps({
-                    "message": "You need to apply to the job before requesting contact-information"
-                }),
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-            }
+            return http_status.forbidden("You need to apply to the job before requesting contact-information")
 
         if job.people_contacted >= 4:
-            return {
-                "statusCode": 417,
-                "body": json.dumps({
-                    "message": "Limit of contact information requests has been exceeded"
-                }),
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-            }
-        print(credit)
+            return http_status.forbidden("Limit of contact information requests has been exceeded")
+
         if int(credit) < 5:
-            return {
-                "statusCode": 402,
-                "body": json.dumps({
-                    "message": "You do not have enough credits to request contact information"
-                }),
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-            }
+            return http_status.forbidden("You do not have enough credits to request contact information")
         response = client.update_user_attributes(
             UserAttributes=[
                 {
@@ -117,30 +68,14 @@ def handler(event, context):
         )
         job.people_contacted = job.people_contacted + 1
         session.commit()
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
+        return http_status.success(json.dumps({
                 "contact_details": {
                         "email" : job.posted_by,
                         "given_name" : job.poster_given_name,
                         "family_name" : job.poster_family_name
                     }   
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+            }))
     else:
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
+        return http_status.success(json.dumps({
                     "message": "Hiring manager does not want to be contacted"
-                }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+                }))

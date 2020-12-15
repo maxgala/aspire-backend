@@ -9,6 +9,7 @@ from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
 from role_validation import UserType, check_auth
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -52,15 +53,7 @@ def handler(event, context):
     
     session.close()
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
+    return http_status.success(json.dumps({
             "jobs": joblist,
             "count": len(joblist)
-        }),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+        }))
