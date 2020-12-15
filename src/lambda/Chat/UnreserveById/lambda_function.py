@@ -99,8 +99,9 @@ def handler(event, context):
         chat.chat_status = ChatStatus.RESERVED_PARTIAL
 
     try:
-        prepare_and_send_email_to_ap(user['email'], chat.senior_executive)
-        prepare_and_send_email_to_se(user['email'], chat.senior_executive)
+        # FIXME send email to both
+        prepare_and_send_email_to_ap(user['email'], user['email'])
+        prepare_and_send_email_to_se(user['email'], user['email'])
     except ClientError as e:
         session.rollback()
         session.close()
