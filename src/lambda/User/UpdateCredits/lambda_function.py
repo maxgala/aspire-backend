@@ -3,14 +3,12 @@ import logging
 
 from role_validation import UserType, check_auth, edit_auth
 from cognito_helpers import admin_update_credits
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
 def handler(event, context):
-    # check authorization
     authorized_user_types = [
         UserType.ADMIN,
         UserType.PAID,
@@ -20,7 +18,6 @@ def handler(event, context):
     if not success:
         return http_status.unauthorized()
 
-    # validate body
     body = json.loads(event["body"])
     user_email = body.get('email')
     user_credits = body.get('credits')

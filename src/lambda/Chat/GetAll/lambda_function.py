@@ -4,7 +4,7 @@ import logging
 from chat import Chat, ChatType, ChatStatus
 from base import Session, row2dict
 from cognito_helpers import get_users
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

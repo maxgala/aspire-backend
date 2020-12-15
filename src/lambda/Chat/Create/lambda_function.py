@@ -6,7 +6,7 @@ from chat import Chat, ChatType, ChatStatus, mandatory_date
 from base import Session
 from role_validation import UserType, check_auth, edit_auth
 from cognito_helpers import admin_update_remaining_chats_frequency, admin_update_declared_chats_frequency
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

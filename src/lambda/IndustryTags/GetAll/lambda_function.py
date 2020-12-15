@@ -4,7 +4,7 @@ import logging
 from industry_tag import IndustryTag
 from base import Session, row2dict
 from role_validation import UserType, check_auth
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

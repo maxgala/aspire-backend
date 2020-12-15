@@ -3,7 +3,7 @@ import logging
 
 from role_validation import UserType, check_auth, edit_auth
 from cognito_helpers import get_users, admin_update_user_attributes
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -15,7 +15,6 @@ standard_attributes = [
 ]
 
 def handler(event, context):
-    # check authorization
     authorized_user_types = [
         UserType.MENTOR,
         UserType.PAID,

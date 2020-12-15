@@ -3,14 +3,12 @@ import logging
 
 from role_validation import UserType, check_auth
 from cognito_helpers import admin_enable_user
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
 def handler(event, context):
-    # check authorization
     authorized_user_types = [
         UserType.ADMIN
     ]

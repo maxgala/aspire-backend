@@ -3,13 +3,11 @@ import logging
 
 from role_validation import UserType
 from cognito_helpers import get_users
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
-# TODO: Is it safe to return all the user's info since this endpoint is not protected?
 def handler(event, context):
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
     type_filter = event["queryStringParameters"].get("type", "") if event["queryStringParameters"] else ""

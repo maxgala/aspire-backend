@@ -4,12 +4,11 @@ import logging
 import uuid
 from datetime import datetime
 
-# FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
 from role_validation import UserType, check_auth
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -44,13 +43,9 @@ def handler(event, context):
             job_apps_id.append(app.job_application_id)
         jobdict = row2dict(job)
         jobdict['job_applications'] = job_apps_id
-        ###Filtering for tags here
         if tag == None or tag.upper() in jobdict['job_tags']:
             joblist.append(jobdict)
-        
-
-    # # commit and close session
-    
+            
     session.close()
 
     return http_status.success(json.dumps({

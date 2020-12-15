@@ -4,12 +4,11 @@ import logging
 import uuid
 from datetime import datetime
 
-# FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
 from role_validation import UserType, check_auth
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -26,7 +25,6 @@ def handler(event, context):
     if not success:
         return http_status.unauthorized()
     
-    # # create a new session
     session = Session()
     jobId = event["pathParameters"]["jobId"]
     job = session.query(Job).get(jobId)

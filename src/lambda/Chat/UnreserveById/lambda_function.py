@@ -7,7 +7,7 @@ from base import Session
 from role_validation import UserType, check_auth
 from cognito_helpers import get_users, admin_update_credits
 from send_email import send_email
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

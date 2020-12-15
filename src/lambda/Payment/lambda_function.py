@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from base import Session, engine, Base
 import logging
-from common import http_status
+import http_status
 
 load_dotenv()
 

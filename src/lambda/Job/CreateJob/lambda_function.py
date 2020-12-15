@@ -9,7 +9,7 @@ from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
 from role_validation import UserType, check_auth
 from send_email import send_email
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

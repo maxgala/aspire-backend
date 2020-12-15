@@ -3,7 +3,7 @@ import logging
 
 from chat import Chat
 from base import Session, row2dict
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

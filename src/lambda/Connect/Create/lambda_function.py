@@ -5,7 +5,7 @@ from connect_se import ConnectSE, ConnectStatus
 from base import Session
 from send_email import send_email
 from role_validation import UserType, check_auth
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

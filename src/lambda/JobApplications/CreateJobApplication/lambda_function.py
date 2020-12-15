@@ -12,7 +12,7 @@ from base import Session, engine, Base, row2dict
 from send_email import send_email
 import jwt
 from role_validation import UserType, check_auth
-from common import http_status
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -44,7 +44,6 @@ def handler(event, context):
     session.add(job_rs)
     session.commit()
 
-    ##email hiring manager
     job = session.query(Job).get(info["job_id"])
     job_title = job.title
     today = datetime.today().strftime("%Y-%m-%d")
