@@ -22,17 +22,7 @@ def handler(event, context):
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     session = Session()
     jobAppId = event["pathParameters"]["id"]
