@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from base import Session, engine, Base
 import logging
+from common import http_status
 
 load_dotenv()
 
@@ -26,52 +27,12 @@ def handler(event, context):
                 )
             return generate_response(intent)
         else:
-            return {
-                    "statusCode": 400,
-                    "body": json.dumps({
-                        'message': 'Payment failed',
-                    }),
-                    "headers": {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                        'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-                    }
-                }           
+            return http_status.bad_request('Payment failed')
     except Exception as e:
-        return {
-                "statusCode": 400,
-                "body": json.dumps({
-                    "message": 'Payment failed. '+ str(e),
-                }),
-                "headers": {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-                }
-            }
+        return http_status.bad_request('Payment failed. '+ str(e))
 
 def generate_response(intent):
         if intent.status == 'succeeded':
-            return {
-                    "statusCode": 200,
-                    "body": json.dumps({
-                        'message': 'Payment succeeded',
-                    }),
-                    "headers": {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                        'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-                    }
-                }
+            return http_status.success()
         else:
-            return {
-                    "statusCode": 400,
-                    "body": json.dumps({
-                        'message': 'Payment failed. Invalid payment status',
-                    }),
-                    "headers": {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                        'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-                    }
-                } 
+            return http_status.bad_request('Payment failed. Invalid payment status')

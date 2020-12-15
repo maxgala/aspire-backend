@@ -3,6 +3,7 @@ import logging
 
 from role_validation import UserType
 from cognito_helpers import get_users
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -23,15 +24,7 @@ def handler(event, context):
         user_type = None
 
     users, count = get_users(filter_=filter_, user_type=user_type)
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
+    return http_status.success(json.dumps({
             "users": users,
             "count": count
-        }),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+        }))

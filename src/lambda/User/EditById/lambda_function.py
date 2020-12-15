@@ -3,6 +3,7 @@ import logging
 
 from role_validation import UserType, check_auth, edit_auth
 from cognito_helpers import get_users, admin_update_user_attributes
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -22,59 +23,19 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     userId = event["pathParameters"].get("userId") if event["pathParameters"] else None
     if not userId:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing path parameter(s): 'userId'"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.bad_request()
 
     user_edit, _ = get_users(filter_=('email', userId))
     if not user_edit:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "errorMessage": "user with id '{}' not found".format(userId)
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.not_found()
     user_attributes = user_edit['attributes']
     success = edit_auth(user, user_attributes.pop('email'))
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     body = json.loads(event["body"])
 
@@ -85,12 +46,4 @@ def handler(event, context):
         new_attrs[key] = body[key]
 
     admin_update_user_attributes(user['email'], new_attrs)
-    return {
-        "statusCode": 200,
-        "body": json.dumps(user),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+    return http_status.success(json.dumps(user))
