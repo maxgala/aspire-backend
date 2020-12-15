@@ -47,6 +47,8 @@ def handler(event, context):
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
         }
+    
+    timezone_offset_min = event['headers']['Aspire-Client-Timezone-Offset']
 
     session = Session()
     chat = session.query(Chat).get(chatId)
@@ -92,10 +94,6 @@ def handler(event, context):
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
         }
-    
-    logging.info('Chat type is' + str(chat.chat_type))
-    logging.info('Chat credits are ' + str(credit_mapping[chat.chat_type]))
-    logging.info('User credits are ' + str(int(user['custom:credits'])))
 
     if int(user['custom:credits']) < credit_mapping[chat.chat_type]:
         session.close()
@@ -128,7 +126,7 @@ def handler(event, context):
 
     try:
         if chat.chat_status == ChatStatus.RESERVED or chat.chat_status == ChatStatus.RESERVED_PARTIAL:
-            prepare_and_send_emails(chat)
+            prepare_and_send_emails(chat, timezone_offset_min)
     except ClientError as e:
         session.rollback()
         session.close()
@@ -165,7 +163,7 @@ def handler(event, context):
             }
         }
 
-def prepare_and_send_emails(chat):
+def prepare_and_send_emails(chat, timezone_offset_min):
     mentee_IDs = chat.aspiring_professionals
     mentor_ID = chat.senior_executive
 
@@ -178,6 +176,7 @@ def prepare_and_send_emails(chat):
         today = date.today()
         day_idx = (today.weekday() + 1) % 7 # today.weekday() is 0 for Monday
         chat_date = today + timedelta(days=7-day_idx)
+    chat_date = chat_date + timedelta(minutes=timezone_offset_min)
     chat_time = time(14,0,0)
     event_start = datetime.combine(chat_date,chat_time)
     chat_date = f'{chat_date:%b %d, %Y}'
