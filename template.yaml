@@ -110,7 +110,7 @@ Resources:
             UserPoolArn: !Ref CognitoUserPoolArn
       Cors:
         AllowMethods: "'OPTIONS,GET,POST,PUT'"
-        AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+        AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin,Aspire-Client-Timezone-Offset'"
         AllowOrigin: "'*'"
       EndpointConfiguration:
         Type: REGIONAL

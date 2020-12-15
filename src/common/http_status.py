@@ -10,7 +10,7 @@ def success(res_body=""):
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin,Aspire-Client-Timezone-Offset'"
         }
     }
 
@@ -24,7 +24,7 @@ def unauthorized(message=""):
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin,Aspire-Client-Timezone-Offset'"
         }
     }
 
@@ -38,7 +38,7 @@ def forbidden(message=""):
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin,Aspire-Client-Timezone-Offset'"
         }
     }
 
@@ -52,7 +52,7 @@ def not_found(message=""):
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin,Aspire-Client-Timezone-Offset'"
         }
     }
 
@@ -67,7 +67,7 @@ def bad_request(message=""):
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin,Aspire-Client-Timezone-Offset'"
         }
     }
 
@@ -81,6 +81,6 @@ def server_error(message=""):
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin,Aspire-Client-Timezone-Offset'"
         }
     }
