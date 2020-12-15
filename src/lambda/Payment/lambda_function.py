@@ -31,6 +31,11 @@ def handler(event, context):
                     "body": json.dumps({
                         'message': 'Payment failed',
                     }),
+                    "headers": {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                        'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                    }
                 }           
     except Exception as e:
         return {
@@ -38,6 +43,11 @@ def handler(event, context):
                 "body": json.dumps({
                     "message": 'Payment failed. '+ str(e),
                 }),
+                "headers": {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                }
             }
 
 def generate_response(intent):
@@ -47,6 +57,11 @@ def generate_response(intent):
                     "body": json.dumps({
                         'message': 'Payment succeeded',
                     }),
+                    "headers": {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                        'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                    }
                 }
         else:
             return {
@@ -54,4 +69,9 @@ def generate_response(intent):
                     "body": json.dumps({
                         'message': 'Payment failed. Invalid payment status',
                     }),
+                    "headers": {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                        'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                    }
                 } 
