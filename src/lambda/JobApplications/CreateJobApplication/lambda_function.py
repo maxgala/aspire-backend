@@ -12,6 +12,7 @@ from base import Session, engine, Base, row2dict
 from send_email import send_email
 import jwt
 from role_validation import UserType, check_auth
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -26,17 +27,7 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
     email = user['email']
     candidate_name = user["given_name"] + user["family_name"]
@@ -65,12 +56,4 @@ def handler(event, context):
     resp = row2dict(job_rs)
     session.close()
 
-    return {
-        "statusCode": 201,
-        "body": json.dumps(resp),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+    return http_status.success(json.dumps(resp))

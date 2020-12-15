@@ -3,18 +3,16 @@ import json
 import logging
 import uuid
 from datetime import datetime
-
-# FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
 from role_validation import UserType, check_auth
+from common import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
-    # check authorization
     authorized_user_types = [
         UserType.ADMIN,
         UserType.MENTOR,
@@ -23,15 +21,8 @@ def handler(event, context):
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
-    # FOR REFERENCE
-    # # create a new session
     session = Session()
     applicantId = ""
     jobId = ""
@@ -42,7 +33,6 @@ def handler(event, context):
         if event["queryStringParameters"].get('userId') != None:
             applicantId = event["queryStringParameters"].get('userId')
 
-        #Checks to see if any keys passed in are empty, and then performs one search accordingly.
     if (applicantId != None and  applicantId != "" and jobId != None and jobId != "" ):
         jobApps = session.query(JobApplication).filter(JobApplication.applicant_id == applicantId, JobApplication.job_id == jobId).all()
     elif (jobId != None and jobId != ""):
@@ -52,7 +42,6 @@ def handler(event, context):
     else:
         jobApps = session.query(JobApplication).all()
     
-    # # commit and close session
     
     session.close()
 
@@ -70,12 +59,4 @@ def handler(event, context):
             "updated_on":jobApp.updated_on.timestamp()
         }
         jobAppsList.append(jobApp_json)
-    return {
-        "statusCode": 200,
-        "body": json.dumps(jobAppsList),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+    return http_status.success(json.dumps(jobAppsList))
