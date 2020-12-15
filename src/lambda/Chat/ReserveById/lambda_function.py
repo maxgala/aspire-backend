@@ -92,6 +92,10 @@ def handler(event, context):
                 'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
         }
+    
+    logging.info('Chat type is' + str(chat.chat_type))
+    logging.info('Chat credits are ' + str(credit_mapping[chat.chat_type]))
+    logging.info('User credits are ' + str(int(user['custom:credits'])))
 
     if int(user['custom:credits']) < credit_mapping[chat.chat_type]:
         session.close()
