@@ -26,7 +26,12 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     userId = event["pathParameters"].get("userId") if event["pathParameters"] else None
@@ -35,7 +40,12 @@ def handler(event, context):
             "statusCode": 400,
             "body": json.dumps({
                 "errorMessage": "missing path parameter(s): 'userId'"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     user_edit, _ = get_users(filter_=('email', userId))
@@ -44,7 +54,12 @@ def handler(event, context):
             "statusCode": 404,
             "body": json.dumps({
                 "errorMessage": "user with id '{}' not found".format(userId)
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
     user_attributes = user_edit['attributes']
     success = edit_auth(user, user_attributes.pop('email'))
@@ -53,7 +68,12 @@ def handler(event, context):
             "statusCode": 401,
             "body": json.dumps({
                 "errorMessage": "unauthorized"
-            })
+            }),
+            "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
         }
 
     body = json.loads(event["body"])
@@ -67,5 +87,10 @@ def handler(event, context):
     admin_update_user_attributes(user['email'], new_attrs)
     return {
         "statusCode": 200,
-        "body": json.dumps(user)
+        "body": json.dumps(user),
+        "headers": {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+            }
     }
