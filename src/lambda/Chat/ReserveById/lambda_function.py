@@ -51,8 +51,9 @@ def handler(event, context):
         session.close()
         return http_status.forbidden("user '{}' already reserved chat with id '{}'".format(user['email'], chatId))
 
-
-    if int(user['custom:credits']) < credit_mapping[chat.chat_type]:
+    user_credits = int(get_users(filter_=("email", user['email']), \
+        attributes_filter=["custom:credits"])[0]['attributes'].get('custom:credits'))
+    if user_credits < credit_mapping[chat.chat_type]:
         session.close()
         return http_status.forbidden("user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId))
 
