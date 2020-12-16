@@ -18,10 +18,12 @@ def handler(event, context):
     session = Session()
     # TODO: more filters? (tags)
     filtered_query = session.query(Chat)
-    if status_filter and status_filter in ChatStatus.__members__:
-        filtered_query = filtered_query.filter(Chat.chat_status == ChatStatus[status_filter])
-    if type_filter and type_filter in ChatType.__members__:
-        filtered_query = filtered_query.filter(Chat.chat_type == ChatType[type_filter])
+    if status_filter:
+        status_filter = [ChatStatus[x.strip()] for x in status_filter.split(',') if x in ChatStatus.__members__]
+        filtered_query = filtered_query.filter(Chat.chat_status.in_(status_filter))
+    if type_filter:
+        type_filter = [ChatType[x.strip()] for x in type_filter.split(',') if x in ChatType.__members__]
+        filtered_query = filtered_query.filter(Chat.chat_type.in_(type_filter))
     if user_filter:
         user, _ = get_users(filter_=('email', user_filter), attributes_filter=['custom:user_type'])
         user_type = user['attributes']['custom:user_type']
