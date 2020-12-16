@@ -218,7 +218,7 @@ def handler(event, context):
         if "num_activate" in event["queryStringParameters"]:
             default_num_activate = int(event["queryStringParameters"]["num_activate"])
 
-        current_date = datetime.today().strftime("%d/%m/%Y")
+        current_date = datetime.now().strftime("%d/%m/%Y")
         if "current_date" in event["queryStringParameters"]:
             current_date = datetime.strptime(event["queryStringParameters"]["current_date"], "%d/%m/%Y")
 
