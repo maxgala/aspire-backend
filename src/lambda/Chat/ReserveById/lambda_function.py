@@ -73,7 +73,7 @@ def handler(event, context):
         chat.chat_status = ChatStatus.RESERVED
 
     try:
-        if chat.chat_status == ChatStatus.RESERVED or chat.chat_status == ChatStatus.RESERVED_PARTIAL:
+        if chat.chat_type != ChatType.FOUR_ON_ONE:
             prepare_and_send_emails(chat, timezone_offset_min)
     except ClientError as e:
         session.rollback()
@@ -120,6 +120,8 @@ def prepare_and_send_emails(chat, timezone_offset_min):
     chat_type = ''
     if chat.chat_type == ChatType.FOUR_ON_ONE:
         chat_type = '4-on-1'
+    elif chat.chat_type == ChatType.MOCK_INTERVIEW:
+        chat_type = 'Mock Interview'
     else:
         chat_type = '1-on-1'
 
