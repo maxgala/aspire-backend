@@ -213,6 +213,7 @@ def handler(event, context):
     if not success:
         return http_status.unauthorized()
 
+    session = Session()
     try:
         default_num_activate = 15
         if "num_activate" in event["queryStringParameters"]:
@@ -232,7 +233,6 @@ def handler(event, context):
 
         users, _ = get_users(user_type='MENTOR')
         num_carry_over = 0
-        session = Session()
         for user in users:
             num_carry_over += schedule_user(session, user['attributes'], current_date, next_date)
 
