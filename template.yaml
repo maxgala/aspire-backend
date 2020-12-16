@@ -1050,6 +1050,12 @@ Resources:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
             Resource: '*'
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: '*'
       Events:
         SchedulerApiEvent:
           Type: Api
@@ -1063,8 +1069,9 @@ Resources:
             Schedule: rate(3 days)
       Layers:
         - Ref: DatabaseLayer
-        - Ref: AuthLayer
+        - Ref: SesLayer
         - Ref: CognitoLayer
+        - Ref: AuthLayer
         - Ref: CommonLayer
   # --- Scheduler Service ---
 
