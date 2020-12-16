@@ -1051,16 +1051,16 @@ Resources:
               - cognito-idp:AdminUpdateUserAttributes
             Resource: '*'
       Events:
-          SchedulerApiEvent:
-            Type: Api
-            Properties:
-              Path: /scheduler
-              Method: put
-              RestApiId: !Ref AspireApi
-          SchedulerScheduleEvent:
-            Type: Schedule
-            Properties:
-              Schedule: rate(3 day)
+        SchedulerApiEvent:
+          Type: Api
+          Properties:
+            Path: /scheduler
+            Method: put
+            RestApiId: !Ref AspireApi
+        SchedulerScheduleEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(3 days)
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
