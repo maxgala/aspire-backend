@@ -215,16 +215,26 @@ def handler(event, context):
         }
 
     try:
-        session = Session()
-        default_num_activate = int(event["queryStringParameters"]["num_activate"])
-        current_date = datetime.strptime(event["queryStringParameters"]["current_date"], "%d/%m/%Y")
-        scheduling_period = int(event["queryStringParameters"]["scheduling_period"])
+        default_num_activate = 15
+        if "num_activate" in event["queryStringParameters"]:
+            default_num_activate = int(event["queryStringParameters"]["num_activate"])
+        
+        current_date = datetime.strptime(datetime.now(), "%d/%m/%Y")
+        if "current_date" in event["queryStringParameters"]:
+            current_date = datetime.strptime(event["queryStringParameters"]["current_date"], "%d/%m/%Y")
+        next_date = current_date + timedelta(weeks=1)
+        
+        scheduling_period = 7
+        if "scheduling_period" in event["queryStringParameters"]:
+            scheduling_period = int(event["queryStringParameters"]["scheduling_period"])
         next_date = current_date + timedelta(days=scheduling_period)
+        
         logger.info("num_activate={}, current_date={}, next_date={}"\
             .format(default_num_activate, current_date.strftime("%d/%m/%Y"), next_date.strftime("%d/%m/%Y")))
-
+        
         users, _ = get_users(user_type='MENTOR')
         num_carry_over = 0
+        session = Session()
         for user in users:
             num_carry_over += schedule_user(session, user['attributes'], current_date, next_date)
 
