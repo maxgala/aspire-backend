@@ -7,7 +7,10 @@ userPoolId = 'us-east-1_dq5r8O2SO'
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None, user_type: str=None):
+def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None, user_type=None):
+    if user_type and not isinstance(user_type, list):
+        user_type = [user_type]
+
     params = {
         "UserPoolId": userPoolId,
         "Filter": "{} = '{}'".format(filter_[0], filter_[1])
@@ -32,7 +35,7 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
             attributes[attr['Name']] = attr['Value']
 
         # filter by user_type
-        if user_type and attributes['custom:user_type'] != user_type:
+        if user_type and attributes['custom:user_type'] not in user_type:
             continue
 
         user = {}

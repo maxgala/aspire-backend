@@ -17,7 +17,7 @@ def handler(event, context):
     else:
         filter_ = ('status', 'Enabled')
     if type_filter:
-        user_type = [UserType[x.strip()] for x in type_filter.split(',') if x in UserType.__members__]
+        user_type = [x.strip() for x in type_filter.split(',') if x in UserType.__members__]
     else:
         user_type = None
 
