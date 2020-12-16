@@ -184,7 +184,7 @@ def schedule_user(session, user, current_date, next_date):
     '''
     update_scheduling_periods(chats, periods, periods_frequency)
 
-    # activate pending undated chats expiring this week
+    # activate pending undated chats expiring this scheduling period
     num_expiring_activated = activate_expiring_chats(user, chats, current_date, next_date)
     logger.info("User {}: Unbooked={}, Activated={}".format(user['email'], num_unbooked, num_expiring_activated))
     return (num_unbooked - num_expiring_activated)
@@ -218,7 +218,8 @@ def handler(event, context):
         session = Session()
         default_num_activate = int(event["queryStringParameters"]["num_activate"])
         current_date = datetime.strptime(event["queryStringParameters"]["current_date"], "%d/%m/%Y")
-        next_date = current_date + timedelta(weeks=1)
+        scheduling_period = int(event["queryStringParameters"]["scheduling_period"])
+        next_date = current_date + timedelta(days=scheduling_period)
         logger.info("num_activate={}, current_date={}, next_date={}"\
             .format(default_num_activate, current_date.strftime("%d/%m/%Y"), next_date.strftime("%d/%m/%Y")))
 
