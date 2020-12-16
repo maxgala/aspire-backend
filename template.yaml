@@ -876,7 +876,7 @@ Resources:
   # --- Industry Tags Service ---
 
   # --- Payments Service ---
-  StripePaymentProcessor:
+  PaymentProcessor:
     Type: AWS::Serverless::Function
     Properties:
         CodeUri: src/lambda/Payment
@@ -1051,11 +1051,16 @@ Resources:
               - cognito-idp:AdminUpdateUserAttributes
             Resource: '*'
       Events:
-          SchedulerScheduleEvent:
+          SchedulerApiEvent:
             Type: Api
             Properties:
               Path: /scheduler
               Method: put
+              RestApiId: !Ref AspireApi
+          SchedulerScheduleEvent:
+            Type: Schedule
+            Properties:
+              Schedule: rate(3 day)
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
