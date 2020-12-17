@@ -216,7 +216,7 @@ def handler(event, context):
     session = Session()
     try:
         default_num_activate = 15
-        current_date = datetime.now().strftime("%d/%m/%Y")
+        current_date = datetime.strptime(datetime.now().strftime("%d/%m/%Y"), "%d/%m/%Y")
         scheduling_period = 3
         if event.get("queryStringParameters"):
             if event["queryStringParameters"].get("num_activate"):
