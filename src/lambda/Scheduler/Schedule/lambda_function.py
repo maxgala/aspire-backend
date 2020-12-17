@@ -216,18 +216,17 @@ def handler(event, context):
     session = Session()
     try:
         default_num_activate = 15
-        if "num_activate" in event["queryStringParameters"]:
-            default_num_activate = int(event["queryStringParameters"]["num_activate"])
-
         current_date = datetime.now().strftime("%d/%m/%Y")
-        if "current_date" in event["queryStringParameters"]:
-            current_date = datetime.strptime(event["queryStringParameters"]["current_date"], "%d/%m/%Y")
-
         scheduling_period = 3
-        if "scheduling_period" in event["queryStringParameters"]:
-            scheduling_period = int(event["queryStringParameters"]["scheduling_period"])
-        next_date = current_date + timedelta(days=scheduling_period)
+        if event.get("queryStringParameters"):
+            if event["queryStringParameters"].get("num_activate"):
+                default_num_activate = int(event["queryStringParameters"]["num_activate"])
+            if event["queryStringParameters"].get("current_date"):
+                current_date = datetime.strptime(event["queryStringParameters"]["current_date"], "%d/%m/%Y")
+            if event["queryStringParameters"].get("scheduling_period"):
+                scheduling_period = int(event["queryStringParameters"]["scheduling_period"])
 
+        next_date = current_date + timedelta(days=scheduling_period)
         logger.info("num_activate={}, current_date={}, next_date={}"\
             .format(default_num_activate, current_date.strftime("%d/%m/%Y"), next_date.strftime("%d/%m/%Y")))
 
