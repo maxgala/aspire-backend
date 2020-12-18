@@ -19,7 +19,7 @@ def handler(event, context):
     user_id = None
     status = None
     tag = None
-    page_size = 3
+    page_size = 20
     if event["queryStringParameters"]:
         page = event["queryStringParameters"].get('page') #returns None if 'page' not in dict
         user_id = event["queryStringParameters"].get('user_id')
