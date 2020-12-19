@@ -96,14 +96,14 @@ def process_dated_chats(user, chats, current_date, next_date):
     for chat in chats:
         # expired
         # TODO: delta function to expire dated chats, instead of day of
-        if chat.fixed_date and chat.fixed_date < current_date:
+        if chat.fixed_date and chat.fixed_date <= current_date:
             if chat.chat_status == ChatStatus.RESERVED_PARTIAL \
                or chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
                 if chat.chat_type == ChatType.FOUR_ON_ONE:
-                    prepare_and_send_emails(chat, -300)
+                    prepare_and_send_emails(chat, -300, send_calendar_invite=True)
             elif chat.chat_status == ChatStatus.ACTIVE:
-                # TODO: send email notification to SE
+                # TODO: send email notification to SE?
                 chat.chat_status = ChatStatus.EXPIRED
 
 def process_undated_chats(user, chats, current_date, next_date):
@@ -114,7 +114,7 @@ def process_undated_chats(user, chats, current_date, next_date):
                or chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
                 if chat.chat_type == ChatType.FOUR_ON_ONE:
-                    prepare_and_send_emails(chat, -300)
+                    prepare_and_send_emails(chat, -300, send_calendar_invite=True)
             elif chat.chat_status == ChatStatus.ACTIVE:
                 if chat.expiry_date < current_date or chat.expiry_date > next_date:
                     num_unbooked += 1
@@ -249,7 +249,7 @@ def handler(event, context):
             "next_date": next_date.strftime("%d/%m/%Y")
         }))
 
-def prepare_and_send_emails(chat, timezone_offset_min):
+def prepare_and_send_emails(chat, timezone_offset_min, send_calendar_invite):
     mentee_IDs = chat.aspiring_professionals
     mentor_ID = chat.senior_executive
 
@@ -290,5 +290,9 @@ def prepare_and_send_emails(chat, timezone_offset_min):
     mentor_ID = 'test_mentor_1@maxgala.com'
     all_attendees = list(mentee_IDs)
     all_attendees.append(mentor_ID)
-    ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
+
+    if send_calendar_invite:
+        ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
+    else:
+        ics = None
     send_email(all_attendees, subject, body, ics=ics)

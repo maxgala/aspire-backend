@@ -53,8 +53,7 @@ def handler(event, context):
         # FIXME send email to both
         se = chat.senior_executive
         se = 'test_mentor_1@maxgala.com'
-        if chat.chat_type != ChatType.FOUR_ON_ONE:
-            prepare_and_send_email(user['email'], se)
+        prepare_and_send_email(user['email'], se)
     except ClientError as e:
         session.rollback()
         session.close()

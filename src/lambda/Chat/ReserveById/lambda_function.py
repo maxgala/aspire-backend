@@ -73,8 +73,10 @@ def handler(event, context):
         chat.chat_status = ChatStatus.RESERVED
 
     try:
-        if chat.chat_type != ChatType.FOUR_ON_ONE:
-            prepare_and_send_emails(chat, timezone_offset_min)
+        if chat.chat_type == ChatType.FOUR_ON_ONE:
+            prepare_and_send_emails(chat, timezone_offset_min, send_calendar_invite=False)
+        else:
+            prepare_and_send_emails(chat, timezone_offset_min, send_calendar_invite=True)
     except ClientError as e:
         session.rollback()
         session.close()
@@ -90,7 +92,7 @@ def handler(event, context):
         session.close()
         return http_status.success()
 
-def prepare_and_send_emails(chat, timezone_offset_min):
+def prepare_and_send_emails(chat, timezone_offset_min, send_calendar_invite):
     mentee_IDs = chat.aspiring_professionals
     mentor_ID = chat.senior_executive
 
@@ -131,5 +133,9 @@ def prepare_and_send_emails(chat, timezone_offset_min):
     mentor_ID = 'test_mentor_1@maxgala.com'
     all_attendees = list(mentee_IDs)
     all_attendees.append(mentor_ID)
-    ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
+
+    if send_calendar_invite:
+        ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
+    else:
+        ics = None
     send_email(all_attendees, subject, body, ics=ics)
