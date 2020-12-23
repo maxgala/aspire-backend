@@ -38,39 +38,68 @@ def handler(event, context):
             }
         }
 
-    email = user['email']
-    candidate_name = user["given_name"] + user["family_name"]
+    # email = user['email']
+    # candidate_name = user["given_name"] + user["family_name"]
+    email = "tayyaabtanveer@gmail.com"
+    candidate_name= "dfadsf"
 
     session = Session()
     info = json.loads(event["body"])
-    job_rs = JobApplication(
-        job_id = info["job_id"],
-        applicant_id = email,
-        job_application_status = "SUBMIT",
-        resumes = info["resumes"],
-        cover_letters = info["cover_letters"]
-        )
-    session.add(job_rs)
-    session.commit()
+    complete = True
 
-    ##email hiring manager
-    job = session.query(Job).get(info["job_id"])
-    job_title = job.title
-    today = datetime.today().strftime("%Y-%m-%d")
-    hiring_manager = job.posted_by
-    subject = "[MAX Aspire] You have received a job application!"
-    body = f"Salaam!\r\n\nWe would like to notify that {candidate_name} has applied to the job posting {job_title} on {today}. Kindly login to your account to access the complete profile and application of the candidate. Once the application is reviewed the status can be changed to “Under Review”, “Invite for interview” or “Rejected”.\r\n\n Please note that the candidate is more responsive in the first 2 weeks of applying the job. If the job posting is unavailable for any reason kindly contact the support team ASAP.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
-    send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
+    job_id = info.get('job_id')
+    resumes = info.get('resumes')
+    cover_letters = info.get('cover_letters')
 
-    resp = row2dict(job_rs)
-    session.close()
+    #Validate Body
+    if not (job_id and resumes and cover_letters):
+        complete = False
+    else:
+        try:
+            job_id = int(job_id)
+        except ValueError:
+            complete = False
 
-    return {
-        "statusCode": 201,
-        "body": json.dumps(resp),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+    if not complete:
+        return {
+            "statusCode": 400,
+            "headers": {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
             }
-    }
+        }
+
+    else:
+        job_rs = JobApplication(
+            job_id = job_id,
+            applicant_id = email,
+            job_application_status = "SUBMIT",
+            resumes = resumes,
+            cover_letters = cover_letters
+            )
+        session.add(job_rs)
+        session.commit()
+
+        ##email hiring manager
+        job = session.query(Job).get(info["job_id"])
+        job_title = job.title
+        today = datetime.today().strftime("%Y-%m-%d")
+        hiring_manager = job.posted_by
+        subject = "[MAX Aspire] You have received a job application!"
+        body = f"Salaam!\r\n\nWe would like to notify that {candidate_name} has applied to the job posting {job_title} on {today}. Kindly login to your account to access the complete profile and application of the candidate. Once the application is reviewed the status can be changed to “Under Review”, “Invite for interview” or “Rejected”.\r\n\n Please note that the candidate is more responsive in the first 2 weeks of applying the job. If the job posting is unavailable for any reason kindly contact the support team ASAP.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
+        # send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
+
+        resp = row2dict(job_rs)
+        session.close()
+
+        return {
+            "statusCode": 201,
+            "body": json.dumps(resp),
+            "headers": {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
+                    'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+                }
+        }
+
