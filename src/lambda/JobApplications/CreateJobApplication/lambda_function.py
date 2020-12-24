@@ -34,12 +34,25 @@ def handler(event, context):
 
     session = Session()
     info = json.loads(event["body"])
+    job_id = info.get('job_id')
+    resumes = info.get('resumes')
+    cover_letters = info.get('cover_letters')
+
+    #Validate Body
+    if not (job_id and resumes and cover_letters):
+        return http_status.bad_request("missing parameter(s): 'job_id, resumes, cover_letters'")
+    else:
+        try:
+            job_id = int(job_id)
+        except ValueError:
+            return http_status.bad_request("invalid parameter: 'job_id must be an integer'")
+
     job_rs = JobApplication(
-        job_id = info["job_id"],
+        job_id = job_id,
         applicant_id = email,
         job_application_status = "SUBMIT",
-        resumes = info["resumes"],
-        cover_letters = info["cover_letters"]
+        resumes = resumes,
+        cover_letters = cover_letters
         )
     session.add(job_rs)
     session.commit()
