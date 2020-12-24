@@ -15,7 +15,6 @@ logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    # check authorization
     authorized_user_types = [
         UserType.FREE,
         UserType.PAID
@@ -41,9 +40,9 @@ def handler(event, context):
         session.close()
         return http_status.not_found("chat with id '{}' not found".format(chatId))
 
-    # ACTIVE and RESERVED_PARTIAL Chats are available for booking
+    # ACTIVE Chats are available for booking
     # User must not have booked this Chat and must have sufficient funds
-    if chat.chat_status != ChatStatus.ACTIVE and chat.chat_status != ChatStatus.RESERVED_PARTIAL:
+    if chat.chat_status != ChatStatus.ACTIVE:
         session.close()
         return http_status.forbidden("cannot reserve inactive chat with id '{}'".format(chatId))
 
@@ -57,26 +56,11 @@ def handler(event, context):
         session.close()
         return http_status.forbidden("user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId))
 
-    if chat.chat_type == ChatType.FOUR_ON_ONE:
-        if chat.chat_status == ChatStatus.ACTIVE:
-            # no prior reservations
-            chat.aspiring_professionals = [user['email']]
-        else:
-            chat.aspiring_professionals.append(user['email'])
-
-        if len(chat.aspiring_professionals) == 4:
-            chat.chat_status = ChatStatus.RESERVED
-        else:
-            chat.chat_status = ChatStatus.RESERVED_PARTIAL
-    else:
-        chat.aspiring_professionals = [user['email']]
-        chat.chat_status = ChatStatus.RESERVED
+    chat.aspiring_professionals = [user['email']]
+    chat.chat_status = ChatStatus.RESERVED
 
     try:
-        if chat.chat_type == ChatType.FOUR_ON_ONE:
-            prepare_and_send_emails(chat, timezone_offset_min, send_calendar_invite=False)
-        else:
-            prepare_and_send_emails(chat, timezone_offset_min, send_calendar_invite=True)
+        prepare_and_send_emails(chat, timezone_offset_min)
     except ClientError as e:
         session.rollback()
         session.close()
@@ -92,7 +76,7 @@ def handler(event, context):
         session.close()
         return http_status.success()
 
-def prepare_and_send_emails(chat, timezone_offset_min, send_calendar_invite):
+def prepare_and_send_emails(chat, timezone_offset_min):
     mentee_IDs = chat.aspiring_professionals
     mentor_ID = chat.senior_executive
 
@@ -120,22 +104,15 @@ def prepare_and_send_emails(chat, timezone_offset_min, send_calendar_invite):
     mentor_name = "%s %s" % (mentor['attributes']['given_name'], mentor['attributes']['family_name'])
 
     chat_type = ''
-    if chat.chat_type == ChatType.FOUR_ON_ONE:
-        chat_type = '4-on-1'
-    elif chat.chat_type == ChatType.MOCK_INTERVIEW:
+    if chat.chat_type == ChatType.MOCK_INTERVIEW:
         chat_type = 'Mock Interview'
     else:
-        chat_type = '1-on-1'
+        chat_type = 'One-on-One coffee chat'
 
-    subject = '[MAX Aspire] Your coffee chat is confirmed!'
-    body = f"Salaam!\nWe are delighted to confirm your {chat_type} coffee chat with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}. Please connect with the Senior Executive to find a time that works for both of you.\n\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
-    # FIXME
-    mentor_ID = 'test_mentor_1@maxgala.com'
+    subject = '[MAX Aspire] Your coffee chat with {mentor_name} is confirmed!'
+    body = f"Salaam!\nWe are delighted to confirm your {chat_type} with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}. Please connect with the Senior Executive to find a time that works for both of you.\n\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
     all_attendees = list(mentee_IDs)
     all_attendees.append(mentor_ID)
 
-    if send_calendar_invite:
-        ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
-    else:
-        ics = None
+    ics = build_calendar_invite(event_name, event_description, event_start, event_end, all_attendees)
     send_email(all_attendees, subject, body, ics=ics)
