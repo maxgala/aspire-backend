@@ -48,8 +48,8 @@ def handler(event, context):
     job_title = job.title
     today = datetime.today().strftime("%Y-%m-%d")
     hiring_manager = job.posted_by
-    subject = "[MAX Aspire] You have received a job application!"
-    body = f"Salaam!\r\n\nWe would like to notify that {candidate_name} has applied to the job posting {job_title} on {today}. Kindly login to your account to access the complete profile and application of the candidate. Once the application is reviewed the status can be changed to “Under Review”, “Invite for interview” or “Rejected”.\r\n\n Please note that the candidate is more responsive in the first 2 weeks of applying the job. If the job posting is unavailable for any reason kindly contact the support team ASAP.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
+    subject = f"[MAX Aspire] {candidate_name} applied to your {job_title} job!"
+    body = f"Salaam!\n\nWe would like to notify that {candidate_name} has applied to the job posting {job_title} on {today}.\n\nKindly login to your account to access the complete profile and application of the candidate. Once the application is reviewed the status can be changed to “Under Review”, “Invite for Interview” or “Rejected”.\n\nWe hope you get to read some amazing resume's in your review. Enjoy!\n\nBest regards,\nTeam MAX Aspire"
     send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
 
     resp = row2dict(job_rs)
