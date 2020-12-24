@@ -340,40 +340,6 @@ Resources:
         - Ref: SesLayer
         - Ref: CommonLayer
 
-  ChatUnreserveById:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/lambda/Chat/UnreserveById
-      Handler: lambda_function.handler
-      Description: Lambda function to unreserve a chat
-      Policies:
-        - Statement:
-          - Sid: CognitoPolicy
-            Effect: Allow
-            Action:
-              - cognito-idp:ListUsers
-              - cognito-idp:AdminUpdateUserAttributes
-            Resource: '*'
-          - Sid: CognitoPostConfSESSendPolicy
-            Effect: Allow
-            Action:
-              - ses:SendEmail
-              - ses:SendRawEmail
-            Resource: '*'
-      Events:
-        ChatUnreserveByIdEvent:
-          Type: Api
-          Properties:
-            RestApiId: !Ref AspireApi
-            Path: /chats/{chatId}/unreserve
-            Method: put
-      Layers:
-        - Ref: DatabaseLayer
-        - Ref: AuthLayer
-        - Ref: CognitoLayer
-        - Ref: SesLayer
-        - Ref: CommonLayer
-
   ChatCancelById:
     Type: AWS::Serverless::Function
     Properties:
