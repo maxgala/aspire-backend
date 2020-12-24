@@ -109,8 +109,8 @@ def prepare_and_send_emails(chat, timezone_offset_min):
     else:
         chat_type = 'One-on-One coffee chat'
 
-    subject = '[MAX Aspire] Your coffee chat with {mentor_name} is confirmed!'
-    body = f"Salaam!\nWe are delighted to confirm your {chat_type} with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}. Please connect with the Senior Executive to find a time that works for both of you.\n\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
+    subject = f"[MAX Aspire] Your coffee chat with {mentor_name} is confirmed!"
+    body = f"Salaam!\n\nWe are delighted to confirm your {chat_type} with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}. Please connect with the Senior Executive to find a time that works for both of you.\n\nPlease ensure your punctuality and professionalism. This could be the beginning of a special journey.\n\nKind regards,\n\nThe MAX Aspire Team"
     all_attendees = list(mentee_IDs)
     all_attendees.append(mentor_ID)
 
