@@ -1,4 +1,5 @@
 import logging
+import json
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -17,10 +18,10 @@ def success(res_body=""):
 def unauthorized(message=""):
     return {
         "statusCode": 401,
-        "body": {
+        "body": json.dumps({
             "errors": "Unauthorized",
             "message": message
-        },
+        }),
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
@@ -31,10 +32,10 @@ def unauthorized(message=""):
 def forbidden(message=""):
     return {
         "statusCode": 403,
-        "body": {
+        "body": json.dumps({
             "errors": "Forbidden",
             "message": message
-        },
+        }),
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
@@ -45,10 +46,10 @@ def forbidden(message=""):
 def not_found(message=""):
     return {
         "statusCode": 404,
-        "body": {
+        "body": json.dumps({
             "errors": "Not Found",
             "message": message
-        },
+        }),
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
@@ -60,10 +61,10 @@ def not_found(message=""):
 def bad_request(message=""):
     return {
         "statusCode": 400,
-        "body": {
+        "body": json.dumps({
             "errors": "Bad Request",
             "message": message
-        },
+        }),
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
@@ -74,10 +75,10 @@ def bad_request(message=""):
 def server_error(message=""):
     return {
         "statusCode": 500,
-        "body": {
+        "body": json.dumps({
             "error": "Internal Server Error",
             "message": message
-        },
+        }),
         "headers": {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
