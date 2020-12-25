@@ -40,13 +40,13 @@ def handler(event, context):
     for chat in chats_modified:
         for user in users:
             if chat['senior_executive'] == user['attributes']['email']:
-                chat['given_name'] = user['attributes']['given_name']
-                chat['family_name'] = user['attributes']['family_name']
-                chat['picture'] = user['attributes']['picture']
-                chat['company'] = user['attributes']['custom:company']
-                chat['position'] = user['attributes']['custom:position']
-                chat['region'] = json.loads(user['attributes']['address'])['region']
-                chat['industry_tags'] = user['attributes']['custom:industry_tags']
+                chat['se_given_name'] = user['attributes']['given_name']
+                chat['se_family_name'] = user['attributes']['family_name']
+                chat['se_picture'] = user['attributes']['picture']
+                chat['se_company'] = user['attributes']['custom:company']
+                chat['se_position'] = user['attributes']['custom:position']
+                chat['se_region'] = json.loads(user['attributes']['address'])['region']
+                chat['se_industry_tags'] = user['attributes']['custom:industry_tags']
                 break
 
     return http_status.success(json.dumps({
