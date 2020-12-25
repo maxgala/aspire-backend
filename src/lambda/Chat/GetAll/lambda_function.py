@@ -35,7 +35,6 @@ def handler(event, context):
     chats = filtered_query.all()
     session.close()
 
-    # attrs = ['email', 'given_name', 'family_name', 'picture', 'custom:user_type', 'custom:user_type']
     users, _ = get_users()
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
@@ -44,7 +43,10 @@ def handler(event, context):
                 chat['given_name'] = user['attributes']['given_name']
                 chat['family_name'] = user['attributes']['family_name']
                 chat['picture'] = user['attributes']['picture']
-                chat['custom:company'] = user['attributes']['custom:company']
+                chat['company'] = user['attributes']['custom:company']
+                chat['position'] = user['attributes']['custom:position']
+                chat['region'] = json.loads(user['attributes']['address'])['region']
+                chat['industry_tags'] = user['attributes']['custom:industry_tags']
                 break
 
     return http_status.success(json.dumps({
