@@ -43,7 +43,7 @@ def handler(event, context):
                 chat['given_name'] = user['attributes']['given_name']
                 chat['family_name'] = user['attributes']['family_name']
                 chat['picture'] = user['attributes']['picture']
-                chat['company'] = user['attributes']['custom:company']
+                chat['custom:company'] = user['attributes']['custom:company'] # FIXME coordinate with front-end to replace this key with just company
                 chat['position'] = user['attributes']['custom:position']
                 chat['region'] = json.loads(user['attributes']['address'])['region']
                 chat['industry_tags'] = user['attributes']['custom:industry_tags']
