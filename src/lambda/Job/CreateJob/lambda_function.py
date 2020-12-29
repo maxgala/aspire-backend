@@ -30,18 +30,53 @@ def handler(event, context):
     info = json.loads(event["body"])
 
     tags = []
-    for tag in info["job_tags"]:
-        tags.append(JobTags[tag])
 
-    job_title = info["title"]
+    tag = info.get('job_tags')
+    job_title = info.get('title')
+    company = info.get('company')
+    region = info.get('region')
+    city = info.get('city')
+    country = info.get('country')
+    job_type = info.get('job_type')
+    description = info.get('description')
+    requirements = info.get('requirements')
+    posted_by = info.get('posted_by')
+    poster_family_name = info.get('poster_family_name')
+    poster_given_name = info.get('poster_given_name')
+    job_status = "UNDER_REVIEW"
+    salary = info['salary']
+    deadline = info.get('deadline')
+    can_contact = info.get('can_contact')
 
-    deadline = datetime.fromtimestamp(info["deadline"]).replace(hour=0, minute=0,second=0, microsecond=0)
+    #Validate body
+    if not (tag and job_title and company and region and city and country and job_type and description and requirements and posted_by
+            and poster_family_name and poster_given_name and job_status and salary and deadline and can_contact):
+        return http_status.bad_request("missing parameter(s)")
+    else:
+        # If no attributes are missing, cast types as required.
+        try:
+            salary = int(salary)
+            deadline = datetime.fromtimestamp(deadline).replace(hour=0, minute=0,second=0, microsecond=0)
+            
+            if can_contact.lower() == 'true':
+                can_contact = True
+            elif can_contact.lower() == 'false':
+                can_contact = False 
+            else:
+                raise ValueError
 
-    Job_row = Job(title=job_title, company=info["company"],
-                    region=info["region"], city=info["city"], country=info["country"], job_type=JobType[info["job_type"]],
-                    description=info["description"], requirements=info["requirements"], posted_by=info["posted_by"],
-                    poster_family_name = info["poster_family_name"], poster_given_name = info["poster_given_name"],
-                    job_status="UNDER_REVIEW",job_tags=tags, salary=info["salary"], deadline = deadline, can_contact = info["can_contact"])
+            job_type = JobType[job_type]
+            for tag in info["job_tags"]:
+                tags.append(JobTags[tag])
+        except:
+            return http_status.bad_request("invalid parameter(s): 'salary must be an integer, deadline must be a datetime, can_contact must be a bool, and JobType & JobTags must be from their enum types'")
+
+
+    Job_row = Job(title = job_title, company = company, region = region,
+                    city = city, country = country, job_type = job_type,
+                    description = description, requirements = requirements, posted_by = posted_by,
+                    poster_family_name = poster_family_name, poster_given_name = poster_given_name,
+                    job_status = job_status, job_tags = tags, salary = salary, deadline = deadline, can_contact = can_contact)
 
     session.add(Job_row)        
     session.commit()
