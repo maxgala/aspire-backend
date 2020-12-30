@@ -99,7 +99,6 @@ def process_dated_chats(user, chats, current_date, next_date):
             if chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
             elif chat.chat_status == ChatStatus.ACTIVE:
-                # TODO: send email notification to SE?
                 chat.chat_status = ChatStatus.EXPIRED
 
 def process_undated_chats(user, chats, current_date, next_date):
@@ -165,7 +164,7 @@ def schedule_user(session, user, current_date, next_date):
     '''
     initialize and populate periods, take into account:
         * undated chats     =>          ACTIVE, RESERVED, RESERVED_CONFIRMED and DONE chats
-        * dated chats       => PENDING, ACTIVE,                             RESERVED_CONFIRMED and DONE chats with expiry_date specified
+        * dated chats       => PENDING, ACTIVE, RESERVED_CONFIRMED and DONE chats with expiry_date specified
     So, take all but EXPIRED chats into account since at this stage:
         * undated chats: all are in desired states in addition to potential EXPIRED ones
         * dated chats: all are in desired states
