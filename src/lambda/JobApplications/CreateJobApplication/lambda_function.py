@@ -47,17 +47,21 @@ def handler(event, context):
         except ValueError:
             return http_status.bad_request("invalid parameter: 'job_id must be an integer'")
 
+    job = session.query(Job).get(job_id)
+    hiring_manager = job.posted_by
+    if hiring_manager == email:
+        return http_status.forbidden("Hiring manager cannot apply to the job")
+
     job_rs = JobApplication(
         job_id = job_id,
         applicant_id = email,
-        job_application_status = "SUBMIT",
+        job_application_status = JobApplicationStatus.SUBMIT,
         resumes = resumes,
         cover_letters = cover_letters
         )
     session.add(job_rs)
     session.commit()
 
-    job = session.query(Job).get(info["job_id"])
     job_title = job.title
     today = datetime.today().strftime("%Y-%m-%d")
     hiring_manager = job.posted_by
