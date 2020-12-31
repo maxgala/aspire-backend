@@ -40,7 +40,7 @@ def handler(event, context):
         return http_status.bad_request("invalid parameter(s): 'connect_status'")
 
     if new_connection_status:
-        if connection.connect_status == ConnectionStatus.PENDING and new_connection_status == 'ACCEPTED':
+        if connection.connection_status == ConnectionStatus.PENDING and new_connection_status == 'ACCEPTED':
             # TODO: dynamic user_email
             # TODO: update email subject/body
             user_email = "saleh.bakhit@hotmail.com"
@@ -48,7 +48,7 @@ def handler(event, context):
             email_body = "<name> has accepted your connection request!"
             send_email(to_addresses=user_email, subject=email_subject, body_text=email_body)
 
-        connection.connect_status = ConnectionStatus[new_connection_status]
+        connection.connection_status = ConnectionStatus[new_connection_status]
 
     session.commit()
     session.refresh(connection)

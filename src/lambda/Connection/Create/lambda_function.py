@@ -50,9 +50,9 @@ def handler(event, context):
     for connection in connections:
         if (connection.requestor == requestor_email and connection.requestee == requestee_email) \
             or (connection.requestor == requestee_email and connection.requestee == requestor_email):
-            if connection.connect_status == ConnectionStatus.PENDING:
+            if connection.connection_status == ConnectionStatus.PENDING:
                 if connection.requestor == requestee_email and connection.requestee == requestor_email:
-                    connection.connect_status = ConnectionStatus.ACCEPTED
+                    connection.connection_status = ConnectionStatus.ACCEPTED
                     email_subject = "[MAX Aspire] Your connection request was accepted!"
                     email_body = f"Salaam {requestor_name}!\r\n\nWe are delighted to confirm that you are now connected to {requestee_name}!\r\n\nYou will be able to chat and send direct messages to your connection. Engaging in direct communication we request our valued members to maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
                     send_email(to_addresses=[requestor_email, requestee_email], subject=email_subject, body_text=email_body)
@@ -62,20 +62,20 @@ def handler(event, context):
 
                 session.close()
                 return http_status.bad_request("connections request already sent")
-            elif connection.connect_status == ConnectionStatus.ACCEPTED:
+            elif connection.connection_status == ConnectionStatus.ACCEPTED:
                 session.close()
                 return http_status.bad_request("connections request already established")
 
     if create_conn:
         if requestee_type == "MENTOR" and requestor_type == "MENTOR":
-            new_connection = Connection(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectionStatus.PENDING)
+            new_connection = Connection(requestor=requestor_email, requestee=requestee_email, connection_status=ConnectionStatus.PENDING)
             session.add(new_connection)
             email_subject = "[MAX Aspire] Someone wants to connect with you!"
             email_body = f"Salaam {requestee_name}!\r\n\nYou are quite popular in the MAX Aspire community! {requestor_name} wants to connect with you. To accept or reject this request, please visit aspire.maxgala.com\r\n\nEngaging in direct communication members are requested to respect and maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"
             send_email(to_addresses=[requestee_email], subject=email_subject, body_text=email_body)
 
         elif requestee_type == "MENTEE" and requestor_type == "MENTOR":
-            new_connection = Connection(requestor=requestor_email, requestee=requestee_email, connect_status=ConnectionStatus.ACCEPTED)
+            new_connection = Connection(requestor=requestor_email, requestee=requestee_email, connection_status=ConnectionStatus.ACCEPTED)
             session.add(new_connection)
             email_subject = "[MAX Aspire] Someone likes your resume!"
             email_body = f"Salaam {requestee_name}!\r\n\n{requestor_name} liked your resume and wants to connect with you!\r\n\nEngaging in direct communication members are requested to respect and maintain high professional standards at all times.\r\n\nMAX Aspire is helping build strong communities. We value your commitment. Thank you for inspiring our aspiring professionals.\r\n\nBest regards,\nTeam MAX Aspire\r\n"

@@ -29,7 +29,7 @@ def handler(event, context):
     session = Session()
     filtered_query = session.query(Connection)
     if status_filter:
-        filtered_query = filtered_query.filter(Connection.connect_status == status_filter)
+        filtered_query = filtered_query.filter(Connection.connection_status == status_filter)
     if requestor_filter:
         filtered_query = filtered_query.filter(Connection.requestor == requestor_filter)
     if requestee_filter:

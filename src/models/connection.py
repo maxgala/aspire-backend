@@ -20,7 +20,7 @@ class Connection(Base):
     requestor = Column(String(100), nullable=False)
     requestee = Column(String(100), nullable=False)
 
-    connect_status = Column(Enum(ConnectionStatus), nullable=False)
+    connection_status = Column(Enum(ConnectionStatus), nullable=False)
 
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
