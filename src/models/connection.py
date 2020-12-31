@@ -14,7 +14,7 @@ class ConnectionStatus(enum.Enum):
 
 
 class Connection(Base):
-    __tablename__ = 'connection'
+    __tablename__ = 'connections'
 
     connect_id = Column(Integer(), primary_key=True)
     requestor = Column(String(100), nullable=False)
