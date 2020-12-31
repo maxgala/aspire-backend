@@ -386,11 +386,11 @@ Resources:
         - Ref: CommonLayer
   # --- Chats Service ---
 
-  # --- SE Connect Service ---
-  ConnectCreate:
+  # --- Connection Service ---
+  ConnectionCreate:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/Create
+      CodeUri: src/lambda/Connection/Create
       Handler: lambda_function.handler
       Policies:
         - Statement:
@@ -401,7 +401,7 @@ Resources:
               - ses:SendRawEmail
             Resource: '*'
       Events:
-        ConnectCreateEvent:
+        ConnectionCreateEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -414,13 +414,13 @@ Resources:
         - Ref: AuthLayer
         - Ref: CommonLayer
 
-  ConnectGetAll:
+  ConnectionGetAll:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/GetAll
+      CodeUri: src/lambda/Connection/GetAll
       Handler: lambda_function.handler
       Events:
-        ConnectGetAllEvent:
+        ConnectionGetAllEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -432,13 +432,13 @@ Resources:
         - Ref: AuthLayer
         - Ref: CommonLayer
 
-  ConnectGetById:
+  ConnectionGetById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/GetById
+      CodeUri: src/lambda/Connection/GetById
       Handler: lambda_function.handler
       Events:
-        ConnectGetByIdEvent:
+        ConnectionGetByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -450,10 +450,10 @@ Resources:
         - Ref: AuthLayer
         - Ref: CommonLayer
 
-  ConnectEditById:
+  ConnectionEditById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/EditById
+      CodeUri: src/lambda/Connection/EditById
       Handler: lambda_function.handler
       Policies:
         - Statement:
@@ -464,7 +464,7 @@ Resources:
               - ses:SendRawEmail
             Resource: '*'
       Events:
-        ConnectEditByIdEvent:
+        ConnectionEditByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -477,13 +477,13 @@ Resources:
         - Ref: AuthLayer
         - Ref: CommonLayer
 
-  ConnectDeleteById:
+  ConnectionDeleteById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/DeleteById
+      CodeUri: src/lambda/Connection/DeleteById
       Handler: lambda_function.handler
       Events:
-        ConnectDeleteByIdEvent:
+        ConnectionDeleteByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -494,7 +494,7 @@ Resources:
         - Ref: CognitoLayer
         - Ref: AuthLayer
         - Ref: CommonLayer
-  # --- SE Connect Service ---
+  # --- Connection Service ---
 
   # --- Jobs Service ---
   CreateJob:
