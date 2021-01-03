@@ -68,7 +68,27 @@ def build_calendar_invite(name, description, start, end, to_addresses, source_em
 
     return ics
 
+def send_email1(recipients, template_name, template_data):
+    try:
+            
+        response = ses_client.send_templated_email(
+        Source=ADMIN_EMAIL,
+        Destination={
+            'ToAddresses': 
+                recipients
+        },
+        Template = template_name,
+        TemplateData= str(template_data)
+        )
+        print(response)
 
+    except ClientError as e:
+        logger.info(e.response['Error']['Message'])
+        raise e
+    else:
+        logger.info("Email sent! Message ID:"),
+        logger.info(response['MessageId'])
+        
 def send_email(to_addresses, subject, body_text, source_email=ADMIN_EMAIL, charset="UTF-8", ics=None):   
     if not isinstance(to_addresses, list):
         to_addresses = [to_addresses]

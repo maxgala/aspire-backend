@@ -9,7 +9,7 @@ import time
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
-from send_email import send_email
+from send_email import send_email1
 import jwt
 from role_validation import UserType, check_auth
 import http_status
@@ -19,18 +19,19 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
 
-    # check authorization
-    authorized_user_types = [
-        UserType.ADMIN,
-        UserType.MENTOR,
-        UserType.PAID
-    ]
-    success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
-    if not success:
-        return http_status.unauthorized()
+    # # check authorization
+    # authorized_user_types = [
+    #     UserType.ADMIN,
+    #     UserType.MENTOR,
+    #     UserType.PAID
+    # ]
+    # success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
+    # if not success:
+    #     return http_status.unauthorized()
 
-    email = user['email']
-    candidate_name = user["given_name"] + user["family_name"]
+    # email = user['email']
+    # candidate_name = user["given_name"] + user["family_name"]
+    email = "tayyabatest123@gmac.com"
 
     session = Session()
     info = json.loads(event["body"])
@@ -65,9 +66,21 @@ def handler(event, context):
     job_title = job.title
     today = datetime.today().strftime("%Y-%m-%d")
     hiring_manager = job.posted_by
-    subject = f"[MAX Aspire] {candidate_name} applied to your {job_title} job!"
-    body = f"Salaam!\n\nWe would like to notify that {candidate_name} has applied to the job posting {job_title} on {today}.\n\nKindly login to your account to access the complete profile and application of the candidate. Once the application is reviewed the status can be changed to “Under Review”, “Invite for Interview” or “Rejected”.\n\nWe hope you get to read some amazing resume's in your review. Enjoy!\n\nBest regards,\nTeam MAX Aspire"
-    send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
+
+    template_data = {
+        "candidate_name": "tayyaab",
+        "job_title": str(job_title),
+        "today": str(today)
+    }
+    template_data = json.dumps(template_data)
+    print(template_data)
+    
+    recipients = ["tayyaabtanveer@gmail.com"]
+    send_email1(recipients, "CreateJobApplication2", template_data )
+
+    # subject = f"[MAX Aspire] {candidate_name} applied to your {job_title} job!"
+    # body = f"Salaam!\n\nWe would like to notify that {candidate_name} has applied to the job posting {job_title} on {today}.\n\nKindly login to your account to access the complete profile and application of the candidate. Once the application is reviewed the status can be changed to “Under Review”, “Invite for Interview” or “Rejected”.\n\nWe hope you get to read some amazing resume's in your review. Enjoy!\n\nBest regards,\nTeam MAX Aspire"
+    # send_email(to_addresses="tayyaabtanveer@gmail.com", subject=subject, body_text=body)
 
     resp = row2dict(job_rs)
     session.close()
