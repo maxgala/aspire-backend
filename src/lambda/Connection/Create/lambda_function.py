@@ -1,7 +1,7 @@
 import json
 import logging
 
-from connect import Connection, ConnectionStatus
+from connection import Connection, ConnectionStatus
 from base import Session
 from send_email import send_email
 from role_validation import UserType, check_auth
@@ -9,7 +9,6 @@ import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
 
 def handler(event, context):
     # check authorization
@@ -40,10 +39,6 @@ def handler(event, context):
     except:
         return http_status.bad_request("missing body attribute(s): 'user_type', 'email' or 'name'")
 
-    # if ACCEPTED exists (in either direction) => Conflict (409)
-    # if PENDING exists (in the direction of the request) => Conflict (409)
-    # if PENDING exists (in the direction opposite to the request) => change status to ACCEPTED
-    # else => create new record with PENDING status
     session = Session()
     connections = session.query(Connection).all()
     create_conn = True

@@ -1,7 +1,7 @@
 import json
 import logging
 
-from connect import Connection
+from connection import Connection
 from base import Session
 from role_validation import UserType, check_auth
 import http_status
