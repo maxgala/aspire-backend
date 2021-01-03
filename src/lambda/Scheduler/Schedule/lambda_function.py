@@ -1,11 +1,11 @@
 import sys
 import json
 import logging
-from datetime import datetime, date, timedelta, time
+from datetime import datetime, timedelta
 
-from chat import Chat, ChatType, ChatStatus, credit_mapping, mandatory_date
+from chat import Chat, ChatStatus
 from base import Session
-from role_validation import UserType, check_auth
+# from role_validation import UserType, check_auth
 from cognito_helpers import get_users, admin_update_remaining_chats_frequency
 import http_status
 
@@ -93,10 +93,10 @@ def next_best_period(periods_chats_freq):
 
 def process_dated_chats(user, chats, current_date, next_date):
     for chat in chats:
-        # expired
         # TODO: delta function to expire dated chats, instead of day of
         if chat.fixed_date and chat.fixed_date <= current_date:
-            if chat.chat_status == ChatStatus.RESERVED:
+            if chat.chat_status == ChatStatus.RESERVED_PARTIAL \
+               or chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
             elif chat.chat_status == ChatStatus.ACTIVE:
                 chat.chat_status = ChatStatus.EXPIRED
@@ -105,7 +105,8 @@ def process_undated_chats(user, chats, current_date, next_date):
     num_unbooked = 0
     for chat in chats:
         if not chat.fixed_date:
-            if chat.chat_status == ChatStatus.RESERVED:
+            if chat.chat_status == ChatStatus.RESERVED_PARTIAL \
+               or chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
             elif chat.chat_status == ChatStatus.ACTIVE:
                 if chat.expiry_date < current_date or chat.expiry_date > next_date:
@@ -143,6 +144,7 @@ def activate_expiring_chats(user, chats, current_date, next_date):
 dated chats
     * PENDING               => N/A; a new Chat with fixed_date is automatically activated
     * ACTIVE                => if expired, move to EXPIRED (notification/refunds?)
+    * RESERVED_PARTIAL      => if expired, move to RESERVED_CONFIRMED
     * RESERVED              => if expired, move to RESERVED_CONFIRMED
 
 undated chats
@@ -151,10 +153,11 @@ undated chats
         - if current_date  > expiry_date                => expired; move to PENDING, refund remaining_chats_frequency, reschedule(set expiry_date=None)
         - if current_date <= expiry_date <= next_date   => expiring this scheduling window; NOOP
         - if                 expiry_date > next_date    => not expiring; move to PENDING, refund remaining_chats_frequency
+    * RESERVED_PARTIAL      => move to RESERVED_CONFIRMED
     * RESERVED              => move to RESERVED_CONFIRMED
 '''
 def schedule_user(session, user, current_date, next_date):
-    status_list = ['PENDING', 'ACTIVE', 'RESERVED', 'RESERVED_CONFIRMED', 'DONE']
+    status_list = ['PENDING', 'ACTIVE', 'RESERVED_PARTIAL', 'RESERVED', 'RESERVED_CONFIRMED', 'DONE']
     chats = get_chats(session, email=user['email'], status=status_list)
     # dated chats
     process_dated_chats(user, chats, current_date, next_date)
@@ -163,7 +166,7 @@ def schedule_user(session, user, current_date, next_date):
 
     '''
     initialize and populate periods, take into account:
-        * undated chats     =>          ACTIVE, RESERVED, RESERVED_CONFIRMED and DONE chats
+        * undated chats     =>          ACTIVE, RESERVED_PARTIAL, RESERVED, RESERVED_CONFIRMED and DONE chats
         * dated chats       => PENDING, ACTIVE, RESERVED_CONFIRMED and DONE chats with expiry_date specified
     So, take all but EXPIRED chats into account since at this stage:
         * undated chats: all are in desired states in addition to potential EXPIRED ones
@@ -195,13 +198,13 @@ def schedule_activate(session, default_num_activate, num_carry_over):
         admin_update_remaining_chats_frequency(user['attributes']['email'], -1)
 
 def handler(event, context):
-    # check authorization
-    authorized_user_types = [
-        UserType.ADMIN
-    ]
-    success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
-    if not success:
-        return http_status.unauthorized()
+    # # check authorization
+    # authorized_user_types = [
+    #     UserType.ADMIN
+    # ]
+    # success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
+    # if not success:
+    #     return http_status.unauthorized()
 
     session = Session()
     try:

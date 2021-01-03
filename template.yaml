@@ -1023,12 +1023,13 @@ Resources:
               - ses:SendRawEmail
             Resource: '*'
       Events:
-        SchedulerApiEvent:
-          Type: Api
-          Properties:
-            Path: /scheduler
-            Method: put
-            RestApiId: !Ref AspireApi
+        # only allow CloudWatch event
+        # SchedulerApiEvent:
+        #   Type: Api
+        #   Properties:
+        #     Path: /scheduler
+        #     Method: put
+        #     RestApiId: !Ref AspireApi
         SchedulerScheduleEvent:
           Type: Schedule
           Properties:
@@ -1037,7 +1038,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: SesLayer
         - Ref: CognitoLayer
-        - Ref: AuthLayer
+        # - Ref: AuthLayer
         - Ref: CommonLayer
   # --- Scheduler Service ---
 
