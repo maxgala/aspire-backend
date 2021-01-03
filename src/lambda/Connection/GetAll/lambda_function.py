@@ -39,6 +39,6 @@ def handler(event, context):
     session.close()
 
     return http_status.success(json.dumps({
-            "connections": [row2dict(r) for r in connections],
+            "connect_se": [row2dict(r) for r in connections],
             "count": len(connections)
         }))
