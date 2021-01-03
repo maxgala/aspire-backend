@@ -146,10 +146,3 @@ def create_timezone(tz):
         timezone.add_component(subcomp)
 
     return timezone
-
-event_name = 'MAX Aspire Coffee Chat'
-subject = '[MAX Aspire] 1 on 1 coffee chat confirming the attendees'
-email = 'test_mentee_paid_1@outlook.com'
-mentee_body = f"Salaam!\nWe are delighted to confirm your 1 on 1 coffee chat with Naba.\nYour coffee chat will take place on: \n\nPlease connect with the Senior Executive to find a time that works for both of you.\nPlease make sure of your attendance. In case of any changes in the circumstances contact the support team at your earliest.\n\nBest regards,\n\nThe MAX Aspire Team"
-ics = build_calendar_invite(event_name, subject, datetime(2021, 12, 31, 9, 00), datetime(2021, 12, 31, 10, 00), [email])
-send_email(email, subject, mentee_body, ics=ics)
