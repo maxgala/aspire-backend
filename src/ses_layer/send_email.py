@@ -68,7 +68,7 @@ def build_calendar_invite(name, description, start, end, to_addresses, source_em
 
     return ics
 
-def send_email1(recipients, template_name, template_data):
+def send_templated_email(recipients, template_name, template_data):
     try:
             
         response = ses_client.send_templated_email(
@@ -80,7 +80,6 @@ def send_email1(recipients, template_name, template_data):
         Template = template_name,
         TemplateData= str(template_data)
         )
-        print(response)
 
     except ClientError as e:
         logger.info(e.response['Error']['Message'])
