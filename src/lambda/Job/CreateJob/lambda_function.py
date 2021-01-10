@@ -8,7 +8,7 @@ from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
 from role_validation import UserType, check_auth
-from send_email import send_email
+from send_email import send_templated_email
 import http_status
 
 logger = logging.getLogger()
@@ -46,7 +46,7 @@ def handler(event, context):
     job_status = "UNDER_REVIEW"
     salary = info['salary']
     deadline = info.get('deadline')
-    can_contact = info.get('can_contact')
+    can_contact = str(info.get('can_contact'))
 
     #Validate body
     if not (tag and job_title and company and region and city and country and job_type and description and requirements and posted_by
@@ -86,9 +86,15 @@ def handler(event, context):
     ##email hiring manager
     job_title = info["title"]
     today = datetime.today().strftime("%Y-%m-%d")
-    hiring_manager = info["posted_by"]   
-    subject = f"[MAX Aspire] Your {job_title} job is under review"
-    body = f"Salaam!\n\nThank you for choosing MAX Aspire as your entrusted partner. I am delighted to confirm that we have received your job posting {job_title} on {today}.\n\nYour Job Posting will be reviewed and if approved, will go LIVE within 36 hours.\n\nYou will be notified by email as individuals apply for the position.\n\nThank you.\n\nKind Regards,\nTeam MAX Aspire"
-    send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
+    hiring_manager = str(info["posted_by"])  
+
+    # The send_email_templated function requires JSON Formatted Data with " strings "
+    template_data = {
+        "job_title": str(job_title),
+        "today": str(today)
+    }
+    template_data = json.dumps(template_data)
+    recipients = [hiring_manager]
+    send_templated_email(recipients, "CreateJob", template_data)
 
     return http_status.success(json.dumps(res))
