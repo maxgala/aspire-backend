@@ -51,6 +51,10 @@ def handler(event, context):
     hiring_manager = job.posted_by
     if hiring_manager == email:
         return http_status.forbidden("Hiring manager cannot apply to the job")
+    
+    existing_job_application = session.query(JobApplication).filter(JobApplication.applicant_id == email).filter(JobApplication.job_id == job_id).all()
+    if len(existing_job_application) > 0:
+        return http_status.forbidden("You have already applied to this job")
 
     job_rs = JobApplication(
         job_id = job_id,
