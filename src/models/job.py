@@ -58,6 +58,7 @@ class Job(Base):
     job_status = Column(Enum(JobStatus), nullable=False)
     job_tags = Column(ARRAY(Enum(JobTags)), nullable=False)
     salary = Column(Integer())
+    times_viewed = Column(Integer(), default=0)
     deadline = Column(DateTime(), nullable=False)
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
