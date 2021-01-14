@@ -9,7 +9,7 @@ import time
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
-from send_email import send_email
+from send_email import send_templated_email
 import jwt
 from role_validation import UserType, check_auth
 import http_status
@@ -64,10 +64,17 @@ def handler(event, context):
 
     job_title = job.title
     today = datetime.today().strftime("%Y-%m-%d")
-    hiring_manager = job.posted_by
-    subject = f"[MAX Aspire] {candidate_name} applied to your {job_title} job!"
-    body = f"Salaam!\n\nWe would like to notify that {candidate_name} has applied to the job posting {job_title} on {today}.\n\nKindly login to your account to access the complete profile and application of the candidate. Once the application is reviewed the status can be changed to “Under Review”, “Invite for Interview” or “Rejected”.\n\nWe hope you get to read some amazing resume's in your review. Enjoy!\n\nBest regards,\nTeam MAX Aspire"
-    send_email(to_addresses=hiring_manager, subject=subject, body_text=body)
+    hiring_manager = str(job.posted_by)
+
+    # The send_email_templated function requires JSON Formatted Data with " strings "
+    template_data = {
+        "candidate_name": str(candidate_name),
+        "job_title": str(job_title),
+        "today": str(today)
+    }
+    template_data = json.dumps(template_data)
+    recipients = [hiring_manager]
+    send_templated_email(recipients, "CreateJobApplication", template_data)
 
     resp = row2dict(job_rs)
     session.close()
