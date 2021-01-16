@@ -30,6 +30,7 @@ def handler(event, context):
     info = json.loads(event["body"])
 
     tags = []
+    salary = 0
 
     tag = info.get('job_tags')
     job_title = info.get('title')
