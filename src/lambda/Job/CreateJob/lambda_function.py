@@ -43,14 +43,13 @@ def handler(event, context):
     posted_by = info.get('posted_by')
     poster_family_name = info.get('poster_family_name')
     poster_given_name = info.get('poster_given_name')
-    job_status = "UNDER_REVIEW"
     salary = info['salary']
     deadline = info.get('deadline')
     can_contact = str(info.get('can_contact'))
 
     #Validate body
-    if not (tag and job_title and company and region and city and country and job_type and description and requirements and posted_by
-            and poster_family_name and poster_given_name and job_status and salary and deadline and can_contact):
+    if not (job_title and company and region and city and country and job_type and description and requirements and posted_by
+            and poster_family_name and poster_given_name and salary and deadline and can_contact):
         return http_status.bad_request("missing parameter(s)")
     else:
         # If no attributes are missing, cast types as required.
@@ -76,7 +75,7 @@ def handler(event, context):
                     city = city, country = country, job_type = job_type,
                     description = description, requirements = requirements, posted_by = posted_by,
                     poster_family_name = poster_family_name, poster_given_name = poster_given_name,
-                    job_status = job_status, job_tags = tags, salary = salary, deadline = deadline, can_contact = can_contact)
+                    job_status = 'UNDER_REVIEW', job_tags = tags, salary = salary, deadline = deadline, can_contact = can_contact)
 
     session.add(Job_row)        
     session.commit()
