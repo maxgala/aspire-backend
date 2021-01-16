@@ -151,6 +151,7 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatCreateEvent:
@@ -178,6 +179,7 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatCreateMultipleEvent:
@@ -198,6 +200,13 @@ Resources:
       CodeUri: src/lambda/Chat/GetById
       Handler: lambda_function.handler
       Description: Lambda function to get chat by Id
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - ses:SendTemplatedEmail
+            Resource: '*'
       Events:
         ChatGetByIdEvent:
           Type: Api
@@ -215,6 +224,13 @@ Resources:
       CodeUri: src/lambda/Chat/EditById
       Handler: lambda_function.handler
       Description: Lambda function to edit chat by Id
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - ses:SendTemplatedEmail
+            Resource: '*'
       Events:
         ChatEditByIdEvent:
           Type: Api
@@ -240,6 +256,7 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatDeleteByIdEvent:
@@ -266,6 +283,7 @@ Resources:
             Effect: Allow
             Action:
               - cognito-idp:ListUsers
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatGetAllEvent:
@@ -292,6 +310,7 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatDeleteAllEvent:
@@ -325,6 +344,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatReserveByIdEvent:
@@ -399,6 +419,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ConnectionCreateEvent:
@@ -462,6 +483,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ConnectionEditByIdEvent:
@@ -509,6 +531,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
           CreateJobEvent:
@@ -586,6 +609,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
           CreateJobEvent:
@@ -646,6 +670,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ApproveJobScheduledEvent:
@@ -688,6 +713,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
           CreateJobApplicationEvent:
@@ -1021,15 +1047,9 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
-        # only allow CloudWatch event
-        # SchedulerApiEvent:
-        #   Type: Api
-        #   Properties:
-        #     Path: /scheduler
-        #     Method: put
-        #     RestApiId: !Ref AspireApi
         SchedulerScheduleEvent:
           Type: Schedule
           Properties:
@@ -1038,7 +1058,6 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: SesLayer
         - Ref: CognitoLayer
-        # - Ref: AuthLayer
         - Ref: CommonLayer
   # --- Scheduler Service ---
 
