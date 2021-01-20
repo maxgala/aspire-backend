@@ -47,6 +47,7 @@ def handler(event, context):
                 chat['position'] = user['attributes']['custom:position']
                 chat['region'] = json.loads(user['attributes']['address'])['region']
                 chat['industry_tags'] = user['attributes']['custom:industry_tags']
+                chat['industry'] = user['attributes']['custom:industry']
                 break
 
     return http_status.success(json.dumps({
