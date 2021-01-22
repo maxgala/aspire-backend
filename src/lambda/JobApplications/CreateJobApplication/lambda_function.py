@@ -80,6 +80,14 @@ def handler(event, context):
     recipients = [hiring_manager]
     send_templated_email(recipients, "CreateJobApplication", template_data)
 
+    template_data = {
+        "job_title": str(job_title),
+        "today": str(today)
+    }
+    template_data = json.dumps(template_data)
+    recipients = [email]
+    send_templated_email(recipients, "CreateJobApplication-Applicant", template_data)
+
     resp = row2dict(job_rs)
     session.close()
 
