@@ -1,12 +1,18 @@
 import logging
 import boto3
+import pytz
+import uuid
+import django
 from botocore.exceptions import ClientError
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.header import Header
-from ics.icalendar import Calendar, Event
+from email.encoders import encode_base64
+from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStandard
 from datetime import datetime
+from django.template import Template, Context
+from django.conf import settings
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -15,28 +21,96 @@ ses_client = boto3.client('ses')
 
 ADMIN_EMAIL = "aspire@maxgala.com"
 
-def build_calendar_invite(name, description, start, end, to_addresses, source_email=ADMIN_EMAIL):
+BODY_TEMPLATE = """\
+<html>
+<body>
+<p>{{body}}</p>
+</body>
+</html>
+"""
+
+settings.configure(TEMPLATES=[
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': False,
+    },
+])
+django.setup()
+
+def build_calendar_invite(name, description, start, end, to_addresses, source_email=ADMIN_EMAIL,charset="UTF-8"):
+    # prepare calendar with timezone
     ics = Calendar()
-    ics.events.add(Event(name, start, end, description=description, attendees=to_addresses, organizer=source_email))
+    ics.add('prodid', '-//MAX Aspire//-')
+    ics.add('version', '2.0')
+    ics.add('method','REQUEST')
+    tz = pytz.timezone("America/Toronto")
+    timezone = create_timezone(tz)
+    ics.add_component(timezone)
 
-    return str(ics)
+    # prepare event with all fields
+    e = Event()
+    for i in range(0,len(to_addresses)):
+        e.add('attendee', to_addresses[i])
+    e.add('organizer', source_email)    
+    e.add('summary', name)
+    e.add('created',tz.localize(datetime.now()))
+    e.add('description', description)
+    e.add('dtstart', tz.localize(start))
+    e.add('dtend', tz.localize(end))
+    e.add('dtstamp',tz.localize(datetime.now()))
+    e.add('last-modified',tz.localize(datetime.now()))
+    e.add('sequence',0)
+    e.add('priority',5)
+    e.add('uid',uuid.uuid4())
+    ics.add_component(e)
 
+    ics = ics.to_ical().decode(charset) 
+
+    return ics
+
+def send_templated_email(recipients, template_name, template_data):
+    try:
+            
+        response = ses_client.send_templated_email(
+        Source=ADMIN_EMAIL,
+        Destination={
+            'ToAddresses': 
+                recipients
+        },
+        Template = template_name,
+        TemplateData= str(template_data)
+        )
+
+    except ClientError as e:
+        logger.info(e.response['Error']['Message'])
+        raise e
+    else:
+        logger.info("Email sent! Message ID:"),
+        logger.info(response['MessageId'])
+        
 def send_email(to_addresses, subject, body_text, source_email=ADMIN_EMAIL, charset="UTF-8", ics=None):   
-    msg = MIMEMultipart('mixed')
-
-    msg_text = MIMEText(body_text, 'plain', charset)
-    msg.attach(msg_text)
-
-    msg['Subject'] = Header(subject, charset) 
-
-    if ics != None:
-        msg_cal = MIMEBase('text', 'calendar', **{'method' : 'REQUEST', 'name' : 'MAX Aspire Calendar Event'})
-        msg_cal.set_payload(ics)
-        msg_cal.add_header('Content-Type', 'text/calendar;method=REQUEST', name='invite.ics')
-        msg.attach(msg_cal)
-
     if not isinstance(to_addresses, list):
         to_addresses = [to_addresses]
+
+    msg = MIMEMultipart('alternative')
+
+    msg["Subject"] = subject
+    msg["From"] = source_email
+    msg["To"] = ", ".join(to_addresses)
+    msg["Content-class"] = "urn:content-classes:calendarmessage"
+
+    # Attach message body
+    t = Template(BODY_TEMPLATE)
+    c = Context({'body':body_text})
+    text = t.render(c).replace('\n','<br />')
+    msg_text = MIMEText(text,"html")
+    msg.attach(msg_text)
+
+    # Attach calendar invite
+    if ics != None:
+        msg_cal = MIMEText(ics,'calendar;method=REQUEST', charset)
+        msg.attach(msg_cal) 
+
     try:
         response = ses_client.send_raw_email(
             Source=source_email,
@@ -51,3 +125,43 @@ def send_email(to_addresses, subject, body_text, source_email=ADMIN_EMAIL, chars
     else:
         logger.info("Email sent! Message ID:"),
         logger.info(response['MessageId'])
+
+
+def create_timezone(tz):
+    # Function from https://github.com/pimutils/khal/blob/64d70e3eb59570cfd3af2e10dbbcf0a26bf89111/khal/khalendar/event.py#L287
+
+    first_date = datetime.today() 
+    last_date = datetime.today() 
+    timezone = Timezone()
+    timezone.add('TZID', tz)
+
+    dst = {one[2]: 'DST' in two.__repr__() for one, two in tz._tzinfos.items()}
+
+    first_num, last_num = 0, len(tz._utc_transition_times) - 1
+    first_tt = tz._utc_transition_times[0]
+    last_tt = tz._utc_transition_times[-1]
+    for num, dt in enumerate(tz._utc_transition_times):
+        if dt > first_tt and dt < first_date:
+            first_num = num
+            first_tt = dt
+        if dt < last_tt and dt > last_date:
+            last_num = num
+            last_tt = dt
+
+    for num in range(first_num, last_num + 1):
+        name = tz._transition_info[num][2]
+        if dst[name]:
+            subcomp = TimezoneDaylight()
+            rrule = {'freq': 'yearly', 'bymonth': 3, 'byday': '2su'}
+        else:
+            subcomp = TimezoneStandard()
+            rrule = {'freq': 'yearly', 'bymonth': 11, 'byday': '1su'} 
+
+        subcomp.add('TZNAME', tz._transition_info[num][2])
+        subcomp.add('DTSTART',tz.fromutc(tz._utc_transition_times[num]).replace(tzinfo=None))
+        subcomp.add('TZOFFSETTO', tz._transition_info[num][0])
+        subcomp.add('TZOFFSETFROM', tz._transition_info[num - 1][0])
+        subcomp.add('RRULE',rrule)
+        timezone.add_component(subcomp)
+
+    return timezone

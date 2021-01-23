@@ -4,6 +4,7 @@ import logging
 from chat import Chat
 from base import Session, row2dict
 from role_validation import UserType, check_auth, edit_auth
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -17,41 +18,22 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
     chatId = event["pathParameters"].get("chatId") if event["pathParameters"] else None
     if not chatId:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "missing path parameter(s): 'chatId'"
-            })
-        }
+        return http_status.bad_request("missing path parameter(s): 'chatId'")
 
     session = Session()
     chat = session.query(Chat).get(chatId)
     if not chat:
         session.close()
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "errorMessage": "chat with id '{}' not found".format(chatId)
-            })
-        }
+        return http_status.not_found("chat with id '{}' not found".format(chatId))
+
     success = edit_auth(user, chat.senior_executive)
     if not success:
         session.close()
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
     # TODO: allow updating description, tags and fixed_date?
     # if fixed_date => what if it's active or pending with expiry_date specified?
@@ -64,9 +46,4 @@ def handler(event, context):
     session.refresh(chat)
     session.close()
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps(
-            row2dict(chat)
-        )
-    }
+    return http_status.success(json.dumps(row2dict(chat)))

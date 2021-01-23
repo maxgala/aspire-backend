@@ -6,21 +6,21 @@ from sqlalchemy.types import String, Integer, Enum, DateTime
 from base import Base
 
 
-class ConnectStatus(enum.Enum):
+class ConnectionStatus(enum.Enum):
     PENDING = 1
     ACCEPTED = 2
     CANCELLED = 3
     DECLINED = 4
 
 
-class ConnectSE(Base):
-    __tablename__ = 'senior-exec-connect'
+class Connection(Base):
+    __tablename__ = 'connections'
 
-    connect_id = Column(Integer(), primary_key=True)
+    connection_id = Column(Integer(), primary_key=True)
     requestor = Column(String(100), nullable=False)
     requestee = Column(String(100), nullable=False)
 
-    connect_status = Column(Enum(ConnectStatus), nullable=False)
+    connection_status = Column(Enum(ConnectionStatus), nullable=False)
 
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)

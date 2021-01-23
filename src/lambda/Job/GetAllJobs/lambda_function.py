@@ -4,11 +4,11 @@ import logging
 import uuid
 from datetime import datetime
 
-# FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base, row2dict
 from role_validation import UserType, check_auth
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -19,7 +19,7 @@ def handler(event, context):
     user_id = None
     status = None
     tag = None
-    page_size = 3
+    page_size = 20
     if event["queryStringParameters"]:
         page = event["queryStringParameters"].get('page') #returns None if 'page' not in dict
         user_id = event["queryStringParameters"].get('user_id')
@@ -43,24 +43,12 @@ def handler(event, context):
             job_apps_id.append(app.job_application_id)
         jobdict = row2dict(job)
         jobdict['job_applications'] = job_apps_id
-        ###Filtering for tags here
         if tag == None or tag.upper() in jobdict['job_tags']:
             joblist.append(jobdict)
-        
-
-    # # commit and close session
-    
+            
     session.close()
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
+    return http_status.success(json.dumps({
             "jobs": joblist,
             "count": len(joblist)
-        }),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+        }))

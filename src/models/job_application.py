@@ -8,9 +8,10 @@ from base import Base
 class JobApplicationStatus(enum.Enum):
     SUBMIT = 1
     REVIEW = 2
-    OFFER_EXTEND = 3
-    OFFER_ACCEPT = 4
-    OFFER_REJECT = 5
+    INVITE = 3
+    OFFER_EXTEND = 4
+    OFFER_ACCEPT = 5
+    OFFER_REJECT = 6
 
 
 class JobApplication(Base):

@@ -3,12 +3,11 @@ import logging
 
 from role_validation import UserType
 from cognito_helpers import get_users
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
-# TODO: Is it safe to return all the user's info since this endpoint is not protected?
 def handler(event, context):
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
     type_filter = event["queryStringParameters"].get("type", "") if event["queryStringParameters"] else ""
@@ -17,21 +16,13 @@ def handler(event, context):
         filter_ = ('status', status_filter)
     else:
         filter_ = ('status', 'Enabled')
-    if type_filter and type_filter in UserType.__members__:
-        user_type = type_filter
+    if type_filter:
+        user_type = [x.strip() for x in type_filter.split(',') if x in UserType.__members__]
     else:
         user_type = None
 
     users, count = get_users(filter_=filter_, user_type=user_type)
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
+    return http_status.success(json.dumps({
             "users": users,
             "count": count
-        }),
-        "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-    }
+        }))

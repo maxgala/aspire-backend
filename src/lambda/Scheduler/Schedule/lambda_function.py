@@ -3,10 +3,11 @@ import json
 import logging
 from datetime import datetime, timedelta
 
-from chat import Chat, ChatType, ChatStatus, credit_mapping, mandatory_date
+from chat import Chat, ChatStatus
 from base import Session
-from role_validation import UserType, check_auth
+# from role_validation import UserType, check_auth
 from cognito_helpers import get_users, admin_update_remaining_chats_frequency
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -92,15 +93,12 @@ def next_best_period(periods_chats_freq):
 
 def process_dated_chats(user, chats, current_date, next_date):
     for chat in chats:
-        # expired
         # TODO: delta function to expire dated chats, instead of day of
-        if chat.fixed_date and chat.fixed_date < current_date:
+        if chat.fixed_date and chat.fixed_date <= current_date:
             if chat.chat_status == ChatStatus.RESERVED_PARTIAL \
                or chat.chat_status == ChatStatus.RESERVED:
-                # TODO: send email notification to SE/AP(s)
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
             elif chat.chat_status == ChatStatus.ACTIVE:
-                # TODO: send email notification to SE
                 chat.chat_status = ChatStatus.EXPIRED
 
 def process_undated_chats(user, chats, current_date, next_date):
@@ -109,7 +107,6 @@ def process_undated_chats(user, chats, current_date, next_date):
         if not chat.fixed_date:
             if chat.chat_status == ChatStatus.RESERVED_PARTIAL \
                or chat.chat_status == ChatStatus.RESERVED:
-                # TODO: send email notification to SE/AP(s)
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
             elif chat.chat_status == ChatStatus.ACTIVE:
                 if chat.expiry_date < current_date or chat.expiry_date > next_date:
@@ -170,7 +167,7 @@ def schedule_user(session, user, current_date, next_date):
     '''
     initialize and populate periods, take into account:
         * undated chats     =>          ACTIVE, RESERVED_PARTIAL, RESERVED, RESERVED_CONFIRMED and DONE chats
-        * dated chats       => PENDING, ACTIVE,                             RESERVED_CONFIRMED and DONE chats with expiry_date specified
+        * dated chats       => PENDING, ACTIVE, RESERVED_CONFIRMED and DONE chats with expiry_date specified
     So, take all but EXPIRED chats into account since at this stage:
         * undated chats: all are in desired states in addition to potential EXPIRED ones
         * dated chats: all are in desired states
@@ -184,7 +181,7 @@ def schedule_user(session, user, current_date, next_date):
     '''
     update_scheduling_periods(chats, periods, periods_frequency)
 
-    # activate pending undated chats expiring this week
+    # activate pending undated chats expiring this scheduling period
     num_expiring_activated = activate_expiring_chats(user, chats, current_date, next_date)
     logger.info("User {}: Unbooked={}, Activated={}".format(user['email'], num_unbooked, num_expiring_activated))
     return (num_unbooked - num_expiring_activated)
@@ -201,24 +198,28 @@ def schedule_activate(session, default_num_activate, num_carry_over):
         admin_update_remaining_chats_frequency(user['attributes']['email'], -1)
 
 def handler(event, context):
-    # check authorization
-    authorized_user_types = [
-        UserType.ADMIN
-    ]
-    success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
-    if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+    # # check authorization
+    # authorized_user_types = [
+    #     UserType.ADMIN
+    # ]
+    # success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
+    # if not success:
+    #     return http_status.unauthorized()
 
+    session = Session()
     try:
-        session = Session()
-        default_num_activate = int(event["queryStringParameters"]["num_activate"])
-        current_date = datetime.strptime(event["queryStringParameters"]["current_date"], "%d/%m/%Y")
-        next_date = current_date + timedelta(weeks=1)
+        default_num_activate = 25
+        current_date = datetime.strptime(datetime.now().strftime("%d/%m/%Y"), "%d/%m/%Y")
+        scheduling_period = 3
+        if event.get("queryStringParameters"):
+            if event["queryStringParameters"].get("num_activate"):
+                default_num_activate = int(event["queryStringParameters"]["num_activate"])
+            if event["queryStringParameters"].get("current_date"):
+                current_date = datetime.strptime(event["queryStringParameters"]["current_date"], "%d/%m/%Y")
+            if event["queryStringParameters"].get("scheduling_period"):
+                scheduling_period = int(event["queryStringParameters"]["scheduling_period"])
+
+        next_date = current_date + timedelta(days=scheduling_period)
         logger.info("num_activate={}, current_date={}, next_date={}"\
             .format(default_num_activate, current_date.strftime("%d/%m/%Y"), next_date.strftime("%d/%m/%Y")))
 
@@ -233,18 +234,10 @@ def handler(event, context):
         session.rollback()
         session.close()
         import traceback; traceback.print_exc()
-        return {
-            "statusCode": 400,
-            "body": json.dumps({
-                "errorMessage": "exception caught while running scheduler {}".format(e)
-            })
-        }
+        return http_status.bad_request("exception caught while running scheduler {}".format(e))
 
     session.commit()
     session.close()
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "next_date":next_date.strftime("%d/%m/%Y")
-        })
-    }
+    return http_status.success(json.dumps({
+            "next_date": next_date.strftime("%d/%m/%Y")
+        }))

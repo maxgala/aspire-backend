@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from base import Session, engine, Base
 import logging
+import http_status
 
 load_dotenv()
 
@@ -13,11 +14,12 @@ stripe.api_key= os.getenv('STRIPE_KEY')
 def handler(event, context):
 
     try:
-        paymentMethod_Dict= json.loads(event["body"])
-        if "payment_method_id" in paymentMethod_Dict:
+        req_body = json.loads(event["body"])
+        if "payment_method_id" in req_body:
+            _amount = int(float(req_body["amount"]) * 100)
             intent = stripe.PaymentIntent.create(
-                payment_method = paymentMethod_Dict["payment_method_id"], #attribute depends on request body
-                amount = paymentMethod_Dict["amount"], #change the amount
+                payment_method = req_body["payment_method_id"],
+                amount = _amount,
                 currency = 'cad',
                 confirmation_method = 'automatic',
                 confirm = True,
@@ -25,32 +27,12 @@ def handler(event, context):
                 )
             return generate_response(intent)
         else:
-            return {
-                    "statusCode": 400,
-                    "body": json.dumps({
-                        'message': 'Payment failed',
-                    }),
-                }           
+            return http_status.bad_request('Payment failed')
     except Exception as e:
-        return {
-                "statusCode": 400,
-                "body": json.dumps({
-                    "message": 'Payment failed. '+ str(e),
-                }),
-            }
+        return http_status.bad_request('Payment failed. '+ str(e))
 
 def generate_response(intent):
         if intent.status == 'succeeded':
-            return {
-                    "statusCode": 200,
-                    "body": json.dumps({
-                        'message': 'Payment succeeded',
-                    }),
-                }
+            return http_status.success()
         else:
-            return {
-                    "statusCode": 400,
-                    "body": json.dumps({
-                        'message': 'Payment failed. Invalid payment status',
-                    }),
-                } 
+            return http_status.bad_request('Payment failed. Invalid payment status')

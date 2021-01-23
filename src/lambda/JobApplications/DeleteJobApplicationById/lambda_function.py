@@ -9,6 +9,7 @@ from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
 from base import Session, engine, Base
 from role_validation import UserType, check_auth
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -23,37 +24,18 @@ def handler(event, context):
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            })
-        }
+        return http_status.unauthorized()
 
-    # FOR REFERENCE
-    # # create a new session
     session = Session()
     jobAppId = event["pathParameters"]["id"]
     jobApp = session.query(JobApplication).get(jobAppId)
 
-    # # commit and close session
-
     if jobApp == None:
         session.commit()
         session.close()
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "message": "Record with that ID was not found"
-            })
-        }
+        return http_status.not_found()
     else:
         delete = session.query(JobApplication).filter(JobApplication.job_application_id == jobAppId).delete()
         session.commit()
         session.close()
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
-                "message": "Row deleted"
-            })
-        }
+        return http_status.success()

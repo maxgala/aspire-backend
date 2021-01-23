@@ -1,7 +1,7 @@
 import json
 import logging
 
-from industry_tag import IndustryTag
+from connection import Connection
 from base import Session, row2dict
 from role_validation import UserType, check_auth
 import http_status
@@ -15,23 +15,24 @@ def handler(event, context):
     authorized_user_types = [
         UserType.ADMIN,
         UserType.MENTOR,
-        UserType.PAID,
-        UserType.FREE
+        UserType.FREE,
+        UserType.PAID
     ]
     success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
         return http_status.unauthorized()
 
-    industryTagId = event["pathParameters"].get("industryTagId") if event["pathParameters"] else None
-    if not industryTagId:
-        return http_status.bad_request("missing path parameter(s): 'industryTagId'")
+    connectId = event["pathParameters"].get("connectId") if event["pathParameters"] else None
+    if not connectId:
+        return http_status.bad_request("missing path parameter(s): 'connectId'")
 
     session = Session()
-    industry_tag = session.query(IndustryTag).get(industryTagId.lower())
+    connection = session.query(Connection).get(connectId)
     session.close()
-    if not industry_tag:
+    if not connection:
+        session.close()
         return http_status.not_found()
 
     return http_status.success(json.dumps(
-            row2dict(industry_tag)
+            row2dict(connection)
         ))

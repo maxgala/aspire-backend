@@ -4,6 +4,7 @@ import logging
 from chat import Chat, ChatType, ChatStatus
 from base import Session, row2dict
 from cognito_helpers import get_users
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -17,10 +18,12 @@ def handler(event, context):
     session = Session()
     # TODO: more filters? (tags)
     filtered_query = session.query(Chat)
-    if status_filter and status_filter in ChatStatus.__members__:
-        filtered_query = filtered_query.filter(Chat.chat_status == ChatStatus[status_filter])
-    if type_filter and type_filter in ChatType.__members__:
-        filtered_query = filtered_query.filter(Chat.chat_type == ChatType[type_filter])
+    if status_filter:
+        status_filter = [ChatStatus[x.strip()] for x in status_filter.split(',') if x in ChatStatus.__members__]
+        filtered_query = filtered_query.filter(Chat.chat_status.in_(status_filter))
+    if type_filter:
+        type_filter = [ChatType[x.strip()] for x in type_filter.split(',') if x in ChatType.__members__]
+        filtered_query = filtered_query.filter(Chat.chat_type.in_(type_filter))
     if user_filter:
         user, _ = get_users(filter_=('email', user_filter), attributes_filter=['custom:user_type'])
         user_type = user['attributes']['custom:user_type']
@@ -32,7 +35,6 @@ def handler(event, context):
     chats = filtered_query.all()
     session.close()
 
-    # attrs = ['email', 'given_name', 'family_name', 'picture', 'custom:user_type', 'custom:user_type']
     users, _ = get_users()
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
@@ -41,18 +43,14 @@ def handler(event, context):
                 chat['given_name'] = user['attributes']['given_name']
                 chat['family_name'] = user['attributes']['family_name']
                 chat['picture'] = user['attributes']['picture']
-                chat['custom:company'] = user['attributes']['custom:company']
+                chat['custom:company'] = user['attributes']['custom:company'] # FIXME coordinate with front-end to replace this key with just company
+                chat['position'] = user['attributes']['custom:position']
+                chat['region'] = json.loads(user['attributes']['address'])['region']
+                chat['industry_tags'] = user['attributes']['custom:industry_tags']
+                chat['industry'] = user['attributes']['custom:industry']
                 break
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
+    return http_status.success(json.dumps({
             "chats": chats_modified,
             "count": len(chats_modified)
-        }),
-        "headers": {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-            'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-        }
-    }
+        }))

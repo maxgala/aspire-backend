@@ -1,24 +1,18 @@
 import sys
 import json
 import logging
-import uuid
-from datetime import datetime
 
-# FOR REFERENCE
 from job import Job, JobType, JobStatus, JobTags
 from job_application import JobApplication, JobApplicationStatus
-from base import Session, engine, Base
-import jwt
-import boto3
+from base import Session
 from role_validation import UserType, check_auth
-
-client = boto3.client('cognito-idp')
+from cognito_helpers import get_users, admin_update_credits
+import http_status
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
-
     # check authorization
     authorized_user_types = [
         UserType.ADMIN,
@@ -27,120 +21,48 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return {
-            "statusCode": 401,
-            "body": json.dumps({
-                "errorMessage": "unauthorized"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+        return http_status.unauthorized()
 
-    access_token = event['headers']['X-Aspire-Access-Token']
-
-    # FOR REFERENCE
-    # # create a new session
     session = Session()
     jobId = event["pathParameters"]["jobId"]
     job = session.query(Job).get(jobId)
-    
-    if job == None:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "message": "ID not found"
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
-    
-    credit = int(user['custom:credits'])
-    email = user['email']
 
+    if job == None:
+        session.close()
+        return http_status.not_found()
+
+    user_credits = int(get_users(filter_=("email", user['email']), \
+        attributes_filter=["custom:credits"])[0]['attributes'].get('custom:credits'))
+    email = user['email']
     if job.can_contact:
         applied = False
         for job_app in job.job_applications:
             if job_app.applicant_id == email:
                 applied = True
         if not applied:
-            return {
-                "statusCode": 428,
-                "body": json.dumps({
-                    "message": "You need to apply to the job before requesting contact-information"
-                }),
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-            }
+            session.close()
+            return http_status.forbidden("You need to apply to the job before requesting contact-information")
 
         if job.people_contacted >= 4:
-            return {
-                "statusCode": 417,
-                "body": json.dumps({
-                    "message": "Limit of contact information requests has been exceeded"
-                }),
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-            }
-        print(credit)
-        if int(credit) < 5:
-            return {
-                "statusCode": 402,
-                "body": json.dumps({
-                    "message": "You do not have enough credits to request contact information"
-                }),
-                "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-            }
-        response = client.update_user_attributes(
-            UserAttributes=[
-                {
-                    'Name': 'custom:credits',
-                    'Value': str(int(credit) - 5) #deducting credits for requesting contact_info
-                },
-            ],
-            AccessToken=access_token
-        )
+            session.close()
+            return http_status.forbidden("Limit of contact information requests has been exceeded")
+
+        if user_credits < 5:
+            session.close()
+            return http_status.forbidden("You do not have enough credits to request contact information")
+
+        admin_update_credits(email, -5) # deducting credits for requesting contact_info
         job.people_contacted = job.people_contacted + 1
         session.commit()
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
+        return http_status.success(json.dumps({
                 "contact_details": {
                         "email" : job.posted_by,
                         "given_name" : job.poster_given_name,
                         "family_name" : job.poster_family_name
-                    }   
-            }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+                    }
+            }))
     else:
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
+        session.close()
+        return http_status.success(json.dumps({
                     "message": "Hiring manager does not want to be contacted"
-                }),
-            "headers": {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT',
-                'Access-Control-Allow-Headers': "'Content-Type,Authorization,Access-Control-Allow-Origin'"
-            }
-        }
+                }))

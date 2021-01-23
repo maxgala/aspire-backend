@@ -6,24 +6,24 @@ Description: >
   SAM Template for aspire-sam
 
 Parameters:
-  dbUserPassword:
+  DbUserPassword:
     NoEcho: true
     Type: String
     Default: 'password'
-  dbUserName:
+  DbUserName:
     NoEcho: true
     Type: String
     Default: 'master'
-  dbInstanceClass:
+  DbInstanceClass:
     Type: String
     Default: 'db.t2.micro'
-  dbInstanceIdentifier:
+  DbInstanceIdentifier:
     Type: String
     Default: 'aspire-db-master'
-  dbName:
+  DbName:
     Type: String
     Default: 'main_db'
-  cognitoUserPoolArn:
+  CognitoUserPoolArn:
     Type: String
     Default: 'arn:aws:cognito-idp:us-east-1:143848191537:userpool/us-east-1_dq5r8O2SO'
   CustomDomainName:
@@ -44,16 +44,16 @@ Resources:
     Type: AWS::RDS::DBInstance
     Properties:
       AllocatedStorage: '20'
-      DBInstanceClass: !Ref dbInstanceClass
-      DBInstanceIdentifier: !Ref dbInstanceIdentifier
-      DBName: !Ref dbName
+      DBInstanceClass: !Ref DbInstanceClass
+      DBInstanceIdentifier: !Ref DbInstanceIdentifier
+      DBName: !Ref DbName
       EnableCloudwatchLogsExports:
         - postgresql
       EnablePerformanceInsights: true
       Engine: postgres
       EngineVersion: "11.6"
-      MasterUsername: !Ref dbUserName
-      MasterUserPassword: !Ref dbUserPassword
+      MasterUsername: !Ref DbUserName
+      MasterUserPassword: !Ref DbUserPassword
       MaxAllocatedStorage: 1000
       PubliclyAccessible: true
       StorageType: gp2
@@ -89,20 +89,28 @@ Resources:
       ContentUri: src/layers/cognito/dependencies/
       CompatibleRuntimes:
         - python3.6
+  
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: max-aspire-common
+      ContentUri: src/layers/common/dependencies/
+      CompatibleRuntimes:
+        - python3.6
 
   AspireApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: api
+      StageName: Prod
       Auth:
         DefaultAuthorizer: AspireUserPoolAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False
         Authorizers:
           AspireUserPoolAuthorizer:
-            UserPoolArn: !Ref cognitoUserPoolArn
+            UserPoolArn: !Ref CognitoUserPoolArn
       Cors:
         AllowMethods: "'OPTIONS,GET,POST,PUT'"
-        AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin'"
+        AllowHeaders: "'Content-Type,Authorization,Access-Control-Allow-Origin,Aspire-Client-Timezone-Offset'"
         AllowOrigin: "'*'"
       EndpointConfiguration:
         Type: REGIONAL
@@ -110,15 +118,9 @@ Resources:
         DomainName: !Ref CustomDomainName
         CertificateArn: !Ref CertificateArn
         EndpointConfiguration: REGIONAL
+        BasePath:
+          - api
   
-  ApiBasePath:
-    Type: AWS::ApiGateway::BasePathMapping
-    Properties: 
-      BasePath: 'api'
-      DomainName: !Ref CustomDomainName
-      RestApiId: !Ref AspireApi
-      Stage: api
-
   CreateDatabaseModels:
     Type: AWS::Serverless::Function
     Properties:
@@ -149,6 +151,7 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatCreateEvent:
@@ -161,6 +164,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatCreateMultiple:
     Type: AWS::Serverless::Function
@@ -175,6 +179,7 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatCreateMultipleEvent:
@@ -187,6 +192,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatGetById:
     Type: AWS::Serverless::Function
@@ -194,6 +200,13 @@ Resources:
       CodeUri: src/lambda/Chat/GetById
       Handler: lambda_function.handler
       Description: Lambda function to get chat by Id
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - ses:SendTemplatedEmail
+            Resource: '*'
       Events:
         ChatGetByIdEvent:
           Type: Api
@@ -203,6 +216,7 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: CommonLayer
 
   ChatEditById:
     Type: AWS::Serverless::Function
@@ -210,6 +224,13 @@ Resources:
       CodeUri: src/lambda/Chat/EditById
       Handler: lambda_function.handler
       Description: Lambda function to edit chat by Id
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - ses:SendTemplatedEmail
+            Resource: '*'
       Events:
         ChatEditByIdEvent:
           Type: Api
@@ -220,6 +241,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   ChatDeleteById:
     Type: AWS::Serverless::Function
@@ -234,6 +256,7 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatDeleteByIdEvent:
@@ -246,6 +269,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatGetAll:
     Type: AWS::Serverless::Function
@@ -259,6 +283,7 @@ Resources:
             Effect: Allow
             Action:
               - cognito-idp:ListUsers
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatGetAllEvent:
@@ -270,6 +295,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatDeleteAll:
     Type: AWS::Serverless::Function
@@ -284,6 +310,7 @@ Resources:
             Action:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatDeleteAllEvent:
@@ -296,6 +323,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatReserveById:
     Type: AWS::Serverless::Function
@@ -316,6 +344,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ChatReserveByIdEvent:
@@ -329,39 +358,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: SesLayer
-
-  ChatUnreserveById:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/lambda/Chat/UnreserveById
-      Handler: lambda_function.handler
-      Description: Lambda function to unreserve a chat
-      Policies:
-        - Statement:
-          - Sid: CognitoPolicy
-            Effect: Allow
-            Action:
-              - cognito-idp:ListUsers
-              - cognito-idp:AdminUpdateUserAttributes
-            Resource: '*'
-          - Sid: CognitoPostConfSESSendPolicy
-            Effect: Allow
-            Action:
-              - ses:SendEmail
-              - ses:SendRawEmail
-            Resource: '*'
-      Events:
-        ChatUnreserveByIdEvent:
-          Type: Api
-          Properties:
-            RestApiId: !Ref AspireApi
-            Path: /chats/{chatId}/unreserve
-            Method: put
-      Layers:
-        - Ref: DatabaseLayer
-        - Ref: AuthLayer
-        - Ref: CognitoLayer
-        - Ref: SesLayer
+        - Ref: CommonLayer
 
   ChatCancelById:
     Type: AWS::Serverless::Function
@@ -388,6 +385,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   ChatDoneById:
     Type: AWS::Serverless::Function
@@ -405,13 +403,14 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- Chats Service ---
 
-  # --- SE Connect Service ---
-  ConnectCreate:
+  # --- Connection Service ---
+  ConnectionCreate:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/Create
+      CodeUri: src/lambda/Connection/Create
       Handler: lambda_function.handler
       Policies:
         - Statement:
@@ -420,9 +419,10 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
-        ConnectCreateEvent:
+        ConnectionCreateEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -431,14 +431,17 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: SesLayer
+        - Ref: CognitoLayer
+        - Ref: AuthLayer
+        - Ref: CommonLayer
 
-  ConnectGetAll:
+  ConnectionGetAll:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/GetAll
+      CodeUri: src/lambda/Connection/GetAll
       Handler: lambda_function.handler
       Events:
-        ConnectGetAllEvent:
+        ConnectionGetAllEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -446,14 +449,17 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: CognitoLayer
+        - Ref: AuthLayer
+        - Ref: CommonLayer
 
-  ConnectGetById:
+  ConnectionGetById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/GetById
+      CodeUri: src/lambda/Connection/GetById
       Handler: lambda_function.handler
       Events:
-        ConnectGetByIdEvent:
+        ConnectionGetByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -461,11 +467,14 @@ Resources:
             Method: get
       Layers:
         - Ref: DatabaseLayer
+        - Ref: CognitoLayer
+        - Ref: AuthLayer
+        - Ref: CommonLayer
 
-  ConnectEditById:
+  ConnectionEditById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/EditById
+      CodeUri: src/lambda/Connection/EditById
       Handler: lambda_function.handler
       Policies:
         - Statement:
@@ -474,9 +483,10 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
-        ConnectEditByIdEvent:
+        ConnectionEditByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -485,14 +495,17 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: SesLayer
+        - Ref: CognitoLayer
+        - Ref: AuthLayer
+        - Ref: CommonLayer
 
-  ConnectDeleteById:
+  ConnectionDeleteById:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/Connect/DeleteById
+      CodeUri: src/lambda/Connection/DeleteById
       Handler: lambda_function.handler
       Events:
-        ConnectDeleteByIdEvent:
+        ConnectionDeleteByIdEvent:
           Type: Api
           Properties:
             RestApiId: !Ref AspireApi
@@ -500,7 +513,10 @@ Resources:
             Method: delete
       Layers:
         - Ref: DatabaseLayer
-  # --- SE Connect Service ---
+        - Ref: CognitoLayer
+        - Ref: AuthLayer
+        - Ref: CommonLayer
+  # --- Connection Service ---
 
   # --- Jobs Service ---
   CreateJob:
@@ -515,6 +531,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
           CreateJobEvent:
@@ -527,6 +544,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   GetAllJobs:
     Type: AWS::Serverless::Function
@@ -543,6 +561,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   GetJobById:
     Type: AWS::Serverless::Function
@@ -559,6 +578,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   DeleteJobById:
     Type: AWS::Serverless::Function
@@ -575,6 +595,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   EditJobById:
     Type: AWS::Serverless::Function
@@ -588,6 +609,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
           CreateJobEvent:
@@ -600,6 +622,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   CloseJobById:
     Type: AWS::Serverless::Function
@@ -616,6 +639,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   RejectJobById:
     Type: AWS::Serverless::Function
@@ -632,6 +656,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   AutomaticallyApproveJob:
     Type: AWS::Serverless::Function
@@ -645,6 +670,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
         ApproveJobScheduledEvent:
@@ -654,6 +680,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   JobContactById:
     Type: AWS::Serverless::Function
@@ -670,6 +697,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- Jobs Service ---
 
   # --- Job Applications Service ---
@@ -685,6 +713,7 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+              - ses:SendTemplatedEmail
             Resource: '*'
       Events:
           CreateJobApplicationEvent:
@@ -697,6 +726,7 @@ Resources:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
         - Ref: SesLayer
+        - Ref: CommonLayer
 
   GetAllJobApplications:
     Type: AWS::Serverless::Function
@@ -713,6 +743,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   DeleteJobApplicationById:
     Type: AWS::Serverless::Function
@@ -729,6 +760,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   GetJobApplicationById:
     Type: AWS::Serverless::Function
@@ -745,6 +777,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   EditJobApplicationById:
     Type: AWS::Serverless::Function
@@ -761,6 +794,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- Job Applications Service ---
 
   # --- Industry Tags Service ---
@@ -779,6 +813,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   IndustryTagsGetAll:
     Type: AWS::Serverless::Function
@@ -795,6 +830,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   IndustryTagsGetById:
     Type: AWS::Serverless::Function
@@ -811,6 +847,7 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
 
   IndustryTagsDeleteById:
     Type: AWS::Serverless::Function
@@ -827,10 +864,11 @@ Resources:
       Layers:
         - Ref: DatabaseLayer
         - Ref: AuthLayer
+        - Ref: CommonLayer
   # --- Industry Tags Service ---
 
   # --- Payments Service ---
-  StripePaymentProcessor:
+  PaymentProcessor:
     Type: AWS::Serverless::Function
     Properties:
         CodeUri: src/lambda/Payment
@@ -842,8 +880,11 @@ Resources:
                 RestApiId: !Ref AspireApi
                 Path: /payment
                 Method: post
+                Auth:
+                  Authorizer: NONE
         Layers:
           - Ref: DatabaseLayer
+          - Ref: CommonLayer
   # --- Payments Service ---
 
   # --- Users Service ---
@@ -868,6 +909,7 @@ Resources:
             Method: get
       Layers:
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   UserGetAll:
     Type: AWS::Serverless::Function
@@ -891,6 +933,25 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
+  
+  UserEditById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/EditById
+      Handler: lambda_function.handler
+      Description: Lambda function to edit user by Id
+      Events:
+        UserEditByIdEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/{userId}
+            Method: put
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   UserUpdateCredits:
     Type: AWS::Serverless::Function
@@ -915,6 +976,7 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   UserEnable:
     Type: AWS::Serverless::Function
@@ -938,6 +1000,7 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
 
   UserDisable:
     Type: AWS::Serverless::Function
@@ -961,6 +1024,7 @@ Resources:
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
   # --- Users Service ---
 
   # --- Scheduler Service ---
@@ -978,16 +1042,23 @@ Resources:
               - cognito-idp:ListUsers
               - cognito-idp:AdminUpdateUserAttributes
             Resource: '*'
+          - Sid: CognitoPostConfSESSendPolicy
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+              - ses:SendTemplatedEmail
+            Resource: '*'
       Events:
-          SchedulerScheduleEvent:
-            Type: Api
-            Properties:
-              Path: /scheduler
-              Method: put
+        SchedulerScheduleEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(3 days)
       Layers:
         - Ref: DatabaseLayer
-        - Ref: AuthLayer
+        - Ref: SesLayer
         - Ref: CognitoLayer
+        - Ref: CommonLayer
   # --- Scheduler Service ---
 
 Outputs:
@@ -1001,4 +1072,4 @@ Outputs:
 
   AspireApiUrl:
     Description: "Aspire API endpoint URL"
-    Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/api/'
+    Value: !Sub 'https://${AspireApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
