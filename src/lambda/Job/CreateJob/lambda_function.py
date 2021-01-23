@@ -44,9 +44,12 @@ def handler(event, context):
     posted_by = info.get('posted_by')
     poster_family_name = info.get('poster_family_name')
     poster_given_name = info.get('poster_given_name')
-    salary = info['salary']
+    salary = str(info.get('salary'))
     deadline = info.get('deadline')
     can_contact = str(info.get('can_contact'))
+    
+    if salary is None or salary == '':
+        salary = "0"
 
     #Validate body
     if not (job_title and company and region and city and country and job_type and description and requirements and posted_by
