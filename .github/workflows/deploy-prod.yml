@@ -19,7 +19,7 @@ jobs:
           echo "RDS_USERNAME=$PROD_DB_USERNAME" >> .env
           echo "RDS_PASSWORD=$PROD_DB_PWD" >> .env
           echo "RDS_DB_NAME=$PROD_DB_NAME" >> .env
-          echo "STRIPE_KEY=$STRIPE_API_KEY" >> .env
+          echo "STRIPE_KEY=$PROD_STRIPE_API_KEY" >> .env
           cd ../layers/database
           sudo bash database_layer_packages.sh
           sudo chown -R runner dependencies
@@ -46,7 +46,7 @@ jobs:
           PROD_DB_USERNAME: ${{secrets.PROD_DB_USERNAME}}
           PROD_DB_PWD: ${{secrets.PROD_DB_PWD}}
           PROD_DB_NAME: ${{secrets.PROD_DB_NAME}}
-          STRIPE_API_KEY: ${{secrets.STRIPE_API_KEY}}
+          STRIPE_API_KEY: ${{secrets.PROD_STRIPE_API_KEY}}
       - name: 'Deploy'
         uses: poketapp/gh-action-aws-sam@v2
         env:
@@ -56,4 +56,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{secrets.ASPIRE_AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.ASPIRE_AWS_SECRET_ACCESS_KEY}}
           AWS_DEPLOY_BUCKET: aspire-api
-          AWS_PARAMETER_OVERRIDES: 'CustomDomainName=services-p.aspire.maxgala.com DbName=${{secrets.PRD_DB_NAME}} DbUserName=${{secrets.PROD_DB_USERNAME}} DbUserPassword=${{secrets.PROD_DB_PWD}} DbInstanceIdentifier=aspire-db-prod'
+          AWS_PARAMETER_OVERRIDES: 'CustomDomainName=services-p.aspire.maxgala.com DbName=${{secrets.PROD_DB_NAME}} DbUserName=${{secrets.PROD_DB_USERNAME}} DbUserPassword=${{secrets.PROD_DB_PWD}} DbInstanceIdentifier=aspire-db-prod'
