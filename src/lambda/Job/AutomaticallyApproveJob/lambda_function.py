@@ -18,7 +18,7 @@ def handler(event, context):
     jobs = session.query(Job).filter(Job.job_status == 'UNDER_REVIEW')
     num_seconds_24_hours = 24*60*60
     for job in jobs:
-        if datetime.now().timestamp() - job.created_on >= num_seconds_24_hours:
+        if datetime.now().timestamp() - datetime.timestamp(job.created_on) >= num_seconds_24_hours:
             job.job_status = 'ACTIVE'
             job_title = job.title
             today = datetime.today().strftime("%Y-%m-%d")
