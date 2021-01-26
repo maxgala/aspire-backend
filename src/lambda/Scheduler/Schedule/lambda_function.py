@@ -206,6 +206,8 @@ def handler(event, context):
     # if not success:
     #     return http_status.unauthorized()
 
+    return http_status.success()
+
     session = Session()
     try:
         default_num_activate = 25
