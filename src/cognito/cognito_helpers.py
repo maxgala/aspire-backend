@@ -1,11 +1,14 @@
 import logging
 import boto3
-
-client = boto3.client('cognito-idp')
-userPoolId = 'us-east-1_dq5r8O2SO'
+from dotenv import load_dotenv
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+load_dotenv()
+
+client = boto3.client('cognito-idp')
+userPoolId = os.getenv('COGNITO_POOL_ID')
 
 def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None, user_type=None):
     if user_type and not isinstance(user_type, list):
