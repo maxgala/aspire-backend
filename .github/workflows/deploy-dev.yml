@@ -19,6 +19,7 @@ jobs:
           echo "RDS_PASSWORD=$PROD_DB_PWD" >> .env
           echo "RDS_DB_NAME=$PROD_DB_NAME" >> .env
           echo "STRIPE_KEY=$STRIPE_API_KEY" >> .env
+          echo "COGNITO_POOL_ID=$AWS_COGNITO_POOL_ID_PREPROD" >> .env
           cd ../layers/database
           sudo bash database_layer_packages.sh
           sudo chown -R runner dependencies
