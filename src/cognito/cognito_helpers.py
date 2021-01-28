@@ -1,5 +1,6 @@
 import logging
 import boto3
+import os
 
 client = boto3.client('cognito-idp')
 userPoolId = 'us-east-1_dq5r8O2SO'
