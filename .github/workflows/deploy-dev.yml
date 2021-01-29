@@ -19,7 +19,7 @@ jobs:
           echo "RDS_PASSWORD=$PROD_DB_PWD" >> .env
           echo "RDS_DB_NAME=$PROD_DB_NAME" >> .env
           echo "STRIPE_KEY=$STRIPE_API_KEY" >> .env
-          echo "COGNITO_POOL_ID=$AWS_COGNITO_POOL_ID_PREPROD" >> .env
+          echo "COGNITO_POOL_ID=$AWS_COGNITO_POOL_ID" >> .env
           cd ../layers/database
           sudo bash database_layer_packages.sh
           sudo chown -R runner dependencies
@@ -47,6 +47,7 @@ jobs:
           PROD_DB_PWD: ${{secrets.DEV_DB_PWD}}
           PROD_DB_NAME: ${{secrets.DEV_DB_NAME}}
           STRIPE_API_KEY: ${{secrets.STRIPE_API_KEY}}
+          COGNITO_POOL_ID: ${{secrets.AWS_COGNITO_POOL_ID_PREPROD}}
       - name: 'Deploy'
         uses: poketapp/gh-action-aws-sam@v2
         env:
