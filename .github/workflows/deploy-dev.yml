@@ -20,7 +20,6 @@ jobs:
           echo "RDS_DB_NAME=$PROD_DB_NAME" >> .env
           echo "STRIPE_KEY=$STRIPE_API_KEY" >> .env
           echo "COGNITO_POOL_ID=$DEV_COGNITO_POOL_ID" >> .env
-          cat .env
           cd ../layers/database
           sudo bash database_layer_packages.sh
           sudo chown -R runner dependencies
