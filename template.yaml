@@ -910,6 +910,7 @@ Resources:
       Layers:
         - Ref: CognitoLayer
         - Ref: CommonLayer
+        - Ref: DatabaseLayer
 
   UserGetAll:
     Type: AWS::Serverless::Function
@@ -934,6 +935,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: CommonLayer
+        - Ref: DatabaseLayer
   
   UserEditById:
     Type: AWS::Serverless::Function
@@ -952,6 +954,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: CommonLayer
+        - Ref: DatabaseLayer
 
   UserUpdateCredits:
     Type: AWS::Serverless::Function
@@ -977,6 +980,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: CommonLayer
+        - Ref: DatabaseLayer
 
   UserEnable:
     Type: AWS::Serverless::Function
@@ -1001,6 +1005,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: CommonLayer
+        - Ref: DatabaseLayer
 
   UserDisable:
     Type: AWS::Serverless::Function
@@ -1025,6 +1030,7 @@ Resources:
         - Ref: AuthLayer
         - Ref: CognitoLayer
         - Ref: CommonLayer
+        - Ref: DatabaseLayer
   # --- Users Service ---
 
   # --- Scheduler Service ---
