@@ -80,6 +80,7 @@ Resources:
       ContentUri: src/layers/database/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
 
   AuthLayer:
     Type: AWS::Serverless::LayerVersion
@@ -88,6 +89,7 @@ Resources:
       ContentUri: src/layers/auth/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
 
   SesLayer:
     Type: AWS::Serverless::LayerVersion
@@ -96,6 +98,7 @@ Resources:
       ContentUri: src/layers/ses_layer/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
 
   CognitoLayer:
     Type: AWS::Serverless::LayerVersion
@@ -104,6 +107,7 @@ Resources:
       ContentUri: src/layers/cognito/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
   
   CommonLayer:
     Type: AWS::Serverless::LayerVersion
@@ -112,6 +116,7 @@ Resources:
       ContentUri: src/layers/common/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
 
   AspireApi:
     Type: AWS::Serverless::Api
