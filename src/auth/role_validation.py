@@ -1,7 +1,6 @@
 import enum
 import jwt
 
-
 class UserType(enum.Enum):
     ADMIN = 1
     MENTOR = 2
