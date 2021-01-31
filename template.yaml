@@ -32,6 +32,9 @@ Parameters:
   CertificateArn:
     Type: String
     Default: 'arn:aws:acm:us-east-1:143848191537:certificate/19abc70f-4949-4ed8-9c71-37834cfac7db'
+  CognitoLayerName:
+    Type: String
+    Default: max-aspire-common
 
 Globals:
   Function:
@@ -85,7 +88,7 @@ Resources:
   CognitoLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: max-aspire-cognito
+      LayerName: !Ref CognitoLayerName
       ContentUri: src/layers/cognito/dependencies/
       CompatibleRuntimes:
         - python3.6
