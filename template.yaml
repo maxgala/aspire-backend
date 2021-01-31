@@ -35,6 +35,18 @@ Parameters:
   CognitoLayerName:
     Type: String
     Default: max-aspire-common
+  DatabaseLayerName:
+    Type: String
+    Default: max-aspire-database
+  AuthLayerName:
+    Type: String
+    Default: max-aspire-auth
+  SesLayerName:
+    Type: String
+    Default: max-aspire-email
+  CommonLayerName:
+    Type: String
+    Default: max-aspire-common
 
 Globals:
   Function:
@@ -64,26 +76,29 @@ Resources:
   DatabaseLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: max-aspire-database
+      LayerName: !Ref DatabaseLayerName
       ContentUri: src/layers/database/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
 
   AuthLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: max-aspire-auth
+      LayerName: !Ref AuthLayerName
       ContentUri: src/layers/auth/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
 
   SesLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: max-aspire-email
+      LayerName: !Ref SesLayerName
       ContentUri: src/layers/ses_layer/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
 
   CognitoLayer:
     Type: AWS::Serverless::LayerVersion
@@ -92,14 +107,16 @@ Resources:
       ContentUri: src/layers/cognito/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
   
   CommonLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: max-aspire-common
+      LayerName: !Ref CommonLayerName
       ContentUri: src/layers/common/dependencies/
       CompatibleRuntimes:
         - python3.6
+      RetentionPolicy: Delete
 
   AspireApi:
     Type: AWS::Serverless::Api
