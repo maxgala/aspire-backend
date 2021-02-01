@@ -198,16 +198,6 @@ def schedule_activate(session, default_num_activate, num_carry_over):
         admin_update_remaining_chats_frequency(user['attributes']['email'], -1)
 
 def handler(event, context):
-    # # check authorization
-    # authorized_user_types = [
-    #     UserType.ADMIN
-    # ]
-    # success, _ = check_auth(event['headers']['Authorization'], authorized_user_types)
-    # if not success:
-    #     return http_status.unauthorized()
-
-    return http_status.success()
-
     session = Session()
     try:
         default_num_activate = 25

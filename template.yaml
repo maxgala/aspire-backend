@@ -1079,7 +1079,7 @@ Resources:
         SchedulerScheduleEvent:
           Type: Schedule
           Properties:
-            Schedule: rate(3 days)
+            Schedule: cron(0 6 ? * 2 *)
       Layers:
         - Ref: DatabaseLayer
         - Ref: SesLayer

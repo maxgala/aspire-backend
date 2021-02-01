@@ -62,6 +62,7 @@ def build_calendar_invite(name, description, start, end, to_addresses, source_em
     e.add('sequence',0)
     e.add('priority',5)
     e.add('uid',uuid.uuid4())
+    e.add('location', 'Location To Be Confirmed')
     ics.add_component(e)
 
     ics = ics.to_ical().decode(charset) 
