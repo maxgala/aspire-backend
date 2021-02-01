@@ -77,7 +77,7 @@ def handler(event, context):
         return http_status.success()
 
 def prepare_and_send_emails(chat, timezone_offset_min):
-    mentee_IDs = chat.aspiring_professionals
+    mentee_IDs = chat.aspiring_professionals # FIXME mentee is now only a single element list
     mentor_ID = chat.senior_executive
 
     event_name = '[MAX Aspire] Coffee Chat with Senior Executive'
@@ -99,6 +99,7 @@ def prepare_and_send_emails(chat, timezone_offset_min):
     for m in mentee_IDs:
         m_User, _ = get_users(filter_=("email", m), attributes_filter=["given_name", "family_name"])
         mentees.append("%s %s" % (m_User['attributes']['given_name'], m_User['attributes']['family_name']))
+    mentee_name = mentees[0]
 
     mentor, _ = get_users(filter_=("email", mentor_ID), attributes_filter=["given_name", "family_name"])
     mentor_name = "%s %s" % (mentor['attributes']['given_name'], mentor['attributes']['family_name'])
@@ -110,7 +111,7 @@ def prepare_and_send_emails(chat, timezone_offset_min):
         chat_type = 'One-on-One coffee chat'
 
     subject = f"[MAX Aspire] Your coffee chat with {mentor_name} is confirmed!"
-    body = f"Salaam!\n\nWe are delighted to confirm your {chat_type} with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}. Please connect with the Senior Executive to find a time that works for both of you.\n\nPlease ensure your punctuality and professionalism. This could be the beginning of a special journey.\n\nKind regards,\n\nThe MAX Aspire Team"
+    body = f"Salaam {mentee_name}!\n\nWe are delighted to confirm your {chat_type} with {mentor_name}.\n\nYour coffee chat will take place on: {chat_date}. Please connect with the Senior Executive to determine the virtual or physical venue.\n\nPlease ensure your punctuality and professionalism. This could be the beginning of a special journey.\n\nKind regards,\n\nThe MAX Aspire Team"
     all_attendees = list(mentee_IDs)
     all_attendees.append(mentor_ID)
 
