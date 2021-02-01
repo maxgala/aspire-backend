@@ -30,7 +30,7 @@ def handler(event, context):
         return http_status.unauthorized()
 
     email = user['email']
-    candidate_name = user["given_name"] + user["family_name"]
+    candidate_name = user["given_name"] + " " + user["family_name"]
 
     session = Session()
     info = json.loads(event["body"])
