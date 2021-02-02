@@ -51,7 +51,7 @@ def handler(event, context):
                 break
 
     sorted_chats = []
-    sorted_chats = sorted(chats_modified, key=lambda x: x['chat_type'], reverse=False)
+    sorted_chats = sorted(chats_modified, key=lambda x: x['chat_type'], reverse=True)
 
     return http_status.success(json.dumps({
             "chats": sorted_chats,
