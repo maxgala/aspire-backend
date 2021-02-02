@@ -50,7 +50,10 @@ def handler(event, context):
                 chat['industry'] = user['attributes'].get("custom:industry", "")
                 break
 
+    sorted_chats = []
+    sorted_chats = sorted(chats_modified, key=lambda x: x['chat_type'], reverse=True)
+
     return http_status.success(json.dumps({
-            "chats": chats_modified,
+            "chats": sorted_chats,
             "count": len(chats_modified)
         }))
