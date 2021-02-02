@@ -44,7 +44,7 @@ def handler(event, context):
     # User must not have booked this Chat and must have sufficient funds
     if chat.chat_status != ChatStatus.ACTIVE:
         session.close()
-        return http_status.forbidden("cannot reserve inactive chat with id '{}'".format(chatId))
+        return http_status.forbidden("Chat is not available for booking")
 
     if chat.aspiring_professionals and user['email'] in chat.aspiring_professionals:
         session.close()
@@ -54,7 +54,7 @@ def handler(event, context):
         attributes_filter=["custom:credits"])[0]['attributes'].get('custom:credits'))
     if user_credits < credit_mapping[chat.chat_type]:
         session.close()
-        return http_status.forbidden("user '{}' does not have sufficient credits to reserve chat with id '{}'".format(user['email'], chatId))
+        return http_status.forbidden("You don't have sufficient credits to reserve a chat")
 
     chat.aspiring_professionals = [user['email']]
     chat.chat_status = ChatStatus.RESERVED
