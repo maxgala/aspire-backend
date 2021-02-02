@@ -27,7 +27,7 @@ def handler(event, context):
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
     if not success:
-        return http_status.unauthorized()
+        return http_status.unauthorized("You have to be a paid member to be able to apply to jobs")
 
     email = user['email']
     candidate_name = user["given_name"] + " " + user["family_name"]
