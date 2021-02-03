@@ -47,7 +47,7 @@ jobs:
           PROD_DB_USERNAME: ${{secrets.PROD_DB_USERNAME}}
           PROD_DB_PWD: ${{secrets.PROD_DB_PWD}}
           PROD_DB_NAME: ${{secrets.PROD_DB_NAME}}
-          STRIPE_API_KEY: ${{secrets.PROD_STRIPE_API_KEY}}
+          PROD_STRIPE_API_KEY: ${{secrets.PROD_STRIPE_API_KEY}}
           PROD_COGNITO_POOL_ID: ${{secrets.AWS_COGNITO_POOL_ID_PROD}}
       - name: 'Deploy'
         uses: poketapp/gh-action-aws-sam@v2
