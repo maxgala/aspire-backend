@@ -43,11 +43,6 @@ def handler(event, context):
                     value = int(value)
             elif key == 'deadline':
                 value = datetime.fromtimestamp(value).replace(hour=0, minute=0,second=0, microsecond=0)
-            elif key == 'can_contact':
-                if value.lower() == 'true':
-                    value = True
-                elif value.lower() == 'false':
-                    value = False
             elif key == 'tags':
                 value = []
             setattr(job,key,value)
