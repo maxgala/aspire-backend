@@ -34,7 +34,18 @@ def handler(event, context):
     if job != None: #if it was a valid jobid, and the job was found
         keys = info.keys()
         for key in keys:
-            setattr(job,key,info[key])
+            value = info[key]
+            logger.info('key is ' + str(key) + ' and value is ' + str(value))
+            if key == 'salary':
+                if value is None or value == '':
+                    value = 0
+                else:
+                    value = int(value)
+            elif key == 'deadline':
+                value = datetime.fromtimestamp(value).replace(hour=0, minute=0,second=0, microsecond=0)
+            elif key == 'tags':
+                value = []
+            setattr(job,key,value)
         
         session.commit()
         session.close()
