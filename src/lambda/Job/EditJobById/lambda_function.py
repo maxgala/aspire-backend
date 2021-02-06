@@ -45,6 +45,10 @@ def handler(event, context):
                 value = datetime.fromtimestamp(value).replace(hour=0, minute=0,second=0, microsecond=0)
             elif key == 'tags':
                 value = []
+
+            if key == 'job_applications':
+                continue
+
             setattr(job,key,value)
         
         session.commit()
