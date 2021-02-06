@@ -35,6 +35,7 @@ def handler(event, context):
         keys = info.keys()
         for key in keys:
             value = info[key]
+            logger.info('key is ' + str(key) + ' and value is ' + str(value))
             if key == 'salary':
                 if value is None or value == '':
                     value = 0
