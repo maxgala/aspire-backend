@@ -22,7 +22,7 @@ def handler(event, context):
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)
 
     if not success:
-        return http_status.unauthorized()
+        return http_status.unauthorized("Thank-you so kindly for being a MAX Aspire member. To support our operational costs, this specific feature is available if you sign up for a paid plan or purchase credits")
 
     chatId = event["pathParameters"].get("chatId") if event["pathParameters"] else None
     if not chatId:
@@ -54,7 +54,7 @@ def handler(event, context):
         attributes_filter=["custom:credits"])[0]['attributes'].get('custom:credits'))
     if user_credits < credit_mapping[chat.chat_type]:
         session.close()
-        return http_status.forbidden("You don't have sufficient credits to reserve a chat")
+        return http_status.forbidden("Thank-you so kindly for being a MAX Aspire member. To support our operational costs, this specific feature is available if you sign up for a paid plan or purchase credits")
 
     chat.aspiring_professionals = [user['email']]
     chat.chat_status = ChatStatus.RESERVED
