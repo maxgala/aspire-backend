@@ -93,7 +93,7 @@ def prepare_and_send_emails(chat, timezone_offset_min):
     chat_time = time(14,0,0)
     event_start = datetime.combine(chat_date,chat_time)
     chat_date = f'{chat_date:%b %d, %Y}'
-    event_end = event_start + timedelta(hours=12)
+    event_end = event_start + timedelta(minutes=30)
 
     mentees = []
     for m in mentee_IDs:
