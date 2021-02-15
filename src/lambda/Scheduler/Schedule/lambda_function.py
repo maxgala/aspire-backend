@@ -109,7 +109,11 @@ def process_undated_chats(user, chats, current_date, next_date):
                or chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
             elif chat.chat_status == ChatStatus.ACTIVE:
-                if chat.expiry_date < current_date or chat.expiry_date > next_date:
+                if not chat.expiry_date:
+                    num_unbooked += 1
+                    chat.chat_status = ChatStatus.PENDING
+                    admin_update_remaining_chats_frequency(user['email'], 1)
+                elif chat.expiry_date < current_date or chat.expiry_date > next_date:
                     num_unbooked += 1
                     chat.chat_status = ChatStatus.PENDING
                     admin_update_remaining_chats_frequency(user['email'], 1)
