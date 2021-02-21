@@ -18,8 +18,7 @@ def handler(event, context):
     if not success:
         return http_status.unauthorized()
 
-    body = json.loads(event["body"])
-    user_email = body.get('email')
+    user_email = user['email']
     if not user_email:
         return http_status.bad_request()
 
@@ -31,8 +30,8 @@ def handler(event, context):
     
     attributes = {
         "custom:user_type": "PAID",
-        "custom:start_date" : current_timestamp,
-        "custom:end_date": current_timestamp + 31556952 # 31556952 is the seconds in a year
+        "custom:start_date" : str(current_timestamp),
+        "custom:end_date": str(current_timestamp + 31556952) # 31556952 is the seconds in a year
     }
     admin_update_user_attributes(user_email,attributes)
     user_credits = 25
