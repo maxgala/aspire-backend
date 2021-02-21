@@ -11,7 +11,6 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
     authorized_user_types = [
-        UserType.ADMIN,
         UserType.FREE
     ]
     success, user = check_auth(event['headers']['Authorization'], authorized_user_types)

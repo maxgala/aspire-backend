@@ -1021,7 +1021,7 @@ Resources:
           Properties:
             RestApiId: !Ref AspireApi
             Path: /users/upgrade
-            Method: post
+            Method: put
       Layers:
         - Ref: AuthLayer
         - Ref: CognitoLayer
