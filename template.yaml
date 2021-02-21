@@ -1077,6 +1077,31 @@ Resources:
         - Ref: CognitoLayer
         - Ref: CommonLayer
         - Ref: DatabaseLayer
+  
+  UserAcceptSE:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/User/AcceptSE
+      Handler: lambda_function.handler
+      Policies:
+        - Statement:
+          - Sid: CognitoPolicy
+            Effect: Allow
+            Action:
+              - cognito-idp:AdminUpdateUserAttributes
+            Resource: '*'
+      Events:
+        UserUpgradeEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AspireApi
+            Path: /users/accept-se
+            Method: post
+      Layers:
+        - Ref: AuthLayer
+        - Ref: CognitoLayer
+        - Ref: CommonLayer
+        - Ref: DatabaseLayer
   # --- Users Service ---
 
   # --- Scheduler Service ---
