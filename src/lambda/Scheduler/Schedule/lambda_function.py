@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 
 from chat import Chat, ChatStatus
 from base import Session
-# from role_validation import UserType, check_auth
 from cognito_helpers import get_users, admin_update_remaining_chats_frequency
 import http_status
 
@@ -70,7 +69,7 @@ def populate_periods(chats, periods):
         if chat.chat_status != ChatStatus.EXPIRED:
             for idx, (start, end) in periods.items():
                 if (chat.fixed_date and start <= chat.fixed_date < end) \
-                   or (chat.expiry_date and start <=  chat.expiry_date < end):
+                   or (chat.expiry_date and start <= chat.expiry_date < end):
                     periods_chats_freq[idx] += 1
                     break
     return periods_chats_freq
@@ -104,24 +103,23 @@ def process_dated_chats(user, chats, current_date, next_date):
 def process_undated_chats(user, chats, current_date, next_date):
     num_unbooked = 0
     for chat in chats:
-        if not chat.fixed_date:
+        if chat.expiry_date:
             if chat.chat_status == ChatStatus.RESERVED_PARTIAL \
                or chat.chat_status == ChatStatus.RESERVED:
                 chat.chat_status = ChatStatus.RESERVED_CONFIRMED
             elif chat.chat_status == ChatStatus.ACTIVE:
-                if not chat.expiry_date:
-                    num_unbooked += 1
-                    chat.chat_status = ChatStatus.PENDING
-                    admin_update_remaining_chats_frequency(user['email'], 1)
-                elif chat.expiry_date < current_date or chat.expiry_date > next_date:
+                if chat.expiry_date < current_date or chat.expiry_date > next_date:
                     num_unbooked += 1
                     chat.chat_status = ChatStatus.PENDING
                     admin_update_remaining_chats_frequency(user['email'], 1)
                     if chat.expiry_date < current_date:
-                        chat.expiry_date = None
+                        # TODO: set expiry_date to None to allow for rescheduling
+                        # chat.expiry_date = None
+                        chat.chat_status = ChatStatus.EXPIRED
     return num_unbooked
 
 def update_scheduling_periods(chats, periods, periods_frequency):
+    #TODO: rescheduling should guarantee new expiry_date is in future periods
     for chat in chats:
         if chat.chat_status == ChatStatus.PENDING and not chat.expiry_date:
             schedule_period = next_best_period(periods_frequency)
@@ -170,11 +168,11 @@ def schedule_user(session, user, current_date, next_date):
 
     '''
     initialize and populate periods, take into account:
-        * undated chats     =>          ACTIVE, RESERVED_PARTIAL, RESERVED, RESERVED_CONFIRMED and DONE chats
-        * dated chats       => PENDING, ACTIVE, RESERVED_CONFIRMED and DONE chats with expiry_date specified
+        * dated chats     =>          ACTIVE, RESERVED_PARTIAL, RESERVED, RESERVED_CONFIRMED and DONE chats
+        * undated chats   => PENDING, ACTIVE, RESERVED_CONFIRMED and DONE chats with expiry_date specified
     So, take all but EXPIRED chats into account since at this stage:
-        * undated chats: all are in desired states in addition to potential EXPIRED ones
-        * dated chats: all are in desired states
+        * dated chats: all are in desired states in addition to potential EXPIRED ones
+        * undated chats: all are in desired states
     '''
     periods = init_periods(user, current_date)
     periods_frequency = populate_periods(chats, periods)
@@ -188,7 +186,9 @@ def schedule_user(session, user, current_date, next_date):
     # activate pending undated chats expiring this scheduling period
     num_expiring_activated = activate_expiring_chats(user, chats, current_date, next_date)
     logger.info("User {}: Unbooked={}, Activated={}".format(user['email'], num_unbooked, num_expiring_activated))
-    return (num_unbooked - num_expiring_activated)
+    # TODO: uncomment for rescheduling
+    # return (num_unbooked - num_expiring_activated)
+    return num_unbooked, num_expiring_activated
 
 def schedule_activate(session, default_num_activate, num_carry_over):
     num_activate = default_num_activate + num_carry_over
@@ -206,7 +206,7 @@ def handler(event, context):
     try:
         default_num_activate = 25
         current_date = datetime.strptime(datetime.now().strftime("%d/%m/%Y"), "%d/%m/%Y")
-        scheduling_period = 3
+        scheduling_period = 7
         if event.get("queryStringParameters"):
             if event["queryStringParameters"].get("num_activate"):
                 default_num_activate = int(event["queryStringParameters"]["num_activate"])
@@ -221,10 +221,16 @@ def handler(event, context):
 
         users, _ = get_users(user_type='MENTOR')
         num_carry_over = 0
-        #for user in users:
-        #    num_carry_over += schedule_user(session, user['attributes'], current_date, next_date)
+        total_unbooked = 0
+        total_expiring_activated = 0
+        for user in users:
+            num_unbooked, num_expiring_activated = schedule_user(session, user['attributes'], current_date, next_date)
+            total_unbooked += num_unbooked
+            total_expiring_activated += num_expiring_activated
 
         logger.info("Carry Forward={}".format(num_carry_over))
+        logger.info("Number of Unbooked Chats (previous cycle)={}".format(total_unbooked))
+        logger.info("Number of Activated Expiring Chats={}".format(total_expiring_activated))
         schedule_activate(session, default_num_activate, num_carry_over)
     except Exception as e:
         session.rollback()
