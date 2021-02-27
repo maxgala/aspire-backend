@@ -38,6 +38,10 @@ def handler(event, context):
 
     body = json.loads(event["body"])
 
+    user_type = user['custom:user_type']
+    if user_type == 'MENTOR':
+        body['custom:resume'] = 'https://aspire-user-profile.s3.amazonaws.com/blank_resume.pdf'
+
     new_attrs = {}
     for key in body:
         if key not in standard_attributes:
