@@ -1089,6 +1089,7 @@ Resources:
             Effect: Allow
             Action:
               - cognito-idp:AdminUpdateUserAttributes
+              - cognito-idp:AdminEnableUser
             Resource: '*'
       Events:
         UserUpgradeEvent:
