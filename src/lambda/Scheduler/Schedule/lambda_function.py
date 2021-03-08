@@ -199,6 +199,7 @@ def schedule_activate(session, default_num_activate, num_carry_over):
     for chat in chats:
         chat.chat_status = ChatStatus.ACTIVE
         user, _ = get_users(filter_=('email', chat.senior_executive))
+        print(user)
         admin_update_remaining_chats_frequency(user['attributes']['email'], -1)
 
 def handler(event, context):
