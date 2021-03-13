@@ -86,8 +86,8 @@ def prepare_and_send_emails(chat):
         chat_type = 'One-on-One coffee chat'
 
     template_data = {
-        "mentor_email": mentor_name,
-        "mentee_email": mentee_email,
+        "mentor_email": mentor_name.strip(),
+        "mentee_email": mentee_email.strip(),
         "mentor_name": mentor_name,
         "mentee_name": mentee_name,
         "chat_type": chat_type

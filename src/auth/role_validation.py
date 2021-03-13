@@ -18,7 +18,6 @@ def check_auth(auth_header: str, allowedUserTypes: list):
 
     user = jwt.decode(id_token, verify=False)
     success, user_type = validate_user_type(user)
-    logging.info('user_type is ' + str(user_type))
     if not success:
         return False, None
     if user_type not in allowedUserTypes:
