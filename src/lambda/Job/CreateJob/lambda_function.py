@@ -98,6 +98,6 @@ def handler(event, context):
     }
     template_data = json.dumps(template_data)
     recipients = [hiring_manager]
-    send_templated_email(recipients, "CreateJob", template_data)
+    send_templated_email(recipients, "Job-Creation", template_data)
 
     return http_status.success(json.dumps(res))

@@ -55,7 +55,7 @@ def handler(event, context):
                     }
                     template_data = json.dumps(template_data)
                     recipients = [requestor_email,requestee_email]
-                    send_templated_email(recipients, "CreateConnection-RequestAccepted", template_data)    
+                    send_templated_email(recipients, "Connection-Confirmation-SEtoSE", template_data)    
 
                     create_conn = False
                     break
@@ -77,7 +77,7 @@ def handler(event, context):
             }
             template_data = json.dumps(template_data)
             recipients = [requestee_email]
-            send_templated_email(recipients, "CreateConnection-RequesteeIsMentor", template_data)    
+            send_templated_email(recipients, "Connection-Initiation-SEtoSE", template_data)    
 
 
 
@@ -92,7 +92,7 @@ def handler(event, context):
             }
             template_data = json.dumps(template_data)
             recipients = [requestor_email, requestee_email]
-            send_templated_email(recipients, "CreateConnection-RequesteeIsMentee", template_data)           
+            send_templated_email(recipients, "Connection-Initiation-SEtoAP", template_data)           
 
         else:
             return http_status.bad_request("A connection can only be initiated by a mentor")
