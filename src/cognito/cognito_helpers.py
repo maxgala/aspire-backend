@@ -48,7 +48,7 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         user['status'] = raw_user['UserStatus']
         user['enabled'] = raw_user['Enabled']
         users[raw_user['Username']] = user
-    return users[users.keys()[0]] if len(users.keys()) == 1 else users, len(users.keys())
+    return users[list(users.keys())[0]] if len(users.keys()) == 1 else users, len(users.keys())
 
 def admin_update_user_attributes(email, attributes):
     response = client.admin_update_user_attributes(
