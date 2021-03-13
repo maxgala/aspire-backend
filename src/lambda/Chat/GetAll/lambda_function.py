@@ -36,19 +36,19 @@ def handler(event, context):
     session.close()
 
     users, _ = get_users()
+    logging.info(users)
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
-        for user in users:
-            if chat['senior_executive'] == user['attributes']['email']:
-                chat['given_name'] = user['attributes']['given_name']
-                chat['family_name'] = user['attributes']['family_name']
-                chat['picture'] = user['attributes']['picture']
-                chat['custom:company'] = user['attributes'].get("custom:company", "")
-                chat['position'] = user['attributes'].get("custom:position", "")
-                chat['region'] = json.loads(user['attributes']['address'])['region']
-                chat['industry_tags'] = user['attributes'].get("custom:industry_tags", "")
-                chat['industry'] = user['attributes'].get("custom:industry", "")
-                break
+        se = chat['senior_executive']
+        user = users[se]
+        chat['given_name'] = user['attributes']['given_name']
+        chat['family_name'] = user['attributes']['family_name']
+        chat['picture'] = user['attributes']['picture']
+        chat['custom:company'] = user['attributes'].get("custom:company", "")
+        chat['position'] = user['attributes'].get("custom:position", "")
+        chat['region'] = json.loads(user['attributes']['address'])['region']
+        chat['industry_tags'] = user['attributes'].get("custom:industry_tags", "")
+        chat['industry'] = user['attributes'].get("custom:industry", "")
 
     sorted_chats = []
     sorted_chats = sorted(chats_modified, key=lambda x: x['chat_type'], reverse=True)

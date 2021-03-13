@@ -31,7 +31,7 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         raw_users += response['Users']
         pagination_token = response.get('PaginationToken')
 
-    users = []
+    users = {}
     for raw_user in raw_users:
         raw_attributes = raw_user['Attributes']
         attributes = {}
@@ -41,14 +41,21 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         # filter by user_type
         if user_type and attributes['custom:user_type'] not in user_type:
             continue
+        
+        try:
+            email = attributes['email']
+        except:
+            logging.error('cannot find email')
+            logging.error(attributes)
+            email = raw_user['Username']
 
         user = {}
         user['username'] = raw_user['Username']
         user['attributes'] = attributes
         user['status'] = raw_user['UserStatus']
         user['enabled'] = raw_user['Enabled']
-        users.append(user)
-    return users[0] if len(users) == 1 else users, len(users)
+        users[email] = user
+    return users[list(users.keys())[0]] if len(users.keys()) == 1 else users, len(users.keys())
 
 def admin_update_user_attributes(email, attributes):
     response = client.admin_update_user_attributes(
