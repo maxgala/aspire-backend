@@ -89,12 +89,12 @@ def prepare_and_send_emails(chat):
         chat_type = 'One-on-One coffee chat'
 
     template_data = {
-        "mentor_email": mentor_name,
-        "mentee_email": mentee_email,
-        "mentor_name": mentor_name,
-        "mentee_name": mentee_name,
-        "chat_type": chat_type
+        "mentor_email": str(mentor_name),
+        "mentee_email": str(mentee_email),
+        "mentor_name": str(mentor_name),
+        "mentee_name": str(mentee_name),
+        "chat_type": str(chat_type)
     }
     template_data = json.dumps(template_data)
-    recipients = [mentee_email, mentor_name]
+    recipients = [mentee_email,mentor_name]
     send_templated_email(recipients, "Chat-Reservation", template_data)
