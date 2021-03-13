@@ -73,6 +73,9 @@ def prepare_and_send_emails(chat):
     mentee_email = chat.aspiring_professionals[0].strip()
     mentor_email = chat.senior_executive.strip()
 
+    logging.info("mentee_email is " + mentee_email)
+    logging.info("mentor_email is " + mentor_email)
+
     mentee, _ = get_users(filter_=("email", mentee_email), attributes_filter=["given_name", "family_name"])
     mentee_name = "%s %s" % (mentee['attributes']['given_name'], mentee['attributes']['family_name'])
 
