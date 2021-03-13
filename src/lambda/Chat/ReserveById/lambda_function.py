@@ -13,7 +13,6 @@ import http_status
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
 def handler(event, context):
     authorized_user_types = [
         UserType.FREE,

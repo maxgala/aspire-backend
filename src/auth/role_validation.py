@@ -1,12 +1,15 @@
 import enum
 import jwt
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 class UserType(enum.Enum):
     ADMIN = 1
     MENTOR = 2
     PAID = 3
     FREE = 4
-
 
 def check_auth(auth_header: str, allowedUserTypes: list):
     id_token = auth_header.split('Bearer ')[1]
@@ -15,6 +18,7 @@ def check_auth(auth_header: str, allowedUserTypes: list):
 
     user = jwt.decode(id_token, verify=False)
     success, user_type = validate_user_type(user)
+    logging.info('user_type is ' + user_type)
     if not success:
         return False, None
     if user_type not in allowedUserTypes:
