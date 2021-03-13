@@ -22,7 +22,8 @@ def handler(event, context):
         user_type = None
 
     users, count = get_users(filter_=filter_, user_type=user_type)
+    _users = users.values()
     return http_status.success(json.dumps({
-            "users": users,
+            "users": _users,
             "count": count
         }))
