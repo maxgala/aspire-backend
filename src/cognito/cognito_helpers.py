@@ -38,6 +38,7 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         for attr in raw_attributes:
             attributes[attr['Name']] = attr['Value']
 
+        email = attributes['email']
         # filter by user_type
         if user_type and attributes['custom:user_type'] not in user_type:
             continue
@@ -47,7 +48,7 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         user['attributes'] = attributes
         user['status'] = raw_user['UserStatus']
         user['enabled'] = raw_user['Enabled']
-        users[raw_user['Username']] = user
+        users[email] = user
     return users[list(users.keys())[0]] if len(users.keys()) == 1 else users, len(users.keys())
 
 def admin_update_user_attributes(email, attributes):
