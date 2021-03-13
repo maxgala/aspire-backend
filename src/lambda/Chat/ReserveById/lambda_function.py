@@ -70,8 +70,8 @@ def handler(event, context):
         return http_status.success()
 
 def prepare_and_send_emails(chat):
-    mentee_email = chat.aspiring_professionals[0]
-    mentor_email = chat.senior_executive
+    mentee_email = chat.aspiring_professionals[0].strip()
+    mentor_email = chat.senior_executive.strip()
 
     mentee, _ = get_users(filter_=("email", mentee_email), attributes_filter=["given_name", "family_name"])
     mentee_name = "%s %s" % (mentee['attributes']['given_name'], mentee['attributes']['family_name'])
@@ -86,8 +86,8 @@ def prepare_and_send_emails(chat):
         chat_type = 'One-on-One coffee chat'
 
     template_data = {
-        "mentor_email": mentor_name.strip(),
-        "mentee_email": mentee_email.strip(),
+        "mentor_email": mentor_name,
+        "mentee_email": mentee_email,
         "mentor_name": mentor_name,
         "mentee_name": mentee_name,
         "chat_type": chat_type
