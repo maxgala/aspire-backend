@@ -72,7 +72,7 @@ def handler(event, context):
 def prepare_and_send_emails(chat):
     mentee_email = chat.aspiring_professionals[0].strip()
     mentor_email = chat.senior_executive.strip()
-    
+
     mentee, _ = get_users(filter_=("email", mentee_email), attributes_filter=["given_name", "family_name"])
     mentee_name = "%s %s" % (mentee['attributes']['given_name'], mentee['attributes']['family_name'])
 
@@ -94,5 +94,5 @@ def prepare_and_send_emails(chat):
     }
 
     template_data = json.dumps(template_data)
-    recipients = [mentee_email, mentor_name]
+    recipients = [mentee_email, mentor_email]
     send_templated_email(recipients, "Chat-Reservation", template_data)
