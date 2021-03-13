@@ -2,3 +2,4 @@ stripe==2.56.0
 requests==2.25.1
 chardet==3.0.2
 certifi==2017.4.17
+idna==2.5
