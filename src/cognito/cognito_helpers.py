@@ -42,8 +42,12 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         if user_type and attributes['custom:user_type'] not in user_type:
             continue
         
-        logging.info(attributes)
-        email = attributes['email']
+        try:
+            email = attributes['email']
+        except:
+            logging.error('cannot find email')
+            logging.error(attributes)
+            email = raw_user['Username']
 
         user = {}
         user['username'] = raw_user['Username']
