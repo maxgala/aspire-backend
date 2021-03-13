@@ -36,6 +36,7 @@ def handler(event, context):
     session.close()
 
     users, _ = get_users()
+    logging.info(users)
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
         for user in users:
