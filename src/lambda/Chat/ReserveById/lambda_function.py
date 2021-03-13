@@ -77,10 +77,10 @@ def prepare_and_send_emails(chat):
     logging.info("mentor_email is " + mentor_email)
 
     mentee, _ = get_users(filter_=("email", mentee_email), attributes_filter=["given_name", "family_name"])
-    mentee_name = "%s %s" % (mentee['attributes']['given_name'], mentee['attributes']['family_name'])
+    mentee_name = mentee['attributes']['given_name']
 
     mentor, _ = get_users(filter_=("email", mentor_email), attributes_filter=["given_name", "family_name"])
-    mentor_name = "%s %s" % (mentor['attributes']['given_name'], mentor['attributes']['family_name'])
+    mentor_name = mentor['attributes']['given_name']
 
     chat_type = ''
     if chat.chat_type == ChatType.MOCK_INTERVIEW:
@@ -95,6 +95,9 @@ def prepare_and_send_emails(chat):
         "mentee_name": str(mentee_name),
         "chat_type": str(chat_type)
     }
+
+    logging.info("template data is " + json.dumps(template_data))
+
     template_data = json.dumps(template_data)
     recipients = [mentee_email,mentor_name]
     send_templated_email(recipients, "Chat-Reservation", template_data)
