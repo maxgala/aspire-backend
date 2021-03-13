@@ -38,8 +38,8 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         for attr in raw_attributes:
             attributes[attr['Name']] = attr['Value']
 
-        email = raw_user['Username']
         logging.info(attributes)
+        email = attributes['email']
         # filter by user_type
         if user_type and attributes['custom:user_type'] not in user_type:
             continue
