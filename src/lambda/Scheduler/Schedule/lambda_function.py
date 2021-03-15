@@ -229,6 +229,7 @@ def handler(event, context):
         total_unbooked = 0
         total_expiring_activated = 0
         for user in users:
+            logging.info(user)
             num_unbooked, num_expiring_activated = schedule_user(session, user['attributes'], current_date, next_date)
             total_unbooked += num_unbooked
             total_expiring_activated += num_expiring_activated
