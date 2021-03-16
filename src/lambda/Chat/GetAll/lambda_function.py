@@ -9,6 +9,7 @@ import http_status
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+users, _ = get_users()
 
 def handler(event, context):
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
@@ -35,8 +36,6 @@ def handler(event, context):
     chats = filtered_query.all()
     session.close()
 
-    users, _ = get_users()
-    logging.info(users)
     chats_modified = [row2dict(r) for r in chats]
     for chat in chats_modified:
         se = chat['senior_executive']

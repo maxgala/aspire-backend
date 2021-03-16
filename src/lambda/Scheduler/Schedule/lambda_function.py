@@ -228,7 +228,8 @@ def handler(event, context):
         num_carry_over = 0
         total_unbooked = 0
         total_expiring_activated = 0
-        for user in users:
+        for id in users:
+            user = users[id]            
             num_unbooked, num_expiring_activated = schedule_user(session, user['attributes'], current_date, next_date)
             total_unbooked += num_unbooked
             total_expiring_activated += num_expiring_activated
