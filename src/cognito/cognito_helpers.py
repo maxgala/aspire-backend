@@ -57,6 +57,50 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         users[email] = user
     return users[list(users.keys())[0]] if len(users.keys()) == 1 else users, len(users.keys())
 
+def get_users_pagination(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None, user_type=None, pagination_token=None):
+    if user_type and not isinstance(user_type, list):
+        user_type = [user_type]
+
+    params = {
+        "UserPoolId": userPoolId,
+        "Filter": "{} = '{}'".format(filter_[0], filter_[1])
+    }
+    if attributes_filter:
+        params["AttributesToGet"] = attributes_filter
+
+    if pagination_token:
+        params['PaginationToken'] = pagination_token
+    
+    response = client.list_users(**params)
+    raw_users =  response['Users']
+    pagination_response_token = response.get('PaginationToken')
+    
+    users = {}
+    for raw_user in raw_users:
+        raw_attributes = raw_user['Attributes']
+        attributes = {}
+        for attr in raw_attributes:
+            attributes[attr['Name']] = attr['Value']
+
+        # filter by user_type
+        if user_type and attributes['custom:user_type'] not in user_type:
+            continue
+        
+        try:
+            email = attributes['email']
+        except:
+            logging.error('cannot find email')
+            logging.error(attributes)
+            email = raw_user['Username']
+
+        user = {}
+        user['username'] = raw_user['Username']
+        user['attributes'] = attributes
+        user['status'] = raw_user['UserStatus']
+        user['enabled'] = raw_user['Enabled']
+        users[email] = user
+    return users[list(users.keys())[0]] if len(users.keys()) == 1 else users, len(users.keys()), pagination_response_token
+
 def admin_update_user_attributes(email, attributes):
     response = client.admin_update_user_attributes(
         UserPoolId=userPoolId,
