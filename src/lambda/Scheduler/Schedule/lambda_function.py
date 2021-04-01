@@ -207,7 +207,6 @@ def schedule_activate(session, default_num_activate, num_carry_over):
             print(chat.senior_executive)
 
 def handler(event, context):
-    return
     session = Session()
     try:
         default_num_activate = 25
