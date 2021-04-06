@@ -11,7 +11,7 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
     status_filter = event["queryStringParameters"].get("status", "") if event["queryStringParameters"] else ""
     type_filter = event["queryStringParameters"].get("type", "") if event["queryStringParameters"] else ""
-    page_limit = event["queryStringParameters"].get("limit", "") if event["queryStringParameters"] else 20
+    page_limit = event["queryStringParameters"].get("limit", "") if event["queryStringParameters"] else "20"
 
     if status_filter and status_filter in ['Enabled', 'Disabled']:
         filter_ = ('status', status_filter)
@@ -28,7 +28,6 @@ def handler(event, context):
         pagination_token = body.get('pagination_token')
     else:
         pagination_token = None
-        page_limit = 1000
 
     users, count, pagination_response_token = get_users_pagination(filter_=filter_, user_type=user_type, pagination_token=pagination_token,limit=int(page_limit))
     _users = users.values()
