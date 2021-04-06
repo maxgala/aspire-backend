@@ -1131,7 +1131,7 @@ Resources:
         SchedulerScheduleEvent:
           Type: Schedule
           Properties:
-            Schedule: cron(0 5 ? * 2 *)
+            Schedule: cron(0 5 ? * 5 *)
       Layers:
         - Ref: DatabaseLayer
         - Ref: SesLayer
