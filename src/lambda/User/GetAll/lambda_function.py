@@ -26,6 +26,8 @@ def handler(event, context):
     if body_str is not None:
         body = json.loads(event["body"])
         pagination_token = body.get('pagination_token')
+    else:
+        pagination_token = None
 
     users, count, pagination_response_token = get_users_pagination(filter_=filter_, user_type=user_type, pagination_token=pagination_token,limit=int(page_limit))
     _users = users.values()
