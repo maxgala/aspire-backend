@@ -76,7 +76,15 @@ def get_users_pagination(filter_: tuple=('status', 'Enabled'), attributes_filter
     
     response = client.list_users(**params)
     raw_users =  response['Users']
-    pagination_response_token = response.get('PaginationToken')
+    if limit > -1:
+        pagination_token = response.get('PaginationToken')
+    else:
+        pagination_token = response.get('PaginationToken')
+        while pagination_token != None:
+            params['PaginationToken'] = pagination_token
+            response = client.list_users(**params)
+            raw_users += response['Users']
+            pagination_token = response.get('PaginationToken')
     
     users = {}
     for raw_user in raw_users:
@@ -102,7 +110,7 @@ def get_users_pagination(filter_: tuple=('status', 'Enabled'), attributes_filter
         user['status'] = raw_user['UserStatus']
         user['enabled'] = raw_user['Enabled']
         users[email] = user
-    return users[list(users.keys())[0]] if len(users.keys()) == 1 else users, len(users.keys()), pagination_response_token
+    return users[list(users.keys())[0]] if len(users.keys()) == 1 else users, len(users.keys()), pagination_token
 
 def admin_update_user_attributes(email, attributes):
     response = client.admin_update_user_attributes(
