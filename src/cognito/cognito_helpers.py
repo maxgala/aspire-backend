@@ -57,15 +57,17 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
         users[email] = user
     return users[list(users.keys())[0]] if len(users.keys()) == 1 else users, len(users.keys())
 
-def get_users_pagination(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None, user_type=None, pagination_token=None,limit=20):
+def get_users_pagination(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None, user_type=None, pagination_token=None,limit=-1):
     if user_type and not isinstance(user_type, list):
         user_type = [user_type]
 
     params = {
         "UserPoolId": userPoolId,
         "Filter": "{} = '{}'".format(filter_[0], filter_[1]),
-        "Limit" : limit
     }
+    if limit > -1:
+        params["Limit"] = limit
+        
     if attributes_filter:
         params["AttributesToGet"] = attributes_filter
 
