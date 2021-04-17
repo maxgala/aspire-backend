@@ -2,7 +2,7 @@ import json
 import logging
 
 from role_validation import UserType
-from cognito_helpers import get_users_pagination
+from cognito_helpers import get_users_pagination, get_users
 import http_status
 
 logger = logging.getLogger()
@@ -23,10 +23,18 @@ def handler(event, context):
     else:
         user_type = None
 
-    users, count, pagination_response_token = get_users_pagination(filter_=filter_, user_type=user_type, pagination_token=pagination_token,limit=int(page_limit))
-    _users = users.values()
-    return http_status.success(json.dumps({
-            "users": list(_users),
-            "count": count,
-            "pagination_token": pagination_response_token
-        }))
+    if int(page_limit) != -1:
+        users, count, pagination_response_token = get_users_pagination(filter_=filter_, user_type=user_type, pagination_token=pagination_token,limit=int(page_limit))
+        _users = users.values()
+        return http_status.success(json.dumps({
+                "users": list(_users),
+                "count": count,
+                "pagination_token": pagination_response_token
+            }))
+    else:
+        users, count = get_users(filter_=filter_, user_type=user_type)
+        _users = users.values()
+        return http_status.success(json.dumps({
+                "users": list(_users),
+                "count": count
+            }))
