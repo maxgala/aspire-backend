@@ -5,6 +5,6 @@ export PKG_DIR="${BASE_DIR}/python"
 
 rm -rf ${PKG_DIR} && mkdir -p ${PKG_DIR}
 
-python3 -m pip install -r requirements.txt --no-deps -t ${PKG_DIR}
+python3.6 -m pip install -r requirements.txt --no-deps -t ${PKG_DIR}
 touch ${PKG_DIR}/__init__.py
 cp ../../common/*.py ${PKG_DIR}
