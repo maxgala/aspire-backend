@@ -50,7 +50,7 @@ Parameters:
 
 Globals:
   Function:
-    Runtime: python3.6
+    Runtime: python3.8
     Timeout: 120
 
 Resources:
@@ -79,7 +79,7 @@ Resources:
       LayerName: !Ref DatabaseLayerName
       ContentUri: src/layers/database/dependencies/
       CompatibleRuntimes:
-        - python3.6
+        - python3.8
       RetentionPolicy: Delete
 
   AuthLayer:
@@ -88,7 +88,7 @@ Resources:
       LayerName: !Ref AuthLayerName
       ContentUri: src/layers/auth/dependencies/
       CompatibleRuntimes:
-        - python3.6
+        - python3.8
       RetentionPolicy: Delete
 
   SesLayer:
@@ -97,7 +97,7 @@ Resources:
       LayerName: !Ref SesLayerName
       ContentUri: src/layers/ses_layer/dependencies/
       CompatibleRuntimes:
-        - python3.6
+        - python3.8
       RetentionPolicy: Delete
 
   CognitoLayer:
@@ -106,7 +106,7 @@ Resources:
       LayerName: !Ref CognitoLayerName
       ContentUri: src/layers/cognito/dependencies/
       CompatibleRuntimes:
-        - python3.6
+        - python3.8
       RetentionPolicy: Delete
   
   CommonLayer:
@@ -115,7 +115,7 @@ Resources:
       LayerName: !Ref CommonLayerName
       ContentUri: src/layers/common/dependencies/
       CompatibleRuntimes:
-        - python3.6
+        - python3.8
       RetentionPolicy: Delete
 
   AspireApi:
