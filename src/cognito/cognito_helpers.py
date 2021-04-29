@@ -34,6 +34,7 @@ def get_users(filter_: tuple=('status', 'Enabled'), attributes_filter: list=None
     users = {}
     for raw_user in raw_users:
         raw_attributes = raw_user['Attributes']
+        print(raw_attributes)
         attributes = {}
         for attr in raw_attributes:
             attributes[attr['Name']] = attr['Value']
