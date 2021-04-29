@@ -43,6 +43,7 @@ def get_chats(session, email=None, status=None, fixed_date=None, expiry_date=Non
     return chats
 
 def init_periods(user, current_date):
+    print(user)
     frequency = int(user['custom:declared_chats_freq'])
     start_date = datetime.fromtimestamp(int(user['custom:start_date']))
     end_date = datetime.fromtimestamp(int(user['custom:end_date']))
