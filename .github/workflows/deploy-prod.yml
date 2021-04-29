@@ -31,25 +31,15 @@ jobs:
           echo "STRIPE_KEY=$PROD_STRIPE_API_KEY" >> .env
           echo "COGNITO_POOL_ID=$PROD_COGNITO_POOL_ID" >> .env
           cd ../layers/database
-          sudo bash database_layer_packages.sh
-          sudo chown -R runner dependencies
-          sudo chgrp -R docker dependencies
+          bash database_layer_packages.sh
           cd ../auth
-          sudo bash auth_layer_packages.sh
-          sudo chown -R runner dependencies
-          sudo chgrp -R docker dependencies
+          bash auth_layer_packages.sh
           cd ../ses_layer
-          sudo bash ses_layer_packages.sh
-          sudo chown -R runner dependencies
-          sudo chgrp -R docker dependencies
+          bash ses_layer_packages.sh
           cd ../cognito
-          sudo bash cognito_layer_packages.sh
-          sudo chown -R runner dependencies
-          sudo chgrp -R docker dependencies
+          bash cognito_layer_packages.sh
           cd ../common
-          sudo bash common_layer_packages.sh
-          sudo chown -R runner dependencies
-          sudo chgrp -R docker dependencies
+          bash common_layer_packages.sh
         env:
           PROD_DB_HOST: ${{secrets.PROD_DB_HOST}}
           PROD_DB_PORT: ${{secrets.PROD_DB_PORT}}
