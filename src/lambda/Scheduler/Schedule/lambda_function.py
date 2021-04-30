@@ -226,7 +226,7 @@ def handler(event, context):
         logger.info("num_activate={}, current_date={}, next_date={}"\
             .format(default_num_activate, current_date.strftime("%d/%m/%Y"), next_date.strftime("%d/%m/%Y")))
 
-        users, _ = get_users(user_type='MENTOR', attributes_filter=['email', 'custom:remaining_chats_freq', 'custom:declared_chats_freq', 'custom:end_date', 'custom:start_date'])
+        users, _ = get_users(user_type='MENTOR')
         num_carry_over = 0
         total_unbooked = 0
         total_expiring_activated = 0

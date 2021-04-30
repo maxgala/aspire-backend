@@ -52,6 +52,7 @@ Globals:
   Function:
     Runtime: python3.6
     Timeout: 120
+    MemorySize: 1024
 
 Resources:
   # --- Infrastructure ---
